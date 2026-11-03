@@ -65,7 +65,7 @@ Deno.serve(async (req) => {
     const appUrl = rawUrl && !/^https?:\/\//i.test(rawUrl) ? `https://${rawUrl}` : rawUrl;
     if (!apiKey || !from) return json({ error: "secrets missing" }, 500);
 
-    const subject = "Subcontractor Pros — you have a new message from our team";
+    const subject = "WeeSubby — you have a new message from our team";
     const replyUrl = appUrl ? `${appUrl}/messages` : "";
 
     const html = `
@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
       <tr><td style="padding:24px;">
         <h1 style="color:#0f172a;font-size:22px;margin:0 0 8px;">You have a new message</h1>
         <p style="color:#475569;font-size:15px;line-height:1.55;margin:0 0 16px;">
-          The Subcontractor Pros team sent you a message:
+          The WeeSubby team sent you a message:
         </p>
       </td></tr>
       <tr><td style="padding:0 24px 16px;">
@@ -98,7 +98,7 @@ Deno.serve(async (req) => {
 </body></html>`.trim();
 
     const text = [
-      "You have a new message from the Subcontractor Pros team:",
+      "You have a new message from the WeeSubby team:",
       "",
       msg.text,
       "",

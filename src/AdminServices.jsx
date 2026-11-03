@@ -313,7 +313,7 @@ export default function AdminServices({ catalog, rules, contractors, jobs, admin
           <div style={{ border: "1px solid #e2e8f0", borderRadius: 8, padding: 10 }}>
             <div style={{ fontSize: "0.875rem", fontWeight: 700, color: "#b45309", marginBottom: 4 }}>PLATFORM DOCUMENT POLICY</div>
             <div style={{ fontSize: "0.875rem", color: "#64748b", marginBottom: 8 }}>
-              What SubcontractorPros asks providers of this service to upload. This is platform policy, not a statement of what the law requires — use Rules for jurisdiction requirements.
+              What WeeSubby asks providers of this service to upload. This is platform policy, not a statement of what the law requires — use Rules for jurisdiction requirements.
             </div>
             <label htmlFor="svc-edit-lic" className="field-label">Trade license upload label <span style={{ color: "#64748b" }}>(blank = no trade license upload)</span></label>
             <input id="svc-edit-lic" placeholder="e.g. State Plumbing License" value={editForm.license_label} onChange={e => setEditForm(f => ({ ...f, license_label: e.target.value }))} />

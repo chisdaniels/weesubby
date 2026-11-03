@@ -10,7 +10,7 @@ import {
 } from "./services";
 
 // Platform document policy (trade_types.trade_license_label + requires_bond):
-// what SubcontractorPros asks providers of each service to upload. It is not
+// what WeeSubby asks providers of each service to upload. It is not
 // a statement of legal requirements — those live in requirement_rules.
 function makeRequirementsFor(reqMap) {
   return function requirementsFor(trades) {
@@ -1628,7 +1628,7 @@ function avatarInitials(name) {
           avatar: name.slice(0, 2).toUpperCase(),
         };
       }
-      return { name: "Subcontractor Pros Team", sub: "Admin · replies go to our team", avatar: "SP" };
+      return { name: "WeeSubby Team", sub: "Admin · replies go to our team", avatar: "WS" };
     }
     const contractor = contractors.find(c => c.id === t.contractor_id);
     if (isContractor && myContractor && t.contractor_id === myContractor.id) {
@@ -1872,8 +1872,10 @@ function avatarInitials(name) {
       <header style={{ background: "rgba(255,255,255,0.94)", borderBottom: "1px solid #e2e8f0", padding: "0 20px", boxShadow: "0 1px 3px rgba(15,23,42,0.05)" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", minHeight: 60, gap: 12, flexWrap: "wrap", padding: "8px 0", position: "relative" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, minWidth: 0 }}>
-            <span style={{ fontSize: "1.375rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE, whiteSpace: "nowrap" }}>⚒ SUBCONTRACTOR</span>
-            <span style={{ fontSize: "0.8125rem", fontFamily: "'Bebas Neue', cursive", color: "#1f2937", fontWeight: 600, letterSpacing: 1 }}>PROS</span>
+            <img src="/favicon.svg" alt="" width="36" height="36" style={{ display: "block", flexShrink: 0 }} />
+            <span style={{ fontSize: "1.625rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1, whiteSpace: "nowrap" }}>
+              <span style={{ color: "#db6b33" }}>Wee</span><span style={{ color: "#1f2430" }}>Subby</span>
+            </span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", justifyContent: "flex-end", position: "relative" }}>
             {user ? (
@@ -3454,7 +3456,7 @@ function avatarInitials(name) {
               </div>
             )}
             <div style={{ background: "#f8fafc", borderRadius: 12, padding: 14, marginBottom: 20 }}>
-              <div style={{ fontSize: "0.875rem", fontWeight: 700, letterSpacing: 1, color: "#b45309", marginBottom: 10 }}>VERIFIED BY SUBCONTRACTOR PROS</div>
+              <div style={{ fontSize: "0.875rem", fontWeight: 700, letterSpacing: 1, color: "#b45309", marginBottom: 10 }}>VERIFIED BY WEESUBBY</div>
               <VerifiedCredentialsSummary contractor={modal} />
             </div>
 
@@ -3605,7 +3607,7 @@ function avatarInitials(name) {
                       REQUIRED DOCUMENTS <span style={{ color: "#dc2626" }}>*</span>
                     </div>
                     <div style={{ fontSize: "0.875rem", color: "#64748b", marginBottom: 14 }}>
-                      What SubcontractorPros asks for, based on the services you picked. Files are only shared with a customer once you accept their job.
+                      What WeeSubby asks for, based on the services you picked. Files are only shared with a customer once you accept their job.
                     </div>
                     {myContractor && (
                       <div style={{ background: "#f8fafc", borderRadius: 10, padding: 12, marginBottom: 14 }}>
@@ -3693,7 +3695,7 @@ function avatarInitials(name) {
                             {i + 3}. {licType} <span style={{ color: "#475569", fontWeight: 400, fontSize: "0.875rem" }}>(for {t})</span>
                           </div>
                           <div style={{ fontSize: "0.875rem", color: "#b45309", marginBottom: 10 }}>
-                            SubcontractorPros asks {t} providers for this document.
+                            WeeSubby asks {t} providers for this document.
                           </div>
                           <div>
                             <label htmlFor={`pf-tl-num-${t}`} style={{ fontSize: "0.9375rem", color: "#334155", marginBottom: 6, display: "block" }}>License Number *</label>
@@ -3733,7 +3735,7 @@ function avatarInitials(name) {
                       <div style={{ background: "#f8fafc", borderRadius: 10, padding: 12, marginBottom: 4, border: "1px solid #facc15" }}>
                         <div style={{ fontSize: "0.9375rem", fontWeight: 700, color: "#0f172a", marginBottom: 4 }}>{bondNumber}. Surety Bond</div>
                         <div style={{ fontSize: "0.875rem", color: "#b45309", marginBottom: 10 }}>
-                          SubcontractorPros asks for a bond for: {profileForm.trades.filter(t => tradeReqMap[t]?.bonded).join(", ")}.
+                          WeeSubby asks for a bond for: {profileForm.trades.filter(t => tradeReqMap[t]?.bonded).join(", ")}.
                         </div>
                         <div>
                           <label htmlFor="pf-bond-amt" style={{ fontSize: "0.9375rem", color: "#334155", marginBottom: 6, display: "block" }}>Bond Amount ($)</label>
@@ -4084,10 +4086,10 @@ function avatarInitials(name) {
               <li>Tap the <strong>Share</strong> icon at the bottom center — a square with an arrow pointing up.</li>
               <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
               <li>Make sure <strong>Open as Web App</strong> is switched on, then tap <strong>Add</strong>.</li>
-              <li>Open Subcontractor Pros from the new home screen icon and sign in.</li>
+              <li>Open WeeSubby from the new home screen icon and sign in.</li>
             </ol>
             <div style={{ color: "#475569", fontSize: "0.9375rem", marginBottom: 14, background: "#f8fafc", borderRadius: 8, padding: 12 }}>
-              The icon opens Subcontractor Pros full-screen, with no browser bar. Notifications only work in the home screen app, so turn them on from there: My Account → Turn on notifications.
+              The icon opens WeeSubby full-screen, with no browser bar. Notifications only work in the home screen app, so turn them on from there: My Account → Turn on notifications.
             </div>
             <button type="button" className="btn btn-gold" style={{ width: "100%" }} onClick={() => setIosInstallModal(false)}>
               Got it
@@ -4251,7 +4253,7 @@ function avatarInitials(name) {
                 <div style={{ fontSize: "0.8125rem", color: "#64748b", marginTop: 4 }}>Shown on the contractor's profile.</div>
               </div>
               <div>
-                <label htmlFor="cm-comment" style={{ fontSize: "0.9375rem", color: "#334155", marginBottom: 6, display: "block" }}>Private note to Subcontractor Pros (optional)</label>
+                <label htmlFor="cm-comment" style={{ fontSize: "0.9375rem", color: "#334155", marginBottom: 6, display: "block" }}>Private note to WeeSubby (optional)</label>
                 <textarea
                   id="cm-comment"
                   rows={2}

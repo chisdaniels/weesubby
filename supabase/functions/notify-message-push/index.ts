@@ -63,7 +63,7 @@ Deno.serve(async (req) => {
     // Sender name as the recipient should see it.
     let title = "New message";
     if (msg.from_admin) {
-      title = "Subcontractor Pros Team";
+      title = "WeeSubby Team";
     } else if (msg.contractor_id != null) {
       const { data: c } = await admin.from("contractors").select("name, user_id").eq("id", msg.contractor_id).maybeSingle();
       if (c && c.user_id === msg.sender_id) title = c.name;

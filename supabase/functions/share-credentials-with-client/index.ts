@@ -109,7 +109,7 @@ Deno.serve(async (req) => {
       <tr><td style="padding:24px 24px 12px;">
         <h1 style="color:#0f172a;font-size:22px;margin:0 0 8px;">${escape(senderName)}'s credentials${clientName ? `, for ${escape(clientName)}` : ""}</h1>
         <p style="color:#475569;font-size:15px;line-height:1.55;margin:0 0 16px;">
-          ${escape(senderName)} shared their license and insurance documents with you through Subcontractor Pros. Each document shows whether our team has reviewed it.
+          ${escape(senderName)} shared their license and insurance documents with you through WeeSubby. Each document shows whether our team has reviewed it.
         </p>
         ${message ? `<p style="color:#0f172a;background:#f1f5f9;padding:12px 14px;border-radius:8px;font-size:14px;line-height:1.55;margin:0 0 16px;white-space:pre-wrap;">${escape(message)}</p>` : ""}
       </td></tr>
@@ -151,14 +151,14 @@ Deno.serve(async (req) => {
         </table>
       </td></tr>
 
-      ${appUrl ? `<tr><td style="padding:0 24px 20px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="background:#f59e0b;border-radius:10px;"><a href="${appUrl}" style="display:inline-block;padding:12px 24px;color:#0f172a;text-decoration:none;font-weight:700;">Message ${escape(senderName)} on Subcontractor Pros</a></td></tr></table></td></tr>` : ""}
+      ${appUrl ? `<tr><td style="padding:0 24px 20px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="background:#f59e0b;border-radius:10px;"><a href="${appUrl}" style="display:inline-block;padding:12px 24px;color:#0f172a;text-decoration:none;font-weight:700;">Message ${escape(senderName)} on WeeSubby</a></td></tr></table></td></tr>` : ""}
 
       <tr><td style="padding:0 24px 20px;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0f172a;border-radius:10px;">
           <tr><td style="padding:18px;">
-            <div style="color:#f59e0b;font-size:12px;font-weight:700;letter-spacing:1px;margin-bottom:8px;">NEW TO SUBCONTRACTOR PROS?</div>
+            <div style="color:#f59e0b;font-size:12px;font-weight:700;letter-spacing:1px;margin-bottom:8px;">NEW TO WEESUBBY?</div>
             <div style="color:#e2e8f0;font-size:14px;line-height:1.6;margin-bottom:12px;">
-              Subcontractor Pros is a free platform where homeowners and businesses post jobs and get matched with <strong style="color:#ffffff;">verified, licensed, and insured contractors</strong> like ${escape(senderName)}. Every pro on the board has their license &amp; insurance vetted by our admin team before they can accept a single job.
+              WeeSubby is a free platform where homeowners and businesses post jobs and get matched with <strong style="color:#ffffff;">verified, licensed, and insured contractors</strong> like ${escape(senderName)}. Every pro on the board has their license &amp; insurance vetted by our admin team before they can accept a single job.
             </div>
             ${appUrl ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="background:#ffffff;border-radius:8px;"><a href="${appUrl}" style="display:inline-block;padding:10px 18px;color:#0f172a;text-decoration:none;font-weight:700;font-size:14px;">Post a Job Free</a></td></tr></table>` : ""}
           </td></tr>
@@ -194,10 +194,10 @@ Deno.serve(async (req) => {
       websiteHref ? websiteHref : "",
       "",
       `Reply directly to reach them at ${senderEmail}.`,
-      appUrl ? `\nMessage on Subcontractor Pros: ${appUrl}` : "",
+      appUrl ? `\nMessage on WeeSubby: ${appUrl}` : "",
       "",
-      "── NEW TO SUBCONTRACTOR PROS? ──",
-      `Subcontractor Pros is a free platform where you can post jobs and get matched with verified, licensed, and insured contractors like ${senderName}. Every pro is vetted by our admin team before they can accept work.`,
+      "── NEW TO WEESUBBY? ──",
+      `WeeSubby is a free platform where you can post jobs and get matched with verified, licensed, and insured contractors like ${senderName}. Every pro is vetted by our admin team before they can accept work.`,
       appUrl ? `Post a job free: ${appUrl}` : "",
     ].filter(Boolean).join("\n");
 
@@ -247,13 +247,13 @@ function credStatus(c: any, key: string, docPath?: string | null, fallbackExpiry
   return "pending";
 }
 const STATUS_HTML: Record<string, string> = {
-  verified: ' <span style="color:#047857;font-weight:700;">&middot; &#10003; Verified by Subcontractor Pros</span>',
+  verified: ' <span style="color:#047857;font-weight:700;">&middot; &#10003; Verified by WeeSubby</span>',
   pending:  ' <span style="color:#b45309;">&middot; Not yet reviewed</span>',
   expired:  ' <span style="color:#b91c1c;font-weight:700;">&middot; Expired</span>',
   rejected: ' <span style="color:#b91c1c;font-weight:700;">&middot; Did not pass review</span>',
 };
 const STATUS_TEXT: Record<string, string> = {
-  verified: " [Verified by Subcontractor Pros]", pending: " [Not yet reviewed]", expired: " [Expired]", rejected: " [Did not pass review]",
+  verified: " [Verified by WeeSubby]", pending: " [Not yet reviewed]", expired: " [Expired]", rejected: " [Did not pass review]",
 };
 function statusHtml(c: any, key: string, docPath?: string | null, fallbackExpiry?: string | null) {
   return STATUS_HTML[credStatus(c, key, docPath, fallbackExpiry)] || "";

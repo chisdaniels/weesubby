@@ -86,7 +86,7 @@ async function emailAdmins(admin: ReturnType<typeof createClient>, ticket: any) 
 </body></html>`.trim();
 
   const text = [
-    `New Subcontractor Pros support ticket #${ticket.id}`,
+    `New WeeSubby support ticket #${ticket.id}`,
     `From: ${ticket.email}${ticket.user_id ? "" : " (not signed in)"}`,
     `Subject: ${ticket.subject}`,
     "",

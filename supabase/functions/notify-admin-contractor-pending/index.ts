@@ -11,7 +11,7 @@
 // Required secrets (set from the Supabase dashboard OR via
 // `supabase secrets set NAME=value`):
 //   RESEND_API_KEY   from https://resend.com/api-keys
-//   MAIL_FROM        e.g. "Subcontractor Pros <notifications@subcontractorpros.com>"
+//   MAIL_FROM        e.g. "WeeSubby <notifications@subcontractorpros.com>"
 //                    (must be from a verified Resend domain, or use
 //                    "onboarding@resend.dev" while testing)
 //   APP_URL          the deployed site URL (used in the CTA button)
@@ -98,7 +98,7 @@ Deno.serve(async (req) => {
     }
 
     const appUrl  = Deno.env.get("APP_URL") || "";
-    const subject = `[Subcontractor Pros] Verify: ${contractor.name}`;
+    const subject = `[WeeSubby] Verify: ${contractor.name}`;
 
     const html = `
 <!doctype html>
@@ -119,7 +119,7 @@ Deno.serve(async (req) => {
     </table>
     <p style="color:#64748b;font-size:12px;margin:0 0 16px;">Document links expire in 7 days. You can always open them from the admin dashboard.</p>
     ${appUrl ? `<p><a href="${appUrl}" style="display:inline-block;background:#f59e0b;color:#0f172a;padding:12px 24px;text-decoration:none;border-radius:10px;font-weight:700;">Open Admin Dashboard</a></p>` : ""}
-    <p style="color:#94a3b8;font-size:12px;margin-top:24px;">You're receiving this because you're an admin on Subcontractor Pros.</p>
+    <p style="color:#94a3b8;font-size:12px;margin-top:24px;">You're receiving this because you're an admin on WeeSubby.</p>
   </div>
 </body></html>`.trim();
 
@@ -151,7 +151,7 @@ Deno.serve(async (req) => {
     }
 
     // Also confirm to the contractor that we've got their docs.
-    const contractorSubject = "Subcontractor Pros — your documents are being reviewed";
+    const contractorSubject = "WeeSubby — your documents are being reviewed";
     const contractorHtml = `
 <!doctype html>
 <html><body style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:#f8fafc;padding:24px;">
@@ -163,8 +163,8 @@ Deno.serve(async (req) => {
     <p style="color:#475569;line-height:1.55;">
       Once you're verified, the ✓ Verified badge appears on your profile and you'll be able to accept jobs from homeowners.
     </p>
-    ${appUrl ? `<p><a href="${appUrl}" style="display:inline-block;background:#f59e0b;color:#0f172a;padding:12px 24px;text-decoration:none;border-radius:10px;font-weight:700;">Open Subcontractor Pros</a></p>` : ""}
-    <p style="color:#94a3b8;font-size:12px;margin-top:24px;">You're receiving this because you set up a contractor profile on Subcontractor Pros.</p>
+    ${appUrl ? `<p><a href="${appUrl}" style="display:inline-block;background:#f59e0b;color:#0f172a;padding:12px 24px;text-decoration:none;border-radius:10px;font-weight:700;">Open WeeSubby</a></p>` : ""}
+    <p style="color:#94a3b8;font-size:12px;margin-top:24px;">You're receiving this because you set up a contractor profile on WeeSubby.</p>
   </div>
 </body></html>`.trim();
     const contractorText = [
@@ -174,7 +174,7 @@ Deno.serve(async (req) => {
       "Our team is reviewing them now — usually within one business day.",
       "",
       "You'll get a follow-up email as soon as your profile is verified.",
-      appUrl ? `\nOpen Subcontractor Pros: ${appUrl}` : "",
+      appUrl ? `\nOpen WeeSubby: ${appUrl}` : "",
     ].filter(Boolean).join("\n");
 
     if (user.email) {

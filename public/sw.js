@@ -42,7 +42,7 @@ self.addEventListener("push", (event) => {
   try { data = event.data ? event.data.json() : {}; } catch { data = { body: event.data?.text() }; }
   event.waitUntil((async () => {
     // Every push must show a notification (Safari revokes push otherwise).
-    await self.registration.showNotification(data.title || "Subcontractor Pros", {
+    await self.registration.showNotification(data.title || "WeeSubby", {
       body: data.body || "You have a new message.",
       tag: data.tag || "message",
       renotify: true,

@@ -144,7 +144,7 @@ Deno.serve(async (req) => {
               </td></tr>
               ${links[cc.bond_path] ? `<tr><td style="padding:0;"><a href="${links[cc.bond_path]}" style="color:#047857;font-size:14px;font-weight:600;">View bond certificate</a></td></tr>` : ""}` : ""}
             </table>
-            <div style="color:#065f46;font-size:12px;margin-top:10px;">Document links expire in 7 days. You can open them anytime in Subcontractor Pros under Post a Job &rarr; Your Posted Jobs.</div>
+            <div style="color:#065f46;font-size:12px;margin-top:10px;">Document links expire in 7 days. You can open them anytime in WeeSubby under Post a Job &rarr; Your Posted Jobs.</div>
           </td></tr>
         </table>
       </td></tr>
@@ -175,13 +175,13 @@ Deno.serve(async (req) => {
 
       <tr><td style="padding:0 24px 24px;">
         <p style="color:#475569;font-size:14px;line-height:1.55;margin:0 0 16px;">
-          They also sent you an intro message in your Subcontractor Pros inbox. Log in to reply and coordinate the work.
+          They also sent you an intro message in your WeeSubby inbox. Log in to reply and coordinate the work.
         </p>
         ${appUrl ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="background:#f59e0b;border-radius:10px;"><a href="${appUrl}" style="display:inline-block;padding:12px 24px;color:#0f172a;text-decoration:none;font-weight:700;">Open Messages</a></td></tr></table>` : ""}
       </td></tr>
 
       <tr><td style="padding:0 24px 24px;color:#94a3b8;font-size:12px;">
-        You're receiving this because a contractor accepted a job you posted on Subcontractor Pros.
+        You're receiving this because a contractor accepted a job you posted on WeeSubby.
       </td></tr>
     </table>
   </td></tr>
@@ -207,10 +207,10 @@ Deno.serve(async (req) => {
       cc.bond_path
         ? `Surety Bond${cc.bond_amount ? " · $" + Number(cc.bond_amount).toLocaleString() : ""}${statusText(cc, "bond", cc.bond_path)}${links[cc.bond_path] ? "\n  Doc: " + links[cc.bond_path] : ""}`
         : "",
-      "Document links expire in 7 days. You can open them anytime in Subcontractor Pros.",
+      "Document links expire in 7 days. You can open them anytime in WeeSubby.",
       "",
       "They also sent you an intro message in the app. Log in to reply.",
-      appUrl ? `Open Subcontractor Pros: ${appUrl}` : "",
+      appUrl ? `Open WeeSubby: ${appUrl}` : "",
     ].filter(Boolean).join("\n");
 
     const res = await fetch("https://api.resend.com/emails", {
@@ -252,13 +252,13 @@ function credStatus(c: any, key: string, docPath?: string | null, fallbackExpiry
   return "pending";
 }
 const STATUS_HTML: Record<string, string> = {
-  verified: ' <span style="color:#047857;font-weight:700;">&middot; &#10003; Verified by Subcontractor Pros</span>',
+  verified: ' <span style="color:#047857;font-weight:700;">&middot; &#10003; Verified by WeeSubby</span>',
   pending:  ' <span style="color:#b45309;">&middot; Not yet reviewed</span>',
   expired:  ' <span style="color:#b91c1c;font-weight:700;">&middot; Expired</span>',
   rejected: ' <span style="color:#b91c1c;font-weight:700;">&middot; Did not pass review</span>',
 };
 const STATUS_TEXT: Record<string, string> = {
-  verified: " [Verified by Subcontractor Pros]", pending: " [Not yet reviewed]", expired: " [Expired]", rejected: " [Did not pass review]",
+  verified: " [Verified by WeeSubby]", pending: " [Not yet reviewed]", expired: " [Expired]", rejected: " [Did not pass review]",
 };
 function statusHtml(c: any, key: string, docPath?: string | null, fallbackExpiry?: string | null) {
   return STATUS_HTML[credStatus(c, key, docPath, fallbackExpiry)] || "";

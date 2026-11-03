@@ -3,7 +3,7 @@ import { supabase } from "./lib/supabase";
 import { CREDENTIAL_STATUS_LABEL, contractorCredentials, verifiedCredentialLabels } from "./services";
 
 export const VERIFIED_PRO_MEANING =
-  "Verified pro: a SubcontractorPros admin reviewed this business's documents and approved the profile to accept jobs.";
+  "Verified pro: a WeeSubby admin reviewed this business's documents and approved the profile to accept jobs.";
 
 const STATUS_STYLE = {
   verified:     { background: "#ecfdf5", color: "#047857" },

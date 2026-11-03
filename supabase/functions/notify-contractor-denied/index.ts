@@ -56,7 +56,7 @@ Deno.serve(async (req) => {
 
     const { data: denial } = await admin
       .from("contractor_denials").select("reason").eq("contractor_id", contractor.id).maybeSingle();
-    const subject = `Subcontractor Pros — your application needs attention`;
+    const subject = `WeeSubby — your application needs attention`;
     const reasonHtml = escape(denial?.reason || "(no reason recorded)");
     const reasonText = denial?.reason || "(no reason recorded)";
 
