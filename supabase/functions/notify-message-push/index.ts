@@ -28,9 +28,9 @@ Deno.serve(async (req) => {
     const vapidPublic  = Deno.env.get("VAPID_PUBLIC_KEY");
     const vapidPrivate = Deno.env.get("VAPID_PRIVATE_KEY");
     if (!vapidPublic || !vapidPrivate) return json({ error: "push keys not configured" }, 500);
-    // APP_URL may be set without a scheme ("subcontractorpros.com"); the VAPID
+    // APP_URL may be set without a scheme ("weesubby.com"); the VAPID
     // contact must be a full https URL.
-    const rawUrl = (Deno.env.get("APP_URL") || "www.subcontractorpros.com").trim().replace(/\/+$/, "");
+    const rawUrl = (Deno.env.get("APP_URL") || "weesubby.com").trim().replace(/\/+$/, "");
     const appUrl = /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
     webpush.setVapidDetails(appUrl, vapidPublic, vapidPrivate);
 

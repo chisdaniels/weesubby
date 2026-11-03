@@ -1,5 +1,32 @@
 {
+  "redirects": [
+    {
+      "source": "/:path((?!sw\\.js$).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "subcontractorpros.com"
+        }
+      ],
+      "destination": "https://weesubby.com/:path",
+      "permanent": true
+    },
+    {
+      "source": "/:path((?!sw\\.js$).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.subcontractorpros.com"
+        }
+      ],
+      "destination": "https://weesubby.com/:path",
+      "permanent": true
+    }
+  ],
   "rewrites": [
-    { "source": "/((?!.*\\.).*)", "destination": "/index.html" }
+    {
+      "source": "/((?!.*\\.).*)",
+      "destination": "/index.html"
+    }
   ]
 }

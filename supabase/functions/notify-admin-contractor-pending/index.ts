@@ -11,7 +11,7 @@
 // Required secrets (set from the Supabase dashboard OR via
 // `supabase secrets set NAME=value`):
 //   RESEND_API_KEY   from https://resend.com/api-keys
-//   MAIL_FROM        e.g. "WeeSubby <notifications@subcontractorpros.com>"
+//   MAIL_FROM        e.g. "WeeSubby <notifications@weesubby.com>"
 //                    (must be from a verified Resend domain, or use
 //                    "onboarding@resend.dev" while testing)
 //   APP_URL          the deployed site URL (used in the CTA button)

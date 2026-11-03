@@ -12,7 +12,7 @@ the contractor row is not yet verified.
 
 - Create an account at [resend.com](https://resend.com) (free tier is 3,000
   emails/month).
-- **Domains** → **Add Domain** → add `subcontractorpros.com` and follow
+- **Domains** → **Add Domain** → add `weesubby.com` and follow
   the DNS steps. Skip this while testing and use `onboarding@resend.dev`
   as the sender.
 - **API Keys** → **Create API Key** → copy it.
@@ -32,7 +32,7 @@ Dashboard: **Edge Functions → Secrets → New**, add:
 | Name | Value |
 |---|---|
 | `RESEND_API_KEY` | the key from step 1 |
-| `MAIL_FROM` | `TradeLinkPro <notifications@subcontractorpros.com>` — or `onboarding@resend.dev` for testing |
+| `MAIL_FROM` | `WeeSubby <notifications@weesubby.com>` — or `onboarding@resend.dev` for testing |
 | `APP_URL` | your deployed site URL (the "Open Admin Dashboard" button links here) |
 
 `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are injected automatically — do NOT set them.
