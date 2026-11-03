@@ -7,7 +7,7 @@ export const VERIFIED_PRO_MEANING =
 
 const STATUS_STYLE = {
   verified:     { background: "#ecfdf5", color: "#047857" },
-  pending:      { background: "#fffbeb", color: "#b45309" },
+  pending:      { background: "#fffbeb", color: "#b04a17" },
   expired:      { background: "#fef2f2", color: "#dc2626" },
   rejected:     { background: "#fef2f2", color: "#dc2626" },
   not_provided: { background: "#e2e8f0", color: "#475569" },
@@ -69,7 +69,7 @@ export function CredentialList({ contractor, reqMap, showDocs = false, showNotes
             <div style={{ fontWeight: 600, color: "#0f172a", fontSize: "0.9375rem" }}>{item.label}</div>
             {detailLine(item) && <div style={{ fontSize: "0.875rem", color: "#475569" }}>{detailLine(item)}</div>}
             {showNotes && item.review?.note && item.review.doc_path === item.docPath && (
-              <div style={{ fontSize: "0.875rem", color: "#b45309" }}>Reviewer note: {item.review.note}</div>
+              <div style={{ fontSize: "0.875rem", color: "#b04a17" }}>Reviewer note: {item.review.note}</div>
             )}
             {showDocs && item.docPath && <DocLink path={item.docPath} />}
           </div>
@@ -161,12 +161,12 @@ function CredentialReviewRow({ item, onSave }) {
           {item.docPath
             ? <DocLink path={item.docPath} />
             : <span style={{ fontSize: "0.875rem", color: "#64748b" }}>No document uploaded</span>}
-          {item.review?.note && <div style={{ fontSize: "0.875rem", color: "#b45309", marginTop: 4 }}>Note: {item.review.note}</div>}
+          {item.review?.note && <div style={{ fontSize: "0.875rem", color: "#b04a17", marginTop: 4 }}>Note: {item.review.note}</div>}
           {item.review?.reviewed_at && current && (
             <div style={{ fontSize: "0.8125rem", color: "#64748b", marginTop: 2 }}>Reviewed {new Date(item.review.reviewed_at).toLocaleString()}</div>
           )}
           {item.review && !current && item.docPath && (
-            <div style={{ fontSize: "0.8125rem", color: "#b45309", marginTop: 2 }}>New file uploaded since the last review.</div>
+            <div style={{ fontSize: "0.8125rem", color: "#b04a17", marginTop: 2 }}>New file uploaded since the last review.</div>
           )}
         </div>
         <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>

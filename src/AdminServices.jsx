@@ -311,14 +311,14 @@ export default function AdminServices({ catalog, rules, contractors, jobs, admin
             <textarea id="svc-edit-aliases" rows={2} value={editForm.aliases} onChange={e => setEditForm(f => ({ ...f, aliases: e.target.value }))} />
           </div>
           <div style={{ border: "1px solid #e2e8f0", borderRadius: 8, padding: 10 }}>
-            <div style={{ fontSize: "0.875rem", fontWeight: 700, color: "#b45309", marginBottom: 4 }}>PLATFORM DOCUMENT POLICY</div>
+            <div style={{ fontSize: "0.875rem", fontWeight: 700, color: "#b04a17", marginBottom: 4 }}>PLATFORM DOCUMENT POLICY</div>
             <div style={{ fontSize: "0.875rem", color: "#64748b", marginBottom: 8 }}>
               What WeeSubby asks providers of this service to upload. This is platform policy, not a statement of what the law requires — use Rules for jurisdiction requirements.
             </div>
             <label htmlFor="svc-edit-lic" className="field-label">Trade license upload label <span style={{ color: "#64748b" }}>(blank = no trade license upload)</span></label>
             <input id="svc-edit-lic" placeholder="e.g. State Plumbing License" value={editForm.license_label} onChange={e => setEditForm(f => ({ ...f, license_label: e.target.value }))} />
             <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.9375rem", color: "#0f172a", cursor: "pointer", marginTop: 8 }}>
-              <input type="checkbox" checked={editForm.requires_bond} onChange={e => setEditForm(f => ({ ...f, requires_bond: e.target.checked }))} style={{ width: "auto", accentColor: "#facc15" }} />
+              <input type="checkbox" checked={editForm.requires_bond} onChange={e => setEditForm(f => ({ ...f, requires_bond: e.target.checked }))} style={{ width: "auto", accentColor: "#db6b33" }} />
               Require a surety bond upload
             </label>
           </div>

@@ -52,13 +52,13 @@ function pathToTab(pathname, hash) {
   return PATH_TABS[clean] || "search";
 }
 
-const AVATAR_COLORS = { IR: "#b45309", BS: "#0369a1", VP: "#7c3aed", AR: "#b91c1c", CC: "#047857", TK: "#374151" };
+const AVATAR_COLORS = { IR: "#b04a17", BS: "#0369a1", VP: "#7c3aed", AR: "#b91c1c", CC: "#047857", TK: "#374151" };
 
 function Stars({ rating }) {
   return (
     <span aria-label={`${rating} out of 5 stars`}>
       {[1, 2, 3, 4, 5].map(i => (
-        <span key={i} aria-hidden="true" style={{ color: i <= Math.round(rating) ? "#b45309" : "#d1d5db", fontSize: "1rem" }}>★</span>
+        <span key={i} aria-hidden="true" style={{ color: i <= Math.round(rating) ? "#b04a17" : "#d1d5db", fontSize: "1rem" }}>★</span>
       ))}
     </span>
   );
@@ -139,7 +139,7 @@ function Avatar({ initials, size = 48 }) {
         background: AVATAR_COLORS[initials] || "#374151",
         color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
         fontWeight: 700, fontSize: size * 0.33, flexShrink: 0,
-        fontFamily: "'Bebas Neue', cursive", letterSpacing: 1,
+        fontFamily: "'Inter', 'DM Sans', sans-serif", letterSpacing: 0,
       }}
     >
       {initials}
@@ -147,8 +147,6 @@ function Avatar({ initials, size = 48 }) {
   );
 }
 
-// Big yellow titles get a thin dark outline so they read on gray and white.
-const TITLE_OUTLINE = "-1px -1px 0 #1f2937, 1px -1px 0 #1f2937, -1px 1px 0 #1f2937, 1px 1px 0 #1f2937, 0 2px 0 #1f2937";
 
 // Web push (notifications while the app is closed). The public half of the
 // VAPID key pair; the private half is a Supabase Edge Function secret.
@@ -1744,52 +1742,47 @@ function avatarInitials(name) {
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-          background-color: #cccccc;
-          /* Slanted pinstripes in the brand gold and a soft sky blue. */
-          background-image: repeating-linear-gradient(-45deg,
-            rgba(245,158,11,0.30) 0 2px, transparent 2px 26px,
-            rgba(56,189,248,0.26) 26px 28px, transparent 28px 52px);
-          background-attachment: fixed;
+          background-color: #f5f3ee;
         }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
         .user-menu { position: absolute; top: calc(100% + 8px); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 6px; min-width: 240px; display: flex; flex-direction: column; gap: 2px; z-index: 50; box-shadow: 0 12px 32px rgba(15,23,42,0.14); }
         .user-menu-who { padding: 10px 14px 12px; margin-bottom: 4px; border-bottom: 1px solid #e2e8f0; max-width: 280px; }
-        .user-menu-item { background: none; border: none; cursor: pointer; padding: 12px 14px; font-size: 1rem; font-weight: 600; color: #b45309; border-radius: 8px; text-align: left; font-family: inherit; transition: background 0.15s, color 0.15s; white-space: nowrap; }
+        .user-menu-item { background: none; border: none; cursor: pointer; padding: 12px 14px; font-size: 1rem; font-weight: 600; color: #b04a17; border-radius: 8px; text-align: left; font-family: inherit; transition: background 0.15s, color 0.15s; white-space: nowrap; }
         .user-menu-item:hover { background: #f8fafc; }
-        .user-menu-item:active { background: #facc15; color: #0f172a; }
-        .user-menu-item:focus-visible { outline: 2px solid #facc15; outline-offset: -2px; }
-        .toolbar-btn { flex: 1; background: #fef08a; border: 2px solid #fde047; color: #0f172a; border-radius: 12px; padding: 14px 16px; font-size: 1.0625rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s; }
-        .toolbar-btn:hover { background: #fef9c3; border-color: #fde047; }
-        .toolbar-btn.active:hover { background: #38bdf8; border-color: #0284c7; }
-        .toolbar-btn:active { transform: scale(0.98); background: #38bdf8; border-color: #0284c7; color: #0f172a; }
-        .toolbar-btn.active { background: #38bdf8; border-color: #0284c7; color: #0f172a; }
-        .toolbar-btn:focus-visible { outline: 2px solid #facc15; outline-offset: 2px; }
-        .card { background: #ffffff; border-radius: 16px; border: 1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(15,23,42,0.06), 0 4px 14px rgba(15,23,42,0.07); transition: transform 0.18s, box-shadow 0.18s; }
+        .user-menu-item:active { background: #db6b33; color: #0f172a; }
+        .user-menu-item:focus-visible { outline: 2px solid #db6b33; outline-offset: -2px; }
+        .toolbar-btn { flex: 1; background: #ffffff; border: 2px solid #ddd7cb; color: #1f2430; border-radius: 12px; padding: 14px 16px; font-size: 1.0625rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s; }
+        .toolbar-btn:hover { background: #fdf6f1; border-color: #db6b33; }
+        .toolbar-btn.active:hover { background: #db6b33; border-color: #b04a17; }
+        .toolbar-btn:active { transform: scale(0.98); background: #db6b33; border-color: #b04a17; color: #1f2430; }
+        .toolbar-btn.active { background: #db6b33; border-color: #b04a17; color: #1f2430; }
+        .toolbar-btn:focus-visible { outline: 2px solid #db6b33; outline-offset: 2px; }
+        .card { background: #ffffff; border-radius: 16px; border: 1px solid #ddd7cb; box-shadow: 0 1px 2px rgba(15,23,42,0.06), 0 4px 14px rgba(15,23,42,0.07); transition: transform 0.18s, box-shadow 0.18s; }
         .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(15,23,42,0.12); }
         .badge { display: inline-block; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; border-radius: 99px; padding: 3px 10px; font-size: 0.8125rem; font-weight: 600; }
         .avail { background: #ecfdf5; color: #047857; }
         .unavail { background: #fef2f2; color: #dc2626; }
         .btn { border: none; border-radius: 10px; padding: 10px 20px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-align: center; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 1rem; transition: opacity 0.15s, transform 0.15s; }
         .btn:hover { opacity: 0.88; transform: scale(0.98); }
-        .btn:focus-visible { outline: 2px solid #facc15; outline-offset: 2px; }
-        .btn-gold { background: #facc15; color: #0f172a; }
-        .btn-outline { background: #ffffff; border: 2px solid #cbd5e1; color: #b45309; transition: opacity 0.15s, transform 0.15s, background 0.15s, border-color 0.15s, color 0.15s; }
-        .btn-outline:hover { border-color: #facc15; }
-        .btn-outline:not(:disabled):active, .btn-outline[aria-expanded="true"] { background: #facc15; border-color: #facc15 !important; color: #0f172a !important; opacity: 1; }
-        /* Header and tab buttons are light yellow; selected, pressed, or open
-           ones turn sky blue with a darker edge. */
-        header .btn { background: #fef08a; border: 2px solid #fde047; color: #0f172a; }
-        header .btn:hover { opacity: 1; background: #fef9c3; border-color: #fde047; }
-        header .btn.btn-sm:not(:disabled):active, header .btn.btn-sm[aria-expanded="true"] { background: #38bdf8; border-color: #0284c7 !important; color: #0f172a !important; }
+        .btn:focus-visible { outline: 2px solid #db6b33; outline-offset: 2px; }
+        .btn-gold { background: #db6b33; color: #0f172a; }
+        .btn-outline { background: #ffffff; border: 2px solid #cbd5e1; color: #b04a17; transition: opacity 0.15s, transform 0.15s, background 0.15s, border-color 0.15s, color 0.15s; }
+        .btn-outline:hover { border-color: #db6b33; }
+        .btn-outline:not(:disabled):active, .btn-outline[aria-expanded="true"] { background: #db6b33; border-color: #db6b33 !important; color: #0f172a !important; opacity: 1; }
+        /* Header and tab buttons are white with navy text; selected, pressed,
+           or open ones turn logo orange. */
+        header .btn { background: #ffffff; border: 2px solid #ddd7cb; color: #1f2430; }
+        header .btn:hover { opacity: 1; background: #fdf6f1; border-color: #db6b33; }
+        header .btn.btn-sm:not(:disabled):active, header .btn.btn-sm[aria-expanded="true"] { background: #db6b33; border-color: #b04a17 !important; color: #1f2430 !important; }
         .btn-sm { padding: 7px 14px; min-height: 40px; font-size: 0.9375rem; border-radius: 8px; }
         input, textarea, select { background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; color: #0f172a; padding: 10px 14px; font-family: inherit; font-weight: 500; font-size: max(16px, 1.0625rem); width: 100%; outline: none; }
         input::placeholder, textarea::placeholder { color: #475569; opacity: 1; }
-        input:focus, textarea:focus, select:focus { border-color: #facc15; box-shadow: 0 0 0 3px rgba(250,204,21,0.30); }
-        .msg-me { background: #facc15; color: #0f172a; border-radius: 18px 18px 4px 18px; }
+        input:focus, textarea:focus, select:focus { border-color: #db6b33; box-shadow: 0 0 0 3px rgba(219,107,51,0.28); }
+        .msg-me { background: #db6b33; color: #0f172a; border-radius: 18px 18px 4px 18px; }
         .msg-them { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 18px 18px 18px 4px; }
-        .notification { position: fixed; top: calc(env(safe-area-inset-top) + 20px); right: calc(env(safe-area-inset-right) + 20px); background: #facc15; color: #0f172a; padding: 12px 22px; border-radius: 12px; font-weight: 700; z-index: 999; animation: slidein 0.3s; }
+        .notification { position: fixed; top: calc(env(safe-area-inset-top) + 20px); right: calc(env(safe-area-inset-right) + 20px); background: #1f2430; color: #ffffff; padding: 12px 22px; border-radius: 12px; font-weight: 700; z-index: 999; animation: slidein 0.3s; }
         @keyframes slidein { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
         .modal-bg { position: fixed; inset: 0; background: rgba(15,23,42,0.45); z-index: 100; display: flex; align-items: center; justify-content: center; padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); backdrop-filter: blur(2px); overflow-y: auto; }
         .modal { background: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 24px 60px rgba(15,23,42,0.25); width: 100%; max-width: 480px; padding: 28px; max-height: 90vh; overflow-y: auto; overflow-x: hidden; }
@@ -1799,55 +1792,55 @@ function avatarInitials(name) {
         .field-label { font-size: 0.875rem; color: #334155; margin-bottom: 4px; display: block; }
         .svc-picker { display: flex; flex-direction: column; gap: 8px; }
         .svc-chips { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
-        .svc-chip { display: inline-flex; align-items: center; gap: 4px; background: rgba(250,204,21,0.18); border: 1px solid #facc15; color: #0f172a; border-radius: 99px; padding: 3px 4px 3px 12px; font-size: 0.9375rem; max-width: 100%; flex-wrap: wrap; }
-        .svc-chip.primary { background: #facc15; color: #0f172a; font-weight: 600; }
+        .svc-chip { display: inline-flex; align-items: center; gap: 4px; background: rgba(219,107,51,0.14); border: 1px solid #db6b33; color: #0f172a; border-radius: 99px; padding: 3px 4px 3px 12px; font-size: 0.9375rem; max-width: 100%; flex-wrap: wrap; }
+        .svc-chip.primary { background: #db6b33; color: #0f172a; font-weight: 600; }
         .svc-chip-tag { font-size: 0.8125rem; font-weight: 800; margin-right: 2px; }
         .svc-chip-btn { background: transparent; border: none; color: inherit; cursor: pointer; font: inherit; font-size: 0.875rem; padding: 4px 8px; border-radius: 99px; opacity: 0.8; }
         .svc-chip-btn:hover { opacity: 1; background: rgba(15,23,42,0.1); }
-        .svc-chip-btn:focus-visible { outline: 2px solid #facc15; outline-offset: 1px; }
+        .svc-chip-btn:focus-visible { outline: 2px solid #db6b33; outline-offset: 1px; }
         .svc-list { max-height: 340px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc; }
         .svc-results { display: grid; gap: 6px; padding: 8px; }
         .svc-group + .svc-group { border-top: 1px solid #e2e8f0; }
-        .svc-group-btn { display: flex; width: 100%; justify-content: space-between; align-items: center; gap: 8px; background: transparent; border: none; color: #b45309; font: inherit; font-size: 1.0625rem; font-weight: 800; padding: 12px; cursor: pointer; text-align: left; }
-        .svc-group-btn:focus-visible { outline: 2px solid #facc15; outline-offset: -2px; border-radius: 8px; }
+        .svc-group-btn { display: flex; width: 100%; justify-content: space-between; align-items: center; gap: 8px; background: transparent; border: none; color: #b04a17; font: inherit; font-size: 1.0625rem; font-weight: 800; padding: 12px; cursor: pointer; text-align: left; }
+        .svc-group-btn:focus-visible { outline: 2px solid #db6b33; outline-offset: -2px; border-radius: 8px; }
         .svc-group-body { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding: 0 10px 12px; }
         .svc-option { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border-radius: 8px; border: 1px solid #e2e8f0; background: #ffffff; cursor: pointer; font-size: 0.9375rem; }
-        .svc-option.checked { border-color: #facc15; background: rgba(250,204,21,0.18); }
-        .svc-option input { width: auto; accent-color: #facc15; margin-top: 2px; flex-shrink: 0; }
-        .svc-option:focus-within { outline: 2px solid #facc15; outline-offset: 1px; }
+        .svc-option.checked { border-color: #db6b33; background: rgba(219,107,51,0.14); }
+        .svc-option input { width: auto; accent-color: #db6b33; margin-top: 2px; flex-shrink: 0; }
+        .svc-option:focus-within { outline: 2px solid #db6b33; outline-offset: 1px; }
         .admin-svc-row { display: flex; padding: 10px 12px; background: #f8fafc; border-radius: 8px; font-size: 0.9375rem; gap: 10px; }
         .join-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-bottom: 20px; }
-        .join-card { padding: 18px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; border-color: #facc15; }
-        .admin-section { border: 1px solid #cbd5e1; border-radius: 14px; background: #ffffff; box-shadow: 0 1px 2px rgba(15,23,42,0.06), 0 4px 14px rgba(15,23,42,0.07); margin-bottom: 12px; }
+        .join-card { padding: 18px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; border-color: #db6b33; }
+        .admin-section { border: 1px solid #ddd7cb; border-radius: 14px; background: #ffffff; box-shadow: 0 1px 2px rgba(15,23,42,0.06), 0 4px 14px rgba(15,23,42,0.07); margin-bottom: 12px; }
         .admin-section-h { margin: 0; font-size: 1.25rem; font-weight: 700; }
         .admin-section-toggle { display: flex; width: 100%; justify-content: space-between; align-items: center; gap: 10px; background: transparent; border: none; color: #0f172a; font: inherit; padding: 16px; cursor: pointer; text-align: left; border-radius: 14px; }
-        .admin-section-toggle:hover .admin-section-caret { color: #b45309; }
-        .admin-section-toggle:focus-visible { outline: 2px solid #facc15; outline-offset: -2px; }
+        .admin-section-toggle:hover .admin-section-caret { color: #b04a17; }
+        .admin-section-toggle:focus-visible { outline: 2px solid #db6b33; outline-offset: -2px; }
         .admin-section-summary { display: block; font-size: 0.875rem; font-weight: 500; color: #64748b; margin-top: 2px; }
         .admin-section-caret { color: #475569; font-size: 1.0625rem; }
         .admin-section-body { padding: 0 16px 16px; }
         .admin-section-filter { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-        .btn-outline[aria-pressed="true"] { background: #facc15; border-color: #facc15 !important; color: #0f172a !important; }
+        .btn-outline[aria-pressed="true"] { background: #db6b33; border-color: #db6b33 !important; color: #0f172a !important; }
         .filter-bar { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
         .filter-bar select { width: auto; min-width: 180px; max-width: 100%; }
         .svc-filter { position: relative; min-width: 220px; max-width: 100%; }
         .svc-filter-btn { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; color: #0f172a; padding: 10px 14px; font-family: inherit; font-weight: 500; font-size: max(16px, 1.0625rem); cursor: pointer; text-align: left; }
-        .svc-filter-btn:focus-visible, .svc-filter-btn[aria-expanded="true"] { outline: none; border-color: #facc15; box-shadow: 0 0 0 3px rgba(250,204,21,0.30); }
+        .svc-filter-btn:focus-visible, .svc-filter-btn[aria-expanded="true"] { outline: none; border-color: #db6b33; box-shadow: 0 0 0 3px rgba(219,107,51,0.28); }
         .svc-filter-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .svc-filter-menu { position: absolute; top: calc(100% + 6px); left: 0; z-index: 60; min-width: 100%; width: max-content; max-width: min(380px, calc(100vw - 32px)); max-height: min(60vh, 440px); overflow-y: auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 6px; box-shadow: 0 12px 32px rgba(15,23,42,0.16); outline: none; }
-        .svc-filter-heading { color: #b45309; font-size: 1.125rem; font-weight: 800; letter-spacing: 0.3px; padding: 14px 10px 6px; margin-top: 4px; border-top: 1px solid #e2e8f0; }
-        .svc-filter-opt { display: flex; justify-content: space-between; gap: 12px; padding: 8px 10px 8px 24px; border-radius: 6px; font-size: 1rem; color: #0070f3; cursor: pointer; }
+        .svc-filter-heading { color: #b04a17; font-size: 1.125rem; font-weight: 800; letter-spacing: 0.3px; padding: 14px 10px 6px; margin-top: 4px; border-top: 1px solid #e2e8f0; }
+        .svc-filter-opt { display: flex; justify-content: space-between; gap: 12px; padding: 8px 10px 8px 24px; border-radius: 6px; font-size: 1rem; color: #1f2430; cursor: pointer; }
         .svc-filter-opt.top { padding-left: 10px; font-weight: 600; color: #0f172a; }
         .svc-filter-opt.group { font-weight: 600; }
-        .svc-filter-opt.active { background: #fef3c7; }
-        .svc-filter-opt[aria-selected="true"] { color: #b45309; }
-        .contractor-card:focus-visible { outline: 2px solid #facc15; outline-offset: 2px; border-radius: 16px; }
+        .svc-filter-opt.active { background: #fbeee6; }
+        .svc-filter-opt[aria-selected="true"] { color: #b04a17; }
+        .contractor-card:focus-visible { outline: 2px solid #db6b33; outline-offset: 2px; border-radius: 16px; }
         .star-btn { background: none; border: none; cursor: pointer; padding: 2px; font-size: 1.625rem; line-height: 1; transition: transform 0.1s; }
         .star-btn:hover { transform: scale(1.15); }
-        .star-btn:focus-visible { outline: 2px solid #facc15; outline-offset: 2px; border-radius: 2px; }
+        .star-btn:focus-visible { outline: 2px solid #db6b33; outline-offset: 2px; border-radius: 2px; }
         .messages-layout { display: grid; grid-template-columns: 220px 1fr; gap: 16px; height: 500px; }
         .chat-sidebar-btn { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 12px; border-radius: 16px; background: #ffffff; border: 1px solid #e2e8f0; width: 100%; text-align: left; font-family: inherit; transition: border-color 0.15s; }
-        .chat-sidebar-btn:focus-visible { outline: 2px solid #facc15; outline-offset: 2px; }
+        .chat-sidebar-btn:focus-visible { outline: 2px solid #db6b33; outline-offset: 2px; }
         @media (max-width: 640px) {
           .btn-sm { padding: 6px 10px; }
           .messages-layout { grid-template-columns: 1fr; height: auto; }
@@ -2129,7 +2122,7 @@ function avatarInitials(name) {
         )}
 
         {isContractor && !myContractor?.deactivated_at && hasCredentialsOnFile(myContractor) && !myContractor.verified && (
-          <div className="card" style={{ padding: 16, marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", borderColor: "#facc15" }}>
+          <div className="card" style={{ padding: 16, marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", borderColor: "#db6b33" }}>
             <div>
               <div style={{ fontWeight: 700, marginBottom: 2 }}>⏳ Documents under review</div>
               <div style={{ fontSize: "0.9375rem", color: "#475569" }}>Our team is reviewing your documents. You'll be able to accept jobs once your profile is approved.</div>
@@ -2142,7 +2135,7 @@ function avatarInitials(name) {
         {/* SEARCH TAB */}
         {tab === "search" && (
           <section aria-labelledby="search-heading">
-            <h1 id="search-heading" style={{ fontSize: "1.875rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE, marginBottom: 4 }}>FIND A CONTRACTOR</h1>
+            <h1 id="search-heading" style={{ fontSize: "1.875rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430", marginBottom: 4 }}>FIND A CONTRACTOR</h1>
             <p style={{ color: "#334155", marginBottom: 20, fontSize: "1rem" }}>Construction, cleaning, maintenance, and specialty service pros</p>
 
             {!user && (
@@ -2220,7 +2213,7 @@ function avatarInitials(name) {
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
                       <Stars rating={c.rating} />
                       <span style={{ fontSize: "0.9375rem", color: "#475569" }}>{c.rating} ({c.reviews_count} reviews)</span>
-                      <span style={{ color: "#b45309", fontWeight: 700, fontSize: "0.9375rem" }}>${c.hourly}/hr</span>
+                      <span style={{ color: "#b04a17", fontWeight: 700, fontSize: "0.9375rem" }}>${c.hourly}/hr</span>
                     </div>
                     <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                       {c.tags.map(tag => <span key={tag} className="badge">{tag}</span>)}
@@ -2247,7 +2240,7 @@ function avatarInitials(name) {
         {/* POST JOB TAB */}
         {tab === "post" && !user && (
           <section aria-labelledby="post-heading" style={{ maxWidth: 560 }}>
-            <h1 id="post-heading" style={{ fontSize: "1.875rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE, marginBottom: 4 }}>POST A JOB</h1>
+            <h1 id="post-heading" style={{ fontSize: "1.875rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430", marginBottom: 4 }}>POST A JOB</h1>
             <div className="card" style={{ padding: 28, textAlign: "center" }}>
               <div style={{ fontSize: "2.25rem", marginBottom: 12 }} aria-hidden="true">🔒</div>
               <div style={{ fontWeight: 700, fontSize: "1.25rem", marginBottom: 6 }}>Sign up to post a job</div>
@@ -2266,7 +2259,7 @@ function avatarInitials(name) {
 
         {tab === "post" && isCustomer && (
           <section aria-labelledby="post-heading" style={{ maxWidth: 720 }}>
-            <h1 id="post-heading" style={{ fontSize: "1.875rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE, marginBottom: 4 }}>POST A JOB</h1>
+            <h1 id="post-heading" style={{ fontSize: "1.875rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430", marginBottom: 4 }}>POST A JOB</h1>
             <p style={{ color: "#334155", marginBottom: 24, fontSize: "1rem" }}>Describe your project and let contractors come to you</p>
             <form
               className="card"
@@ -2337,7 +2330,7 @@ function avatarInitials(name) {
               </div>
 
               <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: 14, marginTop: 4 }}>
-                <div style={{ fontSize: "0.875rem", color: "#b45309", fontWeight: 700, letterSpacing: 1, marginBottom: 10 }}>YOUR CONTACT INFO</div>
+                <div style={{ fontSize: "0.875rem", color: "#b04a17", fontWeight: 700, letterSpacing: 1, marginBottom: 10 }}>YOUR CONTACT INFO</div>
                 <div style={{ fontSize: "0.875rem", color: "#64748b", marginBottom: 12 }}>Only shared with the contractor who accepts your job.</div>
                 <div>
                   <label htmlFor="job-name" style={{ fontSize: "0.9375rem", color: "#334155", marginBottom: 6, display: "block" }}>
@@ -2385,7 +2378,7 @@ function avatarInitials(name) {
               </button>
             </form>
 
-            <h2 style={{ fontSize: "1.375rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE, marginTop: 32, marginBottom: 12 }}>
+            <h2 style={{ fontSize: "1.375rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430", marginTop: 32, marginBottom: 12 }}>
               YOUR POSTED JOBS
             </h2>
             {myJobs.length === 0 ? (
@@ -2404,7 +2397,7 @@ function avatarInitials(name) {
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 8, flexWrap: "wrap" }}>
                       <div style={{ fontWeight: 700, fontSize: "1.0625rem" }}>{j.title}</div>
                       {j.budget != null && (
-                        <span style={{ color: "#b45309", fontWeight: 700, fontSize: "1rem" }}>${Number(j.budget).toLocaleString()}</span>
+                        <span style={{ color: "#b04a17", fontWeight: 700, fontSize: "1rem" }}>${Number(j.budget).toLocaleString()}</span>
                       )}
                     </div>
                     <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10 }}>
@@ -2420,7 +2413,7 @@ function avatarInitials(name) {
                     </div>
                     {j.accepter && !removedByAdmin && (
                       <div style={{ background: "#f8fafc", borderRadius: 10, padding: 12, marginBottom: 8 }}>
-                        <div style={{ fontSize: "0.8125rem", fontWeight: 700, letterSpacing: 1, color: "#b45309", marginBottom: 6 }}>ACCEPTED BY</div>
+                        <div style={{ fontSize: "0.8125rem", fontWeight: 700, letterSpacing: 1, color: "#b04a17", marginBottom: 6 }}>ACCEPTED BY</div>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
                           <div>
                             <div style={{ fontWeight: 600 }}>{j.accepter.name}</div>
@@ -2430,7 +2423,7 @@ function avatarInitials(name) {
                                 <a
                                   href={/^https?:\/\//i.test(j.accepter.website) ? j.accepter.website : `https://${j.accepter.website}`}
                                   target="_blank" rel="noreferrer"
-                                  style={{ color: "#b45309", textDecoration: "underline" }}
+                                  style={{ color: "#b04a17", textDecoration: "underline" }}
                                 >
                                   {j.accepter.website.replace(/^https?:\/\//i, "")}
                                 </a>
@@ -2501,14 +2494,14 @@ function avatarInitials(name) {
         {/* JOBS TAB (contractors only) */}
         {tab === "jobs" && user && (
           <section aria-labelledby="jobs-heading">
-            <h1 id="jobs-heading" style={{ fontSize: "1.875rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE, marginBottom: 4 }}>OPEN JOBS</h1>
+            <h1 id="jobs-heading" style={{ fontSize: "1.875rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430", marginBottom: 4 }}>OPEN JOBS</h1>
             <p style={{ color: "#334155", marginBottom: 20, fontSize: "1rem" }}>Browse jobs posted by homeowners and businesses. Accept work that matches your services.</p>
             <div className="filter-bar" style={{ alignItems: "center" }}>
               <label htmlFor="job-trade-filter" className="sr-only">Filter by service</label>
               <ServiceFilter id="job-trade-filter" catalog={catalog} value={serviceFilter} onChange={setServiceFilter} />
               {myContractor && (
                 <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.9375rem", color: "#334155", cursor: "pointer" }}>
-                  <input type="checkbox" checked={onlyMyServices} onChange={e => setOnlyMyServices(e.target.checked)} style={{ width: "auto", accentColor: "#facc15" }} />
+                  <input type="checkbox" checked={onlyMyServices} onChange={e => setOnlyMyServices(e.target.checked)} style={{ width: "auto", accentColor: "#db6b33" }} />
                   Only my services
                 </label>
               )}
@@ -2525,7 +2518,7 @@ function avatarInitials(name) {
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 8, flexWrap: "wrap" }}>
                         <div style={{ fontWeight: 700, fontSize: "1.125rem" }}>{j.title}</div>
                         {j.budget != null && (
-                          <span style={{ color: "#b45309", fontWeight: 700, fontSize: "1.0625rem" }}>${Number(j.budget).toLocaleString()}</span>
+                          <span style={{ color: "#b04a17", fontWeight: 700, fontSize: "1.0625rem" }}>${Number(j.budget).toLocaleString()}</span>
                         )}
                       </div>
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
@@ -2585,7 +2578,7 @@ function avatarInitials(name) {
           const posted    = myJobs;
           return (
             <section aria-labelledby="myjobs-heading">
-              <h1 id="myjobs-heading" style={{ fontSize: "1.875rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE, marginBottom: 4 }}>MY JOBS</h1>
+              <h1 id="myjobs-heading" style={{ fontSize: "1.875rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430", marginBottom: 4 }}>MY JOBS</h1>
               <p style={{ color: "#334155", marginBottom: 20, fontSize: "1rem" }}>Everything you're working on and everything you've posted.</p>
 
               {workingOn.length === 0 && posted.length === 0 && (
@@ -2602,7 +2595,7 @@ function avatarInitials(name) {
                       <div key={j.id} className="card" style={{ padding: 18 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 8, flexWrap: "wrap" }}>
                           <div style={{ fontWeight: 700, fontSize: "1.0625rem" }}>{j.title}</div>
-                          {j.budget != null && <span style={{ color: "#b45309", fontWeight: 700 }}>${Number(j.budget).toLocaleString()}</span>}
+                          {j.budget != null && <span style={{ color: "#b04a17", fontWeight: 700 }}>${Number(j.budget).toLocaleString()}</span>}
                         </div>
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10 }}>
                           <span className="badge">{j.trade}</span>
@@ -2635,7 +2628,7 @@ function avatarInitials(name) {
                       <div key={j.id} className="card" style={{ padding: 18 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 8, flexWrap: "wrap" }}>
                           <div style={{ fontWeight: 700, fontSize: "1.0625rem" }}>{j.title}</div>
-                          {j.budget != null && <span style={{ color: "#b45309", fontWeight: 700 }}>${Number(j.budget).toLocaleString()}</span>}
+                          {j.budget != null && <span style={{ color: "#b04a17", fontWeight: 700 }}>${Number(j.budget).toLocaleString()}</span>}
                         </div>
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10 }}>
                           <span className="badge">{j.trade}</span>
@@ -2664,9 +2657,9 @@ function avatarInitials(name) {
         {/* MESSAGES TAB */}
         {tab === "messages" && (
           <section aria-labelledby="messages-heading">
-            <h1 id="messages-heading" style={{ fontSize: "1.875rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE, marginBottom: 16 }}>MESSAGES</h1>
+            <h1 id="messages-heading" style={{ fontSize: "1.875rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430", marginBottom: 16 }}>MESSAGES</h1>
             {(pushState === "default" || (pushState === "unsupported" && isIOS() && !isInstalled)) && (
-              <div className="card" style={{ padding: 14, marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", borderColor: "#facc15" }}>
+              <div className="card" style={{ padding: 14, marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", borderColor: "#db6b33" }}>
                 <div style={{ fontSize: "1rem", color: "#334155", flex: 1, minWidth: 220 }}>
                   📲 <strong>Get notified about new messages</strong>, even when the app is closed.
                   {pushState === "unsupported" && " On iPhone, add the app to your Home Screen first."}
@@ -2683,7 +2676,7 @@ function avatarInitials(name) {
                 <div style={{ color: "#475569", fontSize: "1rem", marginBottom: 16 }}>
                   {isContractor
                     ? "Customers who message you will show up here."
-                    : <>Start a chat by clicking <span style={{ color: "#b45309", fontWeight: 600 }}>Message</span> on a contractor in the Find tab.</>}
+                    : <>Start a chat by clicking <span style={{ color: "#b04a17", fontWeight: 600 }}>Message</span> on a contractor in the Find tab.</>}
                 </div>
                 {!isContractor && (
                   <button className="btn btn-gold btn-sm" onClick={() => setTab("search")}>Browse Contractors</button>
@@ -2706,7 +2699,7 @@ function avatarInitials(name) {
                       className="chat-sidebar-btn"
                       role="listitem"
                       onClick={() => setActiveChat(t.key)}
-                      style={{ borderColor: activeChat === t.key ? "#facc15" : unread > 0 ? "#facc15" : "#e2e8f0" }}
+                      style={{ borderColor: activeChat === t.key ? "#db6b33" : unread > 0 ? "#db6b33" : "#e2e8f0" }}
                       aria-pressed={activeChat === t.key}
                       aria-label={`Chat with ${label.name}${unread ? `, ${unread} unread` : ""}`}
                     >
@@ -2808,7 +2801,7 @@ function avatarInitials(name) {
         {/* ADMIN TAB */}
         {tab === "admin" && isAdmin && (
           <section aria-labelledby="admin-heading">
-            <h1 id="admin-heading" style={{ fontSize: "1.875rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE, marginBottom: 4 }}>ADMIN</h1>
+            <h1 id="admin-heading" style={{ fontSize: "1.875rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430", marginBottom: 4 }}>ADMIN</h1>
             <p style={{ color: "#334155", marginBottom: 20, fontSize: "1rem" }}>Verify contractor documents and manage the admin team.</p>
 
             <AdminSection id="pending" title="Pending Verification" summary={`${contractors.filter(c => hasCredentialsOnFile(c) && !c.verified && !c.denied_at).length} waiting`} defaultOpen>
@@ -2831,7 +2824,7 @@ function avatarInitials(name) {
                     {(() => {
                       const unreviewed = contractorCredentials(c, tradeReqMap).filter(i => i.status === "pending").length;
                       return unreviewed > 0 ? (
-                        <div style={{ fontSize: "0.875rem", color: "#b45309", marginBottom: 10 }}>
+                        <div style={{ fontSize: "0.875rem", color: "#b04a17", marginBottom: 10 }}>
                           {unreviewed} document{unreviewed === 1 ? "" : "s"} not yet reviewed. Approving the profile doesn't mark documents verified.
                         </div>
                       ) : null;
@@ -2944,7 +2937,7 @@ function avatarInitials(name) {
                         if (acceptedJobs.length === 0) return null;
                         return (
                           <div style={{ background: "#f8fafc", borderRadius: 10, padding: 12, marginBottom: 12 }}>
-                            <div style={{ fontSize: "0.8125rem", fontWeight: 700, letterSpacing: 1, color: "#b45309", marginBottom: 8 }}>
+                            <div style={{ fontSize: "0.8125rem", fontWeight: 700, letterSpacing: 1, color: "#b04a17", marginBottom: 8 }}>
                               JOBS ACCEPTED ({acceptedJobs.length})
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: "0.875rem", color: "#0f172a" }}>
@@ -2953,7 +2946,7 @@ function avatarInitials(name) {
                                   <div>
                                     <strong>{j.title}</strong>
                                     {" · "}
-                                    <span style={{ color: j.status === "completed" ? "#047857" : "#b45309" }}>{j.status}</span>
+                                    <span style={{ color: j.status === "completed" ? "#047857" : "#b04a17" }}>{j.status}</span>
                                   </div>
                                   <div style={{ color: "#475569" }}>{j.trade} · {j.location}{j.budget != null ? ` · $${Number(j.budget).toLocaleString()}` : ""}</div>
                                   {(j.homeowner_name || j.homeowner_email) && (
@@ -3282,7 +3275,7 @@ function avatarInitials(name) {
         {/* REVIEWS TAB */}
         {tab === "reviews" && (
           <section aria-labelledby="reviews-heading">
-            <h1 id="reviews-heading" style={{ fontSize: "1.875rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE, marginBottom: 16 }}>REVIEWS</h1>
+            <h1 id="reviews-heading" style={{ fontSize: "1.875rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430", marginBottom: 16 }}>REVIEWS</h1>
             <div style={{ display: "grid", gap: 20 }}>
               {contractors.map(c => (
                 <div key={c.id} className="card" style={{ padding: 20 }}>
@@ -3294,7 +3287,7 @@ function avatarInitials(name) {
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       <Stars rating={c.rating} />
-                      <span style={{ color: "#b45309", fontWeight: 700 }}>{c.rating}</span>
+                      <span style={{ color: "#b04a17", fontWeight: 700 }}>{c.rating}</span>
                     </div>
                     {(() => {
                       const job = reviewableJobFor(c.id);
@@ -3334,7 +3327,7 @@ function avatarInitials(name) {
                               onClick={() => setReviewInput(r => ({ ...r, stars: s }))}
                               aria-label={`${s} star${s !== 1 ? "s" : ""}`}
                               aria-pressed={s <= reviewInput.stars}
-                              style={{ color: s <= reviewInput.stars ? "#b45309" : "#334155" }}
+                              style={{ color: s <= reviewInput.stars ? "#b04a17" : "#334155" }}
                             >
                               ★
                             </button>
@@ -3361,7 +3354,7 @@ function avatarInitials(name) {
                           <span style={{ fontWeight: 600, fontSize: "0.9375rem" }}>{r.author}</span>
                           <span aria-label={`${r.stars} stars`}>
                             {[...Array(r.stars)].map((_, j) => (
-                              <span key={j} style={{ color: "#b45309" }} aria-hidden="true">★</span>
+                              <span key={j} style={{ color: "#b04a17" }} aria-hidden="true">★</span>
                             ))}
                           </span>
                         </div>
@@ -3417,7 +3410,7 @@ function avatarInitials(name) {
                   href={/^https?:\/\//i.test(modal.website) ? modal.website : `https://${modal.website}`}
                   target="_blank"
                   rel="noreferrer"
-                  style={{ color: "#b45309", textDecoration: "underline", fontSize: "1rem", fontWeight: 600 }}
+                  style={{ color: "#b04a17", textDecoration: "underline", fontSize: "1rem", fontWeight: 600 }}
                 >
                   {modal.website.replace(/^https?:\/\//i, "")}
                 </a>
@@ -3428,7 +3421,7 @@ function avatarInitials(name) {
             </div>
             <div style={{ background: "#f8fafc", borderRadius: 12, padding: 16, marginBottom: 20, display: "flex", justifyContent: "space-around" }}>
               <div style={{ textAlign: "center" }}>
-                <div style={{ color: "#b45309", fontWeight: 700, fontSize: "1.5rem" }}>${modal.hourly}</div>
+                <div style={{ color: "#b04a17", fontWeight: 700, fontSize: "1.5rem" }}>${modal.hourly}</div>
                 <div style={{ color: "#64748b", fontSize: "0.875rem" }}>Per Hour</div>
               </div>
               <div style={{ textAlign: "center" }}>
@@ -3456,13 +3449,13 @@ function avatarInitials(name) {
               </div>
             )}
             <div style={{ background: "#f8fafc", borderRadius: 12, padding: 14, marginBottom: 20 }}>
-              <div style={{ fontSize: "0.875rem", fontWeight: 700, letterSpacing: 1, color: "#b45309", marginBottom: 10 }}>VERIFIED BY WEESUBBY</div>
+              <div style={{ fontSize: "0.875rem", fontWeight: 700, letterSpacing: 1, color: "#b04a17", marginBottom: 10 }}>VERIFIED BY WEESUBBY</div>
               <VerifiedCredentialsSummary contractor={modal} />
             </div>
 
             {(reviews[modal.id] || []).length > 0 && (
               <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: "0.875rem", fontWeight: 700, letterSpacing: 1, color: "#b45309", marginBottom: 10 }}>
+                <div style={{ fontSize: "0.875rem", fontWeight: 700, letterSpacing: 1, color: "#b04a17", marginBottom: 10 }}>
                   REVIEWS ({(reviews[modal.id] || []).length})
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10, maxHeight: 260, overflowY: "auto" }}>
@@ -3472,7 +3465,7 @@ function avatarInitials(name) {
                         <span style={{ fontWeight: 600, fontSize: "0.9375rem" }}>{r.author}</span>
                         <span aria-label={`${r.stars} stars`}>
                           {[...Array(r.stars)].map((_, j) => (
-                            <span key={j} style={{ color: "#b45309" }} aria-hidden="true">★</span>
+                            <span key={j} style={{ color: "#b04a17" }} aria-hidden="true">★</span>
                           ))}
                         </span>
                       </div>
@@ -3524,7 +3517,7 @@ function avatarInitials(name) {
             aria-labelledby="profile-modal-title"
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-              <h2 id="profile-modal-title" style={{ fontSize: "1.5rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE }}>
+              <h2 id="profile-modal-title" style={{ fontSize: "1.5rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430" }}>
                 {myContractor ? "EDIT PROFILE" : "CREATE YOUR PROFILE"}
               </h2>
               <button className="btn btn-outline btn-sm" onClick={() => setProfileModal(false)} aria-label="Close">✕</button>
@@ -3603,7 +3596,7 @@ function avatarInitials(name) {
                 const req = requirementsFor(profileForm.trades);
                 return (
                   <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: 16, marginTop: 4 }}>
-                    <div style={{ fontSize: "0.875rem", color: "#b45309", fontWeight: 700, letterSpacing: 1, marginBottom: 6 }}>
+                    <div style={{ fontSize: "0.875rem", color: "#b04a17", fontWeight: 700, letterSpacing: 1, marginBottom: 6 }}>
                       REQUIRED DOCUMENTS <span style={{ color: "#dc2626" }}>*</span>
                     </div>
                     <div style={{ fontSize: "0.875rem", color: "#64748b", marginBottom: 14 }}>
@@ -3690,11 +3683,11 @@ function avatarInitials(name) {
                         trade_licenses: { ...f.trade_licenses, [t]: { ...entry, type: licType, ...patch } },
                       }));
                       return (
-                        <div key={t} style={{ background: "#f8fafc", borderRadius: 10, padding: 12, marginBottom: 14, border: "1px solid #facc15" }}>
+                        <div key={t} style={{ background: "#f8fafc", borderRadius: 10, padding: 12, marginBottom: 14, border: "1px solid #db6b33" }}>
                           <div style={{ fontSize: "0.9375rem", fontWeight: 700, color: "#0f172a", marginBottom: 4 }}>
                             {i + 3}. {licType} <span style={{ color: "#475569", fontWeight: 400, fontSize: "0.875rem" }}>(for {t})</span>
                           </div>
-                          <div style={{ fontSize: "0.875rem", color: "#b45309", marginBottom: 10 }}>
+                          <div style={{ fontSize: "0.875rem", color: "#b04a17", marginBottom: 10 }}>
                             WeeSubby asks {t} providers for this document.
                           </div>
                           <div>
@@ -3732,9 +3725,9 @@ function avatarInitials(name) {
                       const licenseCount = profileForm.trades.filter(t => tradeReqMap[t]?.tradeLicense).length;
                       const bondNumber = 3 + licenseCount;
                       return (
-                      <div style={{ background: "#f8fafc", borderRadius: 10, padding: 12, marginBottom: 4, border: "1px solid #facc15" }}>
+                      <div style={{ background: "#f8fafc", borderRadius: 10, padding: 12, marginBottom: 4, border: "1px solid #db6b33" }}>
                         <div style={{ fontSize: "0.9375rem", fontWeight: 700, color: "#0f172a", marginBottom: 4 }}>{bondNumber}. Surety Bond</div>
-                        <div style={{ fontSize: "0.875rem", color: "#b45309", marginBottom: 10 }}>
+                        <div style={{ fontSize: "0.875rem", color: "#b04a17", marginBottom: 10 }}>
                           WeeSubby asks for a bond for: {profileForm.trades.filter(t => tradeReqMap[t]?.bonded).join(", ")}.
                         </div>
                         <div>
@@ -3833,7 +3826,7 @@ function avatarInitials(name) {
             style={{ maxWidth: 400 }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-              <h2 id="auth-modal-title" style={{ fontSize: "1.5rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE }}>
+              <h2 id="auth-modal-title" style={{ fontSize: "1.5rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430" }}>
                 {authMode === "signin" ? "SIGN IN" : "CREATE ACCOUNT"}
               </h2>
               <button className="btn btn-outline btn-sm" onClick={() => setAuthModal(false)} aria-label="Close">✕</button>
@@ -3911,7 +3904,7 @@ function avatarInitials(name) {
         <div className="modal-bg" onClick={() => setCustomerProfileModal(false)} role="presentation">
           <div className="modal" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" style={{ maxWidth: 440 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-              <h2 style={{ fontSize: "1.5rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE }}>MY PROFILE</h2>
+              <h2 style={{ fontSize: "1.5rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430" }}>MY PROFILE</h2>
               <button className="btn btn-outline btn-sm" onClick={() => setCustomerProfileModal(false)} aria-label="Close">✕</button>
             </div>
             <form onSubmit={saveCustomerProfile} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -3953,7 +3946,7 @@ function avatarInitials(name) {
         <div className="modal-bg" onClick={() => setJobEditModal(null)} role="presentation">
           <div className="modal" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-              <h2 style={{ fontSize: "1.5rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE }}>EDIT JOB</h2>
+              <h2 style={{ fontSize: "1.5rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430" }}>EDIT JOB</h2>
               <button className="btn btn-outline btn-sm" onClick={() => setJobEditModal(null)} aria-label="Close">✕</button>
             </div>
             <form onSubmit={saveJobEdit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -3992,7 +3985,7 @@ function avatarInitials(name) {
         <div className="modal-bg" onClick={() => setReleaseModal(null)} role="presentation">
           <div className="modal" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <h2 style={{ fontSize: "1.5rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE }}>RELEASE CONTRACTOR</h2>
+              <h2 style={{ fontSize: "1.5rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430" }}>RELEASE CONTRACTOR</h2>
               <button className="btn btn-outline btn-sm" onClick={() => setReleaseModal(null)} aria-label="Close">✕</button>
             </div>
             <div style={{ background: "#f8fafc", borderRadius: 10, padding: 12, marginBottom: 16, fontSize: "0.9375rem" }}>
@@ -4042,7 +4035,7 @@ function avatarInitials(name) {
         <div className="modal-bg" onClick={() => setDenyModal(null)} role="presentation">
           <div className="modal" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <h2 style={{ fontSize: "1.5rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE }}>DENY APPLICATION</h2>
+              <h2 style={{ fontSize: "1.5rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430" }}>DENY APPLICATION</h2>
               <button className="btn btn-outline btn-sm" onClick={() => setDenyModal(null)} aria-label="Close">✕</button>
             </div>
             <div style={{ background: "#f8fafc", borderRadius: 10, padding: 12, marginBottom: 16, fontSize: "0.9375rem" }}>
@@ -4078,7 +4071,7 @@ function avatarInitials(name) {
         <div className="modal-bg" onClick={() => setIosInstallModal(false)} role="presentation">
           <div className="modal" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <h2 style={{ fontSize: "1.5rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE }}>INSTALL ON IPHONE</h2>
+              <h2 style={{ fontSize: "1.5rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430" }}>INSTALL ON IPHONE</h2>
               <button className="btn btn-outline btn-sm" onClick={() => setIosInstallModal(false)} aria-label="Close">✕</button>
             </div>
             <ol style={{ color: "#1e293b", lineHeight: 1.8, fontSize: "1.0625rem", paddingLeft: 20, marginBottom: 16 }}>
@@ -4103,7 +4096,7 @@ function avatarInitials(name) {
         <div className="modal-bg" onClick={() => setShareModal(false)} role="presentation">
           <div className="modal" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <h2 style={{ fontSize: "1.5rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE }}>SHARE LICENSE &amp; INSURANCE</h2>
+              <h2 style={{ fontSize: "1.5rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430" }}>SHARE LICENSE &amp; INSURANCE</h2>
               <button className="btn btn-outline btn-sm" onClick={() => setShareModal(false)} aria-label="Close">✕</button>
             </div>
             <p style={{ fontSize: "0.9375rem", color: "#475569", marginBottom: 14 }}>
@@ -4156,7 +4149,7 @@ function avatarInitials(name) {
         <div className="modal-bg" onClick={() => setSupportModal(false)} role="presentation">
           <div className="modal" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <h2 style={{ fontSize: "1.5rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE }}>CONTACT SUPPORT</h2>
+              <h2 style={{ fontSize: "1.5rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430" }}>CONTACT SUPPORT</h2>
               <button className="btn btn-outline btn-sm" onClick={() => setSupportModal(false)} aria-label="Close">✕</button>
             </div>
             <p style={{ fontSize: "0.9375rem", color: "#475569", marginBottom: 14 }}>
@@ -4213,7 +4206,7 @@ function avatarInitials(name) {
         <div className="modal-bg" onClick={() => setCompleteModal(null)} role="presentation">
           <div className="modal" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" style={{ maxWidth: 520 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <h2 style={{ fontSize: "1.5rem", fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#facc15", textShadow: TITLE_OUTLINE }}>HOW DID IT GO?</h2>
+              <h2 style={{ fontSize: "1.5rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430" }}>HOW DID IT GO?</h2>
               <button className="btn btn-outline btn-sm" onClick={() => setCompleteModal(null)} aria-label="Close">✕</button>
             </div>
             <div style={{ background: "#f8fafc", borderRadius: 10, padding: 12, marginBottom: 16, fontSize: "0.9375rem" }}>
@@ -4233,7 +4226,7 @@ function avatarInitials(name) {
                       onClick={() => setCompleteInput(c => ({ ...c, rating: s }))}
                       aria-label={`${s} star${s !== 1 ? "s" : ""}`}
                       aria-pressed={s <= completeInput.rating}
-                      style={{ color: s <= completeInput.rating ? "#b45309" : "#334155" }}
+                      style={{ color: s <= completeInput.rating ? "#b04a17" : "#334155" }}
                     >
                       ★
                     </button>
