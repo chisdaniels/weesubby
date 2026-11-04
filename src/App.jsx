@@ -11,9 +11,15 @@ const TAB_LABELS = {
   jobs: "💼 Jobs",
   messages: "💬 Messages",
   reviews: "⭐ Reviews",
+  pricing: "💲 Pricing",
 };
 
-const TAB_ORDER = ["search", "post", "jobs", "messages", "reviews"];
+const TAB_ORDER = ["search", "post", "jobs", "messages", "reviews", "pricing"];
+
+// Contractors pay, customers don't. Homeowner contact info is never in a
+// plain jobs select — it comes from the my_job_contacts() RPC (migration 005).
+const PRO_PRICE = 49;
+const JOB_COLUMNS = "id, title, trade, location, budget, description, posted_by, created_at, accepted_by, accepted_at";
 
 function Stars({ rating }) {
   return (
@@ -87,6 +93,7 @@ export default function App() {
   const role = user?.user_metadata?.role ?? null;
   const isCustomer   = role === "customer";
   const isContractor = role === "contractor";
+  const isPro        = isContractor && myContractor?.plan === "pro";
 
   const messagesEndRef = useRef(null);
   const modalRef = useRef(null);
@@ -110,7 +117,7 @@ export default function App() {
     (async () => {
       const { data: rows, error } = await supabase
         .from("jobs")
-        .select("*")
+        .select(JOB_COLUMNS)
         .eq("posted_by", user.id)
         .order("created_at", { ascending: false });
       if (error) { console.error("my jobs load failed:", error); return; }
@@ -142,9 +149,17 @@ export default function App() {
   }, [user]);
 
   async function loadJobs() {
-    const { data, error } = await supabase.from("jobs").select("*").order("created_at", { ascending: false });
+    const { data, error } = await supabase.from("jobs").select(JOB_COLUMNS).order("created_at", { ascending: false });
     if (error) console.error("jobs load failed:", error);
-    setJobs(data || []);
+    let rows = data || [];
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      const { data: contacts, error: cErr } = await supabase.rpc("my_job_contacts");
+      if (cErr) console.error("job contacts load failed:", cErr);
+      const byJob = Object.fromEntries((contacts || []).map(c => [c.job_id, c]));
+      rows = rows.map(j => ({ ...j, ...(byJob[j.id] ?? {}) }));
+    }
+    setJobs(rows);
   }
 
   useEffect(() => {
@@ -163,11 +178,12 @@ export default function App() {
         (reviewsByContractor[r.contractor_id] ||= []).push(r);
       }
       setReviews(reviewsByContractor);
-
-      loadJobs();
     }
     load();
   }, []);
+
+  // Reload jobs when the signed-in user or their plan changes, so contact info follows access.
+  useEffect(() => { loadJobs(); }, [user?.id, myContractor?.plan]);
 
   useEffect(() => {
     if (!user) { setMessages({}); return; }
@@ -376,12 +392,17 @@ export default function App() {
 
   async function acceptJob(jobId) {
     if (!user) return;
+    if (!isPro) {
+      notify("Accepting jobs is a Pro feature.");
+      setTab("pricing");
+      return;
+    }
     const { data, error } = await supabase
       .from("jobs")
       .update({ accepted_by: user.id, accepted_at: new Date().toISOString() })
       .eq("id", jobId)
       .is("accepted_by", null)
-      .select();
+      .select("id");
     if (error) {
       console.error("acceptJob error:", error);
       notify("Failed to accept job: " + error.message);
@@ -478,7 +499,7 @@ export default function App() {
           </div>
           <nav aria-label="Main navigation" className="nav-scroll" style={{ flex: 1, justifyContent: "center" }}>
             {TAB_ORDER.filter(t => {
-              if (t === "search" || t === "reviews") return true;
+              if (t === "search" || t === "reviews" || t === "pricing") return true;
               if (t === "messages") return !!user;
               if (t === "post")     return !user || isCustomer;
               if (t === "jobs")     return isContractor;
@@ -497,6 +518,20 @@ export default function App() {
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
             {user ? (
               <>
+                {isContractor && myContractor && (
+                  <button
+                    className="btn btn-sm"
+                    onClick={() => setTab("pricing")}
+                    aria-label={`Your plan: ${isPro ? "Pro" : "Free"}`}
+                    style={{
+                      background: isPro ? "#f59e0b" : "transparent",
+                      border: "1.5px solid #f59e0b",
+                      color: isPro ? "#0f172a" : "#f59e0b",
+                    }}
+                  >
+                    {isPro ? "★ Pro" : "Upgrade"}
+                  </button>
+                )}
                 {isContractor && myContractor && (
                   <button
                     className="btn btn-sm"
@@ -807,6 +842,15 @@ export default function App() {
           <section aria-labelledby="jobs-heading">
             <h1 id="jobs-heading" style={{ fontSize: 28, fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#f59e0b", marginBottom: 4 }}>OPEN JOBS</h1>
             <p style={{ color: "#64748b", marginBottom: 20, fontSize: 14 }}>Browse jobs posted by homeowners. Reach out to claim work.</p>
+            {!isPro && (
+              <div className="card" style={{ padding: 16, marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", borderColor: "#f59e0b" }}>
+                <div>
+                  <div style={{ fontWeight: 700, marginBottom: 2 }}>You're on the Free plan</div>
+                  <div style={{ fontSize: 13, color: "#94a3b8" }}>Upgrade to Pro (${PRO_PRICE}/mo) to accept jobs and get homeowner contact details.</div>
+                </div>
+                <button className="btn btn-gold btn-sm" onClick={() => setTab("pricing")}>See Pro</button>
+              </div>
+            )}
             <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
               <label htmlFor="job-trade-filter" className="sr-only">Filter by trade</label>
               <select
@@ -880,10 +924,10 @@ export default function App() {
                             className="btn btn-gold btn-sm"
                             onClick={() => acceptJob(j.id)}
                             disabled={!myContractor}
-                            title={!myContractor ? "Complete your profile first" : undefined}
+                            title={!myContractor ? "Complete your profile first" : !isPro ? "Pro plan required" : undefined}
                             style={{ opacity: !myContractor ? 0.5 : 1 }}
                           >
-                            Accept Job
+                            {isPro ? "Accept Job" : "🔒 Upgrade to Accept"}
                           </button>
                         )}
                       </div>
@@ -897,6 +941,61 @@ export default function App() {
                 )}
               </div>
             )}
+          </section>
+        )}
+
+        {/* PRICING TAB */}
+        {tab === "pricing" && (
+          <section aria-labelledby="pricing-heading">
+            <h1 id="pricing-heading" style={{ fontSize: 28, fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#f59e0b", marginBottom: 4 }}>PRICING</h1>
+            <p style={{ color: "#64748b", marginBottom: 20, fontSize: 14 }}>Homeowners never pay. Contractors list for free and go Pro to win work.</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+              {[
+                {
+                  key: "customer", name: "Homeowners", price: "Free", sub: "forever",
+                  features: ["Post unlimited jobs", "Browse & message contractors", "Leave reviews"],
+                },
+                {
+                  key: "free", name: "Contractor Free", price: "$0", sub: "/month",
+                  features: ["Listed in Find", "Browse open jobs", "Message homeowners"],
+                },
+                {
+                  key: "pro", name: "Contractor Pro", price: `$${PRO_PRICE}`, sub: "/month", highlight: true,
+                  features: ["Everything in Free", "Accept jobs", "Homeowner contact details"],
+                },
+              ].map(p => {
+                const current =
+                  (p.key === "customer" && isCustomer) ||
+                  (p.key === "free" && isContractor && !isPro) ||
+                  (p.key === "pro" && isPro);
+                return (
+                  <div key={p.key} className="card" style={{ padding: 22, borderColor: p.highlight ? "#f59e0b" : undefined, display: "flex", flexDirection: "column" }}>
+                    <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 8 }}>{p.name}</div>
+                    <div style={{ marginBottom: 14 }}>
+                      <span style={{ fontSize: 32, fontWeight: 800, color: p.highlight ? "#f59e0b" : "#e2e8f0" }}>{p.price}</span>
+                      <span style={{ color: "#64748b", fontSize: 13, marginLeft: 4 }}>{p.sub}</span>
+                    </div>
+                    <ul style={{ listStyle: "none", padding: 0, margin: "0 0 18px", display: "grid", gap: 6, fontSize: 14, color: "#94a3b8", flex: 1 }}>
+                      {p.features.map(f => <li key={f}>✓ {f}</li>)}
+                    </ul>
+                    {current ? (
+                      <span className="badge avail" style={{ alignSelf: "flex-start" }}>Your plan</span>
+                    ) : p.key === "pro" && isContractor ? (
+                      <button className="btn btn-gold" onClick={() => notify("Online payments are coming soon — contact us to upgrade.")}>
+                        Upgrade to Pro
+                      </button>
+                    ) : !user ? (
+                      <button
+                        className={p.highlight ? "btn btn-gold" : "btn btn-outline"}
+                        onClick={() => { setAuthMode("signup"); setAuthForm(f => ({ ...f, role: p.key === "customer" ? "customer" : "contractor" })); setAuthError(null); setAuthModal(true); }}
+                      >
+                        {p.key === "customer" ? "Sign Up Free" : "Join as Contractor"}
+                      </button>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
           </section>
         )}
 
@@ -1254,8 +1353,8 @@ export default function App() {
                   <div style={{ fontSize: 13, color: "#94a3b8", marginBottom: 6 }}>I am a...</div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                     {[
-                      { value: "customer",   label: "Customer",  sub: "I need a contractor" },
-                      { value: "contractor", label: "Contractor", sub: "I want to find jobs" },
+                      { value: "customer",   label: "Customer",  sub: "I need a contractor · always free" },
+                      { value: "contractor", label: "Contractor", sub: "I want to find jobs · free listing, Pro to accept" },
                     ].map(opt => {
                       const active = authForm.role === opt.value;
                       return (
