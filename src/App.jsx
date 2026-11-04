@@ -89,6 +89,7 @@ export default function App() {
   const [profileBusy, setProfileBusy] = useState(false);
   const [profileError, setProfileError] = useState(null);
   const [myJobs, setMyJobs] = useState([]);
+  const [billingBusy, setBillingBusy] = useState(false);
 
   const role = user?.user_metadata?.role ?? null;
   const isCustomer   = role === "customer";
@@ -147,6 +148,55 @@ export default function App() {
       setMyContractor(data ?? null);
     })();
   }, [user]);
+
+  // Returning from Stripe Checkout: the webhook flips the plan to Pro a moment
+  // after payment, so poll briefly for it.
+  useEffect(() => {
+    if (!user) return;
+    const params = new URLSearchParams(window.location.search);
+    const result = params.get("checkout");
+    if (!result) return;
+    window.history.replaceState({}, "", window.location.pathname);
+    if (result === "cancel") { notify("Checkout cancelled — you're still on Free."); return; }
+    if (result !== "success") return;
+
+    notify("Payment received — activating Pro...");
+    let tries = 0;
+    let stopped = false;
+    const timer = setInterval(async () => {
+      tries++;
+      const { data } = await supabase.from("contractors").select("*").eq("user_id", user.id).maybeSingle();
+      if (stopped) return;
+      if (data?.plan === "pro") {
+        clearInterval(timer);
+        setMyContractor(data);
+        setContractors(prev => prev.map(c => c.id === data.id ? data : c));
+        notify("You're on Pro! You can now accept jobs.");
+      } else if (tries >= 10) {
+        clearInterval(timer);
+        notify("Payment received. Pro will appear shortly — refresh in a minute.");
+      }
+    }, 2000);
+    return () => { stopped = true; clearInterval(timer); };
+  }, [user?.id]);
+
+  async function callBillingFunction(name) {
+    setBillingBusy(true);
+    const { data, error } = await supabase.functions.invoke(name, { method: "POST" });
+    if (error || !data?.url) {
+      let msg = "Something went wrong. Please try again.";
+      try { msg = (await error?.context?.json())?.error ?? msg; } catch { /* keep default */ }
+      setBillingBusy(false);
+      notify(msg);
+      return;
+    }
+    window.location.href = data.url;
+  }
+
+  function startCheckout() {
+    if (!myContractor) { notify("Create your contractor profile first."); openProfileModal(); return; }
+    callBillingFunction("create-checkout");
+  }
 
   async function loadJobs() {
     const { data, error } = await supabase.from("jobs").select(JOB_COLUMNS).order("created_at", { ascending: false });
@@ -977,11 +1027,18 @@ export default function App() {
                     <ul style={{ listStyle: "none", padding: 0, margin: "0 0 18px", display: "grid", gap: 6, fontSize: 14, color: "#94a3b8", flex: 1 }}>
                       {p.features.map(f => <li key={f}>✓ {f}</li>)}
                     </ul>
-                    {current ? (
+                    {current && p.key === "pro" ? (
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                        <span className="badge avail">Your plan</span>
+                        <button className="btn btn-outline btn-sm" onClick={() => callBillingFunction("create-portal")} disabled={billingBusy}>
+                          {billingBusy ? "Opening..." : "Manage billing"}
+                        </button>
+                      </div>
+                    ) : current ? (
                       <span className="badge avail" style={{ alignSelf: "flex-start" }}>Your plan</span>
                     ) : p.key === "pro" && isContractor ? (
-                      <button className="btn btn-gold" onClick={() => notify("Online payments are coming soon — contact us to upgrade.")}>
-                        Upgrade to Pro
+                      <button className="btn btn-gold" onClick={startCheckout} disabled={billingBusy} style={{ opacity: billingBusy ? 0.6 : 1 }}>
+                        {billingBusy ? "Opening checkout..." : "Upgrade to Pro"}
                       </button>
                     ) : !user ? (
                       <button
