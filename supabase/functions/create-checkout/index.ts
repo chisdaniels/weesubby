@@ -18,9 +18,18 @@ Deno.serve(async (req) => {
     if (!contractor) return json({ error: "Create your contractor profile first." }, 400);
     if (contractor.plan === "pro") return json({ error: "You're already on Pro." }, 400);
 
-    const priceId = Deno.env.get("STRIPE_PRICE_ID");
+    const priceId = Deno.env.get("STRIPE_PRICE_ID")?.trim();
     const site = siteUrl(req);
-    if (!stripeConfigured || !priceId || !site) return json({ error: "Payments aren't configured yet." }, 500);
+    if (!stripeConfigured || !priceId || !site) {
+      // Names only, never values, so the logs say exactly which secret to fix.
+      const missing = [
+        !stripeConfigured && "STRIPE_SECRET_KEY",
+        !priceId && "STRIPE_PRICE_ID",
+        !site && "APP_URL",
+      ].filter(Boolean);
+      console.error("create-checkout not configured; missing or invalid:", missing.join(", "));
+      return json({ error: "Payments aren't configured yet." }, 500);
+    }
 
     // Reuse this contractor's Stripe customer if they've checked out before.
     const { data: billing } = await admin
