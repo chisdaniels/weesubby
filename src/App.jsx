@@ -38,8 +38,13 @@ const TAB_PATHS = {
   myjobs:   "/my-jobs",
   messages: "/messages",
   reviews:  "/reviews",
+  pricing:  "/pricing",
   admin:    "/admin",
 };
+
+// Contractors pay, customers don't. Accepting jobs needs Pro (enforced in the
+// database by migration 035); billing runs through Stripe Edge Functions.
+const PRO_PRICE = 49;
 const PATH_TABS = Object.fromEntries(Object.entries(TAB_PATHS).map(([t, p]) => [p, t]));
 
 function pathToTab(pathname, hash) {
@@ -279,6 +284,7 @@ export default function App() {
   const [profileBusy, setProfileBusy] = useState(false);
   const [profileError, setProfileError] = useState(null);
   const [myJobs, setMyJobs] = useState([]);
+  const [billingBusy, setBillingBusy] = useState(false);
 
   // Roles are now derived from state, not from a metadata flag. Anyone
   // signed in can post jobs (customer surface); anyone with a `contractors`
@@ -286,6 +292,7 @@ export default function App() {
   const isSignedIn   = !!user;
   const isContractor = !!myContractor;
   const isCustomer   = isSignedIn;
+  const isPro        = myContractor?.plan === "pro";
 
   const messagesEndRef = useRef(null);
   const modalRef = useRef(null);
@@ -550,6 +557,54 @@ export default function App() {
       setMyContractor(data ? (await withContractorDetails([data]))[0] : null);
     })();
   }, [user]);
+
+  // Back from Stripe Checkout: the webhook switches the plan to Pro a moment
+  // after payment, so check a few times before giving up.
+  useEffect(() => {
+    if (!user) return;
+    const params = new URLSearchParams(window.location.search);
+    const result = params.get("checkout");
+    if (!result) return;
+    window.history.replaceState(null, "", window.location.pathname);
+    if (result === "cancel") { notify("Checkout cancelled. You're still on the Free plan."); return; }
+    if (result !== "success") return;
+
+    notify("Payment received. Activating Pro...");
+    let tries = 0;
+    let stopped = false;
+    const timer = setInterval(async () => {
+      tries++;
+      const { data } = await supabase.from("contractors").select("*").eq("user_id", user.id).maybeSingle();
+      if (stopped) return;
+      if (data?.plan === "pro") {
+        clearInterval(timer);
+        setMyContractor((await withContractorDetails([data]))[0]);
+        notify("You're on Pro! You can now accept jobs.");
+      } else if (tries >= 10) {
+        clearInterval(timer);
+        notify("Payment received. Pro will show up shortly; refresh in a minute.");
+      }
+    }, 2000);
+    return () => { stopped = true; clearInterval(timer); };
+  }, [user?.id]);
+
+  async function callBillingFunction(name) {
+    setBillingBusy(true);
+    const { data, error } = await supabase.functions.invoke(name, { method: "POST" });
+    if (error || !data?.url) {
+      let msg = "Something went wrong. Please try again.";
+      try { msg = (await error?.context?.json())?.error ?? msg; } catch { /* keep default */ }
+      setBillingBusy(false);
+      notify(msg);
+      return;
+    }
+    window.location.href = data.url;
+  }
+
+  function startCheckout() {
+    if (!myContractor) { notify("Set up your contractor profile first."); openProfileModal(); return; }
+    callBillingFunction("create-checkout");
+  }
 
   // Private rows (credentials, homeowner contacts) only come back where the
   // database allows: the pro, admins, and the customer who hired them.
@@ -1546,6 +1601,11 @@ function avatarInitials(name) {
       notify(`This job needs ${jobToAccept.trade}. Add that service to your profile to accept it.`);
       return;
     }
+    if (!isPro) {
+      notify("Accepting jobs needs WeeSubby Pro.");
+      setTab("pricing");
+      return;
+    }
     const { data, error } = await supabase
       .from("jobs")
       .update({ accepted_by: user.id, accepted_at: new Date().toISOString() })
@@ -1915,6 +1975,15 @@ function avatarInitials(name) {
                       >
                         {myContractor ? "Edit Contractor Profile" : "Become a Contractor"}
                       </button>
+                      {myContractor && (
+                        <button
+                          className="user-menu-item"
+                          role="menuitem"
+                          onClick={() => { setTab("pricing"); setUserMenuOpen(false); }}
+                        >
+                          {isPro ? "★ WeeSubby Pro: Billing" : "Upgrade to Pro"}
+                        </button>
+                      )}
                       {canAcceptJobs(myContractor) && (
                         <button
                           className="user-menu-item"
@@ -2056,6 +2125,13 @@ function avatarInitials(name) {
               Browse Jobs
             </button>
           )}
+          <button
+            className={`toolbar-btn ${tab === "pricing" ? "active" : ""}`}
+            onClick={() => setTab("pricing")}
+            aria-current={tab === "pricing" ? "page" : undefined}
+          >
+            Pricing
+          </button>
           {isAdmin && (
             <button
               className={`toolbar-btn ${tab === "admin" ? "active" : ""}`}
@@ -2159,7 +2235,7 @@ function avatarInitials(name) {
                   <div>
                     <div style={{ fontWeight: 700, fontSize: "1.0625rem", marginBottom: 4 }}>⚒ Are you a subcontractor?</div>
                     <div style={{ color: "#475569", fontSize: "0.9375rem", lineHeight: 1.5 }}>
-                      Set up your business profile, upload your license &amp; insurance, and start accepting local jobs. Free to join.
+                      Set up your business profile, upload your license &amp; insurance, and start accepting local jobs. Free to join; go Pro to accept jobs.
                     </div>
                   </div>
                   <button
@@ -2496,6 +2572,15 @@ function avatarInitials(name) {
           <section aria-labelledby="jobs-heading">
             <h1 id="jobs-heading" style={{ fontSize: "1.875rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430", marginBottom: 4 }}>OPEN JOBS</h1>
             <p style={{ color: "#334155", marginBottom: 20, fontSize: "1rem" }}>Browse jobs posted by homeowners and businesses. Accept work that matches your services.</p>
+            {myContractor && !isPro && (
+              <div className="card" style={{ padding: 16, marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", borderColor: "#db6b33" }}>
+                <div>
+                  <div style={{ fontWeight: 700, marginBottom: 2 }}>You're on the Free plan</div>
+                  <div style={{ fontSize: "0.9375rem", color: "#475569" }}>Go Pro (${PRO_PRICE}/month) to accept jobs and get the customer's contact details.</div>
+                </div>
+                <button className="btn btn-gold btn-sm" onClick={() => setTab("pricing")}>See Pro</button>
+              </div>
+            )}
             <div className="filter-bar" style={{ alignItems: "center" }}>
               <label htmlFor="job-trade-filter" className="sr-only">Filter by service</label>
               <ServiceFilter id="job-trade-filter" catalog={catalog} value={serviceFilter} onChange={setServiceFilter} />
@@ -2554,7 +2639,7 @@ function avatarInitials(name) {
                               title={title}
                               style={{ opacity: blocked ? 0.5 : 1 }}
                             >
-                              Accept Job
+                              {isPro ? "Accept Job" : "🔒 Go Pro to Accept"}
                             </button>
                           );
                         })()}
@@ -2569,6 +2654,68 @@ function avatarInitials(name) {
                 )}
               </div>
             )}
+          </section>
+        )}
+
+        {/* PRICING TAB */}
+        {tab === "pricing" && (
+          <section aria-labelledby="pricing-heading">
+            <h1 id="pricing-heading" style={{ fontSize: "1.875rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430", marginBottom: 4 }}>PRICING</h1>
+            <p style={{ color: "#334155", marginBottom: 20, fontSize: "1rem" }}>Customers never pay. Pros join for free and go Pro to win work.</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+              {[
+                {
+                  key: "customer", name: "Customers", price: "Free", sub: "always",
+                  features: ["Post unlimited jobs", "Browse & message verified pros", "Leave reviews"],
+                },
+                {
+                  key: "free", name: "Pros: Free", price: "$0", sub: "/month",
+                  features: ["Business profile in Find a Pro", "Browse open jobs", "Message customers"],
+                },
+                {
+                  key: "pro", name: "WeeSubby Pro", price: `$${PRO_PRICE}`, sub: "/month", highlight: true,
+                  features: ["Everything in Free", "Accept jobs", "Customer contact details", "Cancel anytime"],
+                },
+              ].map(p => {
+                const current =
+                  (p.key === "customer" && isSignedIn && !myContractor) ||
+                  (p.key === "free" && myContractor && !isPro) ||
+                  (p.key === "pro" && isPro);
+                return (
+                  <div key={p.key} className="card" style={{ padding: 22, display: "flex", flexDirection: "column", borderColor: p.highlight ? "#db6b33" : undefined, borderWidth: p.highlight ? 2 : undefined }}>
+                    <div style={{ fontWeight: 700, fontSize: "1.0625rem", marginBottom: 8, color: "#1f2430" }}>{p.name}</div>
+                    <div style={{ marginBottom: 14 }}>
+                      <span style={{ fontSize: "2rem", fontWeight: 800, color: p.highlight ? "#b04a17" : "#1f2430" }}>{p.price}</span>
+                      <span style={{ color: "#64748b", fontSize: "0.9375rem", marginLeft: 4 }}>{p.sub}</span>
+                    </div>
+                    <ul style={{ listStyle: "none", padding: 0, margin: "0 0 18px", display: "grid", gap: 6, fontSize: "0.9375rem", color: "#475569", flex: 1 }}>
+                      {p.features.map(f => <li key={f}>✓ {f}</li>)}
+                    </ul>
+                    {current && p.key === "pro" ? (
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                        <span className="badge">✓ Your plan</span>
+                        <button className="btn btn-outline btn-sm" onClick={() => callBillingFunction("create-portal")} disabled={billingBusy}>
+                          {billingBusy ? "Opening..." : "Manage billing"}
+                        </button>
+                      </div>
+                    ) : current ? (
+                      <span className="badge" style={{ alignSelf: "flex-start" }}>✓ Your plan</span>
+                    ) : p.key === "pro" && user ? (
+                      <button className="btn btn-gold" onClick={startCheckout} disabled={billingBusy} style={{ opacity: billingBusy ? 0.6 : 1 }}>
+                        {billingBusy ? "Opening checkout..." : myContractor ? "Upgrade to Pro" : "Set Up Profile to Go Pro"}
+                      </button>
+                    ) : !user ? (
+                      <button
+                        className={p.highlight ? "btn btn-gold" : "btn btn-outline"}
+                        onClick={() => { setAuthIntent(p.key === "customer" ? "customer" : "pro"); setAuthMode("signup"); setAuthError(null); setAuthModal(true); }}
+                      >
+                        {p.key === "customer" ? "Join Free" : "Join as a Pro"}
+                      </button>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
           </section>
         )}
 
