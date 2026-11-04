@@ -1,6 +1,6 @@
 // Opens the Stripe customer portal so a contractor can cancel or update their card.
 // Called by the app with the contractor's session token; returns { url }.
-import { admin, corsHeaders, getUser, json, siteUrl, stripe } from "../_shared/stripe.ts";
+import { admin, corsHeaders, getUser, json, siteUrl, stripe, stripeConfigured } from "../_shared/stripe.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -9,6 +9,7 @@ Deno.serve(async (req) => {
   try {
     const user = await getUser(req);
     if (!user) return json({ error: "Please sign in first." }, 401);
+    if (!stripeConfigured) return json({ error: "Payments aren't configured yet." }, 500);
 
     const { data: billing } = await admin
       .from("contractor_billing")

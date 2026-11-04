@@ -1,6 +1,6 @@
 // Starts a Stripe Checkout session for the WeeSubby Pro subscription.
 // Called by the app with the contractor's session token; returns { url }.
-import { admin, corsHeaders, getUser, json, siteUrl, stripe } from "../_shared/stripe.ts";
+import { admin, corsHeaders, getUser, json, siteUrl, stripe, stripeConfigured } from "../_shared/stripe.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
 
     const priceId = Deno.env.get("STRIPE_PRICE_ID");
     const site = siteUrl(req);
-    if (!priceId || !site) return json({ error: "Payments aren't configured yet." }, 500);
+    if (!stripeConfigured || !priceId || !site) return json({ error: "Payments aren't configured yet." }, 500);
 
     // Reuse this contractor's Stripe customer if they've checked out before.
     const { data: billing } = await admin
