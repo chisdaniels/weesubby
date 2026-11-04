@@ -1,4 +1,4 @@
--- TradeLinkPro initial schema
+-- WeeSubby initial schema
 -- Paste this into Supabase Dashboard → SQL Editor → New query → Run.
 
 -- ============================================================
