@@ -12,4 +12,4 @@ Tired of chasing leads? On WeeSubby, homeowners post real jobs and you choose th
 How WeeSubby works in 3 steps: 1) Post a job 2) Pros reach out 3) Get it done. Free forever for homeowners, free to list for contractors. Link in bio.
 #homeimprovement #contractor #construction #homeowner #weesubby
 
-Tip: the videos have a silent audio track. Add a trending sound inside Instagram or TikTok before you post.
+Music: the versions in `out/music/` have Mixkit tracks mixed in (see `music.txt`). To use a trending sound instead, post the silent file from `out/` and add the sound inside Instagram or TikTok.

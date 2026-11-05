@@ -51,4 +51,16 @@ node render-overlay.cjs reel4-crew-footage.html footage/base.mp4 stills/r4 30 --
 
 You can also open any reel in a browser and run `render(5)` in the console to see a single moment.
 
-The MP4s include a silent audio track. Add music inside the social app, since licensed and trending sounds there also help reach.
+### Music
+
+The renders above have a silent audio track. `add-music.sh` adds a Mixkit soundtrack to each reel and writes the result to `out/music/`.
+
+- `music.txt` lists the track and start offset for each reel. Tracks are from the [Mixkit free music library](https://mixkit.co/free-stock-music/) under the Mixkit Stock Music Free License: free for commercial use, no credit required.
+- To change a reel's music, put a different Mixkit track ID in `music.txt`.
+- To find a start offset for a new track, run `python3 find-music-start.py music/<id>.mp3:<reel seconds>`. It suggests a bar line after any quiet intro, and needs `pip install librosa`. The track must already be in `music/`, either from a previous `add-music.sh` run or downloaded by hand.
+
+```bash
+./add-music.sh            # needs curl + network access to assets.mixkit.co
+```
+
+To use a trending sound instead, post the silent file from `out/` and add the sound inside the app.
