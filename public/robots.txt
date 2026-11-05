@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /messages
+Disallow: /my-jobs
+Disallow: /jobs
+
+Sitemap: https://weesubby.com/sitemap.xml

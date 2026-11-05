@@ -12,8 +12,10 @@
       html, body { max-width: 100vw; overflow-x: hidden; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; background: #f5f3ee; }
     </style>
 
-    <title>WeeSubby — The right sub for the job.</title>
-    <meta name="description" content="Post construction and home service jobs. Get matched with verified, licensed, and insured contractors — every profile vetted by our admin team." />
+    <title>WeeSubby — Find Verified Local Contractors &amp; Subcontractors</title>
+    <meta name="description" content="Post a construction or home service job free and get matched with verified, licensed, and insured local contractors — plumbers, electricians, roofers, and more. Every pro is vetted by our team." />
+    <link rel="canonical" href="https://weesubby.com/" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="theme-color" content="#ffffff" />
 
     <!-- PWA / installability -->
@@ -30,8 +32,8 @@
     <!-- OpenGraph (Facebook, LinkedIn, iMessage, Slack, WhatsApp, etc.) -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="WeeSubby" />
-    <meta property="og:title" content="WeeSubby — The right sub for the job." />
-    <meta property="og:description" content="Post construction and home service jobs. Get matched with verified, licensed, and insured contractors — every profile vetted by our admin team." />
+    <meta property="og:title" content="WeeSubby — Find Verified Local Contractors &amp; Subcontractors" />
+    <meta property="og:description" content="Post a construction or home service job free and get matched with verified, licensed, and insured local contractors — plumbers, electricians, roofers, and more. Every pro is vetted by our team." />
     <meta property="og:url" content="https://weesubby.com/" />
     <meta property="og:image" content="https://weesubby.com/og-image.png?v=4" />
     <meta property="og:image:type" content="image/png" />
@@ -41,16 +43,48 @@
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="WeeSubby — The right sub for the job." />
-    <meta name="twitter:description" content="Post construction and home service jobs. Get matched with verified, licensed, and insured contractors — every profile vetted by our admin team." />
+    <meta name="twitter:title" content="WeeSubby — Find Verified Local Contractors &amp; Subcontractors" />
+    <meta name="twitter:description" content="Post a construction or home service job free and get matched with verified, licensed, and insured local contractors — plumbers, electricians, roofers, and more. Every pro is vetted by our team." />
     <meta name="twitter:image" content="https://weesubby.com/og-image.png?v=4" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Structured data: tells Google who we are and what the site does -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://weesubby.com/#organization",
+          "name": "WeeSubby",
+          "url": "https://weesubby.com/",
+          "logo": "https://weesubby.com/icon-512.png",
+          "slogan": "The right sub for the job."
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://weesubby.com/#website",
+          "name": "WeeSubby",
+          "url": "https://weesubby.com/",
+          "publisher": { "@id": "https://weesubby.com/#organization" },
+          "inLanguage": "en-US"
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Shown to search engines and before the app loads; React replaces it. -->
+      <div style="max-width:900px;margin:0 auto;padding:48px 20px;font-family:'DM Sans',system-ui,sans-serif;color:#1f2430">
+        <h1 style="font:800 2.25rem/1.15 'Inter','DM Sans',sans-serif;letter-spacing:-.03em;margin:0 0 12px">Find verified local contractors &amp; subcontractors</h1>
+        <p style="font-size:1.125rem;color:#475569;margin:0 0 20px">WeeSubby connects homeowners with verified, licensed, and insured local pros. Post your job free and get matched — every contractor profile is reviewed by our team.</p>
+        <p><a href="/post" style="color:#b04a17;font-weight:700">Post a job — free</a> · <a href="/hire" style="color:#b04a17;font-weight:700">Browse trades</a> · <a href="/pricing" style="color:#b04a17;font-weight:700">Contractor pricing</a></p>
+        <p style="color:#64748b">Popular: <a href="/hire/plumbers" style="color:#64748b">Plumbers</a>, <a href="/hire/electricians" style="color:#64748b">Electricians</a>, <a href="/hire/roofers" style="color:#64748b">Roofers</a>, <a href="/hire/general-contractors" style="color:#64748b">General contractors</a>, <a href="/hire/painters" style="color:#64748b">Painters</a>, <a href="/hire/drywall-contractors" style="color:#64748b">Drywall</a>, <a href="/hire/landscapers" style="color:#64748b">Landscapers</a></p>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
