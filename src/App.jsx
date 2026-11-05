@@ -3556,6 +3556,11 @@ function avatarInitials(name) {
             ))}
           </div>
         </nav>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px", marginTop: 16 }}>
+          <span>© {new Date().getFullYear()} WeeSubby</span>
+          <a href="/privacy" style={{ color: "#64748b" }}>Privacy Policy</a>
+          <a href="/terms" style={{ color: "#64748b" }}>Terms of Service</a>
+        </div>
       </footer>
 
       {/* CONTRACTOR DETAIL MODAL */}
@@ -4073,6 +4078,13 @@ function avatarInitials(name) {
               <button type="submit" className="btn btn-gold" disabled={authBusy} style={{ opacity: authBusy ? 0.6 : 1 }}>
                 {authBusy ? "Working..." : authMode === "signin" ? "Sign In" : "Create Account"}
               </button>
+              {authMode === "signup" && (
+                <p style={{ margin: 0, fontSize: "0.875rem", color: "#64748b", textAlign: "center", lineHeight: 1.5 }}>
+                  By creating an account, you agree to our{" "}
+                  <a href="/terms" target="_blank" rel="noopener" style={{ color: "#b04a17" }}>Terms of Service</a> and{" "}
+                  <a href="/privacy" target="_blank" rel="noopener" style={{ color: "#b04a17" }}>Privacy Policy</a>.
+                </p>
+              )}
               <button
                 type="button"
                 onClick={() => { setAuthMode(authMode === "signin" ? "signup" : "signin"); setAuthError(null); }}
