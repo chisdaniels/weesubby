@@ -9,6 +9,7 @@ import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { SITE_URL, SITE_NAME, ROUTE_META, TRADE_PAGES } from "../src/seo.js";
+import { LEGAL_UPDATED, PRIVACY, TERMS } from "../src/legal.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
@@ -85,6 +86,11 @@ summary{font-weight:700;cursor:pointer}
 .crumbs{font-size:.9375rem;color:#64748b;padding-top:16px}
 .crumbs a{color:#64748b}
 footer{border-top:1px solid #e2e8f0;margin-top:32px;padding:24px 0 40px;color:#64748b;font-size:.9375rem}
+.legal{max-width:720px;padding:40px 0 16px}
+.legal .updated{color:#64748b;margin:-8px 0 24px}
+.legal h2{margin-top:32px}
+.legal ul{padding-left:1.25rem;margin:0}
+.legal li{margin-bottom:8px}
 `;
 
 function page({ path, title, description, body, ld }) {
@@ -128,7 +134,7 @@ ${ld.map(jsonLd).join("\n")}
 ${body}
 </main>
 <footer><div class="wrap">
-  <p><strong>${SITE_NAME}</strong> — the right sub for the job. Free for homeowners. <a href="/pricing">Pricing for contractors</a> · <a href="/hire">All trades</a></p>
+  <p><strong>${SITE_NAME}</strong> — the right sub for the job. Free for homeowners. <a href="/pricing">Pricing for contractors</a> · <a href="/hire">All trades</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>
 </div></footer>
 </body>
 </html>
@@ -227,7 +233,26 @@ ${why}`;
   sitemapUrls.unshift({ loc: SITE_URL + path, priority: "0.9" });
 }
 
-// ---------- 3. Sitemap ----------
+// ---------- 3. Privacy Policy and Terms of Service ----------
+for (const doc of [PRIVACY, TERMS]) {
+  const body = `
+<article class="legal">
+  <h1>${esc(doc.title)}</h1>
+  <p class="updated">Last updated ${esc(LEGAL_UPDATED)}</p>
+  <p>${esc(doc.intro)}</p>
+  ${doc.sections.map(([h, items]) => `<h2>${esc(h)}</h2><ul>${items.map(i => `<li>${esc(i)}</li>`).join("")}</ul>`).join("\n  ")}
+</article>`;
+  await write(join(doc.path.slice(1), "index.html"), page({
+    path: doc.path,
+    title: `${doc.title} | ${SITE_NAME}`,
+    description: doc.description,
+    body,
+    ld: [{ "@context": "https://schema.org", "@type": "WebPage", name: doc.title, url: SITE_URL + doc.path, dateModified: LEGAL_UPDATED }],
+  }));
+  sitemapUrls.push({ loc: SITE_URL + doc.path, priority: "0.3" });
+}
+
+// ---------- 4. Sitemap ----------
 const appUrls = Object.keys(ROUTE_META).map(p => ({ loc: SITE_URL + p, priority: p === "/" ? "1.0" : "0.7" }));
 const all = [...appUrls, ...sitemapUrls];
 await write(
@@ -239,4 +264,4 @@ ${all.map(u => `  <url><loc>${u.loc}</loc><lastmod>${today}</lastmod><priority>$
 `,
 );
 
-console.log(`build-seo: ${Object.keys(ROUTE_META).length - 1} route pages, ${TRADE_PAGES.length + 1} hire pages, sitemap with ${all.length} URLs`);
+console.log(`build-seo: ${Object.keys(ROUTE_META).length - 1} route pages, ${TRADE_PAGES.length + 1} hire pages, 2 legal pages, sitemap with ${all.length} URLs`);

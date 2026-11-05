@@ -33,6 +33,10 @@
       "destination": "/hire/:slug/index.html"
     },
     {
+      "source": "/:page(privacy|terms)",
+      "destination": "/:page/index.html"
+    },
+    {
       "source": "/:page(post|pricing|reviews)",
       "destination": "/:page/index.html"
     },
