@@ -1,0 +1,101 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+.hook { top: 640px; }
+.q { position: absolute; left: 0; right: 0; }
+#cap { top: 250px; }
+#cap2 { top: 250px; }
+.toast.t1 { top: 560px; } .toast.t2 { top: 740px; } .toast.t3 { top: 920px; }
+#checks { top: 560px; left: 150px; right: 90px; display: grid; gap: 70px; }
+#zero { top: 520px; }
+</style></head><body>
+<div class="bg"><div class="glow"></div></div>
+<div class="stripes" id="s-top" style="top:0"></div>
+<div class="stripes" id="s-bot" style="bottom:0"></div>
+
+<!-- 1. Hook -->
+<div class="center hook">
+  <div class="q bebas h-xl" id="q1">LEAKY<br><span class="amber">PIPE?</span></div>
+  <div class="q bebas h-xl" id="q2">ROOF<br><span class="amber">LEAK?</span></div>
+  <div class="q bebas h-xl" id="q3">NEW<br><span class="amber">DECK?</span></div>
+</div>
+<div class="center" id="nohassle" style="top:560px">
+  <div class="bebas h-l" id="nh1">SKIP THE</div>
+  <div class="bebas h-l amber" id="nh2">PHONE TAG.</div>
+  <div class="sub" id="nh3" style="margin-top:40px">Let local pros come to you.</div>
+</div>
+
+<!-- 2. Phone: post a job -->
+<div class="center bebas h-s" id="cap">POST YOUR JOB <span class="amber">FREE</span></div>
+<div class="center bebas h-s" id="cap2">PROS <span class="amber">COME TO YOU</span></div>
+<div class="phone" id="phone" style="top:430px"><div class="notch"></div>
+  <div class="screen">
+    <div class="appbar"><span class="logo">⚒ WEESUBBY</span><span class="badge">Homeowner</span></div>
+    <div class="apptitle">POST A JOB</div>
+    <div class="muted" style="font-size:24px;margin-bottom:28px">Describe your project and let contractors come to you</div>
+    <div class="field"><label>Job title</label><div class="in" id="f1in"><span id="f1">Fix leaking kitchen sink</span></div></div>
+    <div class="field"><label>Trade</label><div class="in" id="f2in"><span id="f2">Plumber</span></div></div>
+    <div class="field"><label>Location</label><div class="in" id="f3in"><span id="f3">Austin, TX</span></div></div>
+    <div class="field"><label>Budget</label><div class="in" id="f4in"><span id="f4">$300</span></div></div>
+    <div class="btn" id="postbtn" style="margin-top:34px">Post Job</div>
+  </div>
+</div>
+<div class="tap" id="tap" style="left:485px;top:1355px"></div>
+<div class="toast t1" id="t1"><div class="ic">🔧</div><div><b>Mike R. · Plumber</b><span class="muted" style="color:#475569">Interested in your job</span></div></div>
+<div class="toast t2" id="t2"><div class="ic">🔧</div><div><b>Dana's Plumbing</b><span style="color:#475569">“I can come by Thursday”</span></div></div>
+<div class="toast t3" id="t3"><div class="ic">💬</div><div><b>3 pros interested</b><span style="color:#475569">Compare & pick yours</span></div></div>
+
+<!-- 3. Benefits -->
+<div class="abs" id="checks">
+  <div class="check" id="c1"><div class="tick">✓</div>Verified local pros</div>
+  <div class="check" id="c2"><div class="tick">★</div>Real reviews</div>
+  <div class="check" id="c3"><div class="tick">💬</div>Message them direct</div>
+  <div class="check" id="c4"><div class="tick">∞</div>Post unlimited jobs</div>
+</div>
+<div class="center" id="zero">
+  <div class="sub" id="z0">Homeowners pay</div>
+  <div class="bebas amber" id="z1" style="font-size:560px;line-height:.9">$<span id="znum">0</span></div>
+  <div class="bebas h-m" id="z2">NOW &amp; FOREVER</div>
+</div>
+
+<!-- 4. End card -->
+<div class="center" id="end" style="top:600px">
+  <div class="logo" id="e1" style="font-size:170px">⚒ WEESUBBY</div>
+  <div class="sub" id="e2" style="margin:40px 0 70px">Your project. Local pros.<br>Zero cost to you.</div>
+  <div id="e3"><span class="chip" style="font-size:52px;padding:26px 60px">Post your job free →</span></div>
+  <div class="sub muted" id="e4" style="margin-top:50px;font-size:40px">Link in bio</div>
+</div>
+
+<script src="engine.js"></script>
+<script>
+DURATION = 18;
+// Hook
+a('#q1', 0, .25, { o: [0, 1], s: [1.4, 1] }); gone('#q1', .8, .1);
+a('#q2', .85, .25, { o: [0, 1], s: [1.4, 1] }); gone('#q2', 1.6, .1);
+a('#q3', 1.65, .25, { o: [0, 1], s: [1.4, 1] }); leave('#q3', 2.45);
+rise('#nh1', 2.7); rise('#nh2', 2.9); fade('#nh3', 3.3, .5);
+leave('#nohassle', 4.6);
+// Phone
+a('#phone', 4.8, .8, { y: [1500, 0] });
+rise('#cap', 5.1);
+typeText('#f1', 5.7, 26); a('#f1in', 0, 0, {}); hook(t => {
+  const f = [['#f1in', 5.7, 6.7], ['#f2in', 6.75, 7.1], ['#f3in', 7.15, 7.6], ['#f4in', 7.65, 7.9]];
+  f.forEach(([s, a0, a1]) => document.querySelector(s).classList.toggle('focus', t >= a0 && t < a1 + .1));
+});
+typeText('#f2', 6.75, 26); typeText('#f3', 7.15, 26); typeText('#f4', 7.65, 20);
+a('#tap', 8.1, .15, { o: [0, 1], s: [1.4, 1] }); a('#tap', 8.3, .3, { o: [1, 0], s: [1, 1.5] });
+a('#postbtn', 8.15, .2, { s: [1, .94] }); a('#postbtn', 8.35, .2, { s: [.94, 1] });
+leave('#cap', 8.6, .3); rise('#cap2', 8.9);
+a('#phone', 8.6, .6, { s: [1, .94], o: [1, .35] });
+a('#t1', 9.0, .5, { o: [0, 1], y: [-80, 0], s: [.9, 1] }, 'back');
+a('#t2', 9.6, .5, { o: [0, 1], y: [-80, 0], s: [.9, 1] }, 'back');
+a('#t3', 10.2, .5, { o: [0, 1], y: [-80, 0], s: [.9, 1] }, 'back');
+['#phone', '#t1', '#t2', '#t3', '#cap2'].forEach((s, i) => a(s, 11.6 + i * .04, .4, { o: [1, 0], y: [0, -120] }, 'in'));
+// Benefits
+['#c1', '#c2', '#c3', '#c4'].forEach((s, i) => a(s, 12.0 + i * .35, .5, { o: [0, 1], x: [-120, 0] }));
+leave('#checks', 14.0);
+fade('#z0', 14.2); pop('#z1', 14.35, .6); rise('#z2', 14.8);
+leave('#zero', 15.9);
+// End
+pop('#e1', 16.1, .6); fade('#e2', 16.4, .5); pop('#e3', 16.7, .5); fade('#e4', 17.0);
+a('#e3', 17.3, .35, { s: [1, 1.06] }, 'inOut'); a('#e3', 17.65, .35, { s: [1.06, 1] }, 'inOut');
+</script></body></html>

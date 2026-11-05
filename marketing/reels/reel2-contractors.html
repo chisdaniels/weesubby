@@ -1,0 +1,125 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+.w { position: absolute; left: 0; right: 0; }
+#cap, #cap2 { top: 250px; }
+.job { margin-bottom: 22px; padding: 26px; }
+.job .tt { font-size: 32px; font-weight: 700; margin-bottom: 10px; }
+.job .meta { font-size: 24px; color: var(--muted); margin-bottom: 14px; }
+.job .money { font-size: 30px; font-weight: 800; color: var(--amber); }
+.job.hl { border-color: var(--amber); box-shadow: 0 0 0 4px rgba(245,158,11,.25); }
+#feedwrap { position: absolute; left: 38px; right: 38px; top: 335px; bottom: 0; overflow: hidden; }
+#detail { transform: translateX(700px); }
+.kv { display: flex; justify-content: space-between; font-size: 28px; padding: 18px 0; border-bottom: 2px solid var(--line); }
+.kv span:first-child { color: var(--muted); }
+.plans { top: 520px; left: 70px; right: 70px; display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.plan { background: var(--slate); border: 3px solid var(--line); border-radius: 36px; padding: 44px 36px; }
+.plan.pro { border-color: var(--amber); box-shadow: 0 0 80px rgba(245,158,11,.3); }
+.plan .nm { font-size: 38px; font-weight: 700; margin-bottom: 14px; }
+.plan .pr { font-size: 110px; font-weight: 800; line-height: 1; }
+.plan .pr small { font-size: 32px; color: #64748b; font-weight: 500; }
+.plan ul { list-style: none; margin-top: 34px; display: grid; gap: 22px; font-size: 32px; color: #cbd5e1; }
+.plan li::before { content: '✓  '; color: var(--amber); font-weight: 800; }
+</style></head><body>
+<div class="bg"><div class="glow"></div></div>
+<div class="stripes" style="top:0"></div>
+<div class="stripes" style="bottom:0"></div>
+
+<!-- 1. Hook -->
+<div class="center" id="hook" style="top:560px">
+  <div class="bebas h-xl" id="h1">TIRED OF</div>
+  <div class="bebas h-xl amber" id="h2">CHASING</div>
+  <div class="bebas h-xl" id="h3">LEADS?</div>
+</div>
+<div class="center" id="flip" style="top:600px">
+  <div class="sub" id="fl1">On WeeSubby, homeowners</div>
+  <div class="bebas h-l" id="fl2">POST THE JOB.</div>
+  <div class="sub" id="fl3" style="margin-top:50px">You pick the work.</div>
+  <div class="bebas h-l amber" id="fl4">YOU WANT.</div>
+</div>
+
+<!-- 2. Phone -->
+<div class="center bebas h-s" id="cap">BROWSE <span class="amber">OPEN JOBS</span></div>
+<div class="center bebas h-s" id="cap2">ACCEPT. <span class="amber">GET TO WORK.</span></div>
+<div class="phone" id="phone" style="top:430px"><div class="notch"></div>
+  <div class="screen" id="feed">
+    <div class="appbar"><span class="logo">⚒ WEESUBBY</span><span class="badge">★ Pro</span></div>
+    <div class="apptitle">OPEN JOBS</div>
+    <div class="muted" style="font-size:24px">Jobs posted by homeowners near you</div>
+    <div id="feedwrap"><div id="list">
+      <div class="card job"><div class="tt">Panel upgrade – 200A</div><div class="meta">Electrician · Denver, CO</div><div class="row" style="justify-content:space-between"><span class="money">$2,400</span><span class="badge g">New</span></div></div>
+      <div class="card job"><div class="tt">Roof repair after storm</div><div class="meta">Roofer · Tampa, FL</div><div class="row" style="justify-content:space-between"><span class="money">$3,500</span><span class="badge g">New</span></div></div>
+      <div class="card job" id="target"><div class="tt">Kitchen remodel – 1,200 sq ft</div><div class="meta">General Contractor · Austin, TX</div><div class="row" style="justify-content:space-between"><span class="money">$18,000</span><span class="badge">Open</span></div></div>
+      <div class="card job"><div class="tt">Deck rebuild</div><div class="meta">Carpenter · Portland, OR</div><div class="row" style="justify-content:space-between"><span class="money">$6,000</span><span class="badge">Open</span></div></div>
+      <div class="card job"><div class="tt">Brick patio & firepit</div><div class="meta">Mason · Charlotte, NC</div><div class="row" style="justify-content:space-between"><span class="money">$4,200</span><span class="badge">Open</span></div></div>
+      <div class="card job"><div class="tt">Bathroom re-pipe</div><div class="meta">Plumber · Phoenix, AZ</div><div class="row" style="justify-content:space-between"><span class="money">$2,900</span><span class="badge">Open</span></div></div>
+    </div></div>
+  </div>
+  <div class="screen" id="detail">
+    <div class="appbar"><span class="logo">⚒ WEESUBBY</span><span class="badge">★ Pro</span></div>
+    <div class="muted" style="font-size:26px;margin-bottom:14px">← Open jobs</div>
+    <div class="apptitle" style="font-size:66px;line-height:1">KITCHEN REMODEL<br>1,200 SQ FT</div>
+    <div style="margin:26px 0 10px"><span class="badge">General Contractor</span> <span class="badge">Austin, TX</span></div>
+    <div class="kv"><span>Budget</span><b class="amber">$18,000</b></div>
+    <div class="kv"><span>Timeline</span><b>Start in March</b></div>
+    <div class="kv"><span>Homeowner</span><b id="hname">Sarah K.</b></div>
+    <div class="kv" id="phoneRow"><span>Contact</span><b id="contact" style="filter:blur(9px)">(512) 555-0142</b></div>
+    <div class="btn" id="accept" style="margin-top:40px">Accept Job</div>
+    <div class="btn" id="accepted" style="margin-top:-96px;background:var(--green)">✓ Job accepted</div>
+  </div>
+</div>
+<div class="tap" id="tap1" style="left:490px;top:965px"></div>
+<div class="tap" id="tap2" style="left:485px;top:1370px"></div>
+<div class="toast" id="toast" style="top:1420px"><div class="ic" style="background:var(--green)">✓</div><div><b>Job accepted!</b><span style="color:#475569">Homeowner contact unlocked</span></div></div>
+
+<!-- 3. Plans -->
+<div class="center bebas h-m" id="ptitle" style="top:280px">LIST <span class="amber">FREE.</span> GO <span class="amber">PRO.</span></div>
+<div class="abs plans" id="plans">
+  <div class="plan" id="pfree"><div class="nm">Free</div><div class="pr">$0<small>/mo</small></div>
+    <ul><li>Listed in Find</li><li>Browse open jobs</li><li>Message homeowners</li></ul></div>
+  <div class="plan pro" id="ppro"><div class="nm amber">★ Pro</div><div class="pr amber">$49<small>/mo</small></div>
+    <ul><li>Everything in Free</li><li>Accept jobs</li><li>Homeowner contact details</li></ul></div>
+</div>
+
+<!-- 4. End -->
+<div class="center" id="end" style="top:600px">
+  <div class="logo" id="e1" style="font-size:170px">⚒ WEESUBBY</div>
+  <div class="sub" id="e2" style="margin:40px 0 70px">Real jobs from real homeowners.<br>Listing is free.</div>
+  <div id="e3"><span class="chip" style="font-size:52px;padding:26px 60px">Join as a contractor →</span></div>
+  <div class="sub muted" id="e4" style="margin-top:50px;font-size:40px">Link in bio</div>
+</div>
+
+<script src="engine.js"></script>
+<script>
+DURATION = 18;
+a('#h1', 0, .3, { o: [0, 1], s: [1.5, 1] });
+a('#h2', .45, .3, { o: [0, 1], s: [1.5, 1] });
+a('#h3', .9, .3, { o: [0, 1], s: [1.5, 1] });
+a('#h3', 1.3, .08, { r: [0, -3] }); a('#h3', 1.38, .08, { r: [-3, 3] }); a('#h3', 1.46, .1, { r: [3, 0] });
+leave('#hook', 2.2);
+fade('#fl1', 2.5); rise('#fl2', 2.7); fade('#fl3', 3.4); rise('#fl4', 3.6);
+leave('#flip', 4.8);
+// phone
+a('#phone', 5.0, .8, { y: [1500, 0] });
+rise('#cap', 5.3);
+a('#list', 6.0, 1.6, { y: [0, -430] }, 'inOut');
+a('#list', 7.7, .6, { y: [-430, -250] }, 'inOut');
+a('#tap1', 8.4, .15, { o: [0, 1], s: [1.4, 1] }); a('#tap1', 8.6, .3, { o: [1, 0], s: [1, 1.5] });
+hook(t => document.querySelector('#target').classList.toggle('hl', t > 8.45 && t < 9.0));
+a('#feed', 8.75, .5, { x: [0, -700] }, 'inOut');
+a('#detail', 8.75, .5, { x: [700, 0] }, 'inOut');
+a('#tap2', 10.0, .15, { o: [0, 1], s: [1.4, 1] }); a('#tap2', 10.2, .3, { o: [1, 0], s: [1, 1.5] });
+a('#accept', 10.05, .2, { s: [1, .94] });
+a('#accepted', 0, 0, { o: [0, 0] }); a('#accepted', 10.25, .3, { o: [0, 1], s: [.94, 1] }, 'back');
+hook(t => { const p = Math.min(1, Math.max(0, (t - 10.4) / .5)); document.querySelector('#contact').style.filter = `blur(${9 * (1 - p)}px)`; document.querySelector('#contact').style.color = p > .5 ? '#34d399' : ''; });
+leave('#cap', 10.1, .3); rise('#cap2', 10.4);
+a('#toast', 10.6, .5, { o: [0, 1], y: [80, 0] }, 'back');
+['#phone', '#toast', '#cap2'].forEach((s, i) => a(s, 12.2 + i * .05, .4, { o: [1, 0], y: [0, -120] }, 'in'));
+// plans
+rise('#ptitle', 12.6);
+a('#pfree', 12.9, .6, { o: [0, 1], x: [-200, 0] });
+a('#ppro', 13.2, .6, { o: [0, 1], x: [200, 0] });
+a('#ppro', 14.0, .4, { s: [1, 1.07] }, 'back'); a('#pfree', 14.0, .4, { o: [1, .5] });
+['#ptitle', '#plans'].forEach(s => leave(s, 15.5));
+pop('#e1', 15.8, .6); fade('#e2', 16.1, .5); pop('#e3', 16.4, .5); fade('#e4', 16.7);
+a('#e3', 17.1, .35, { s: [1, 1.06] }, 'inOut'); a('#e3', 17.45, .35, { s: [1.06, 1] }, 'inOut');
+</script></body></html>
