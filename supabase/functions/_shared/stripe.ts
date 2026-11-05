@@ -1,9 +1,15 @@
 import Stripe from "npm:stripe@17.7.0";
 import { createClient, type SupabaseClient, type User } from "npm:@supabase/supabase-js@2.49.4";
 
-export const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
+// Stripe's SDK throws at construction when the key is missing, which would
+// crash the function before it can answer. Use a placeholder instead and let
+// each function report "not configured" via stripeConfigured.
+const stripeKey = Deno.env.get("STRIPE_SECRET_KEY")?.trim() ?? "";
+export const stripeConfigured = stripeKey.startsWith("sk_") || stripeKey.startsWith("rk_");
+export const stripe = new Stripe(stripeConfigured ? stripeKey : "sk_not_configured", {
   httpClient: Stripe.createFetchHttpClient(),
 });
+if (!stripeConfigured) console.error("STRIPE_SECRET_KEY is missing or doesn't look like a Stripe secret key.");
 
 // Service-role client: bypasses RLS. Only ever used server-side.
 export const admin: SupabaseClient = createClient(

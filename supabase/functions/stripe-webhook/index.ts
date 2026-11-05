@@ -2,7 +2,7 @@
 // Deploy with JWT verification OFF — Stripe can't send a Supabase token.
 // Authenticity comes from the Stripe-Signature header instead.
 import Stripe from "npm:stripe@17.7.0";
-import { admin, stripe } from "../_shared/stripe.ts";
+import { admin, stripe, stripeConfigured } from "../_shared/stripe.ts";
 
 const PRO_STATUSES = new Set(["active", "trialing", "past_due"]);
 const cryptoProvider = Stripe.createSubtleCryptoProvider();
@@ -47,6 +47,8 @@ async function syncSubscription(sub: Stripe.Subscription) {
 }
 
 Deno.serve(async (req) => {
+  // 500 so Stripe keeps retrying until the key is set, rather than dropping the event.
+  if (!stripeConfigured) return new Response("Stripe isn't configured", { status: 500 });
   const signature = req.headers.get("Stripe-Signature");
   const secret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
   if (!signature || !secret) return new Response("Missing signature", { status: 400 });
