@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { supabase } from "./lib/supabase";
+import { SITE_URL, DEFAULT_TITLE, DEFAULT_DESCRIPTION, ROUTE_META, TRADE_PAGES } from "./seo";
 import { ServiceFilter, ServicePicker, ServiceSelect, serviceFilterMatches } from "./ServicePicker";
 import { AdminSection, byStatus } from "./AdminSection";
 import AdminServices from "./AdminServices";
@@ -1775,10 +1776,15 @@ function avatarInitials(name) {
     return () => document.removeEventListener("visibilitychange", clearTray);
   }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Per-route title/description/canonical (src/seo.js), plus the unread count.
   useEffect(() => {
-    const base = document.title.replace(/^\(\d+\) /, "");
+    const path = TAB_PATHS[tab] || "/";
+    const meta = ROUTE_META[path];
+    const base = meta?.title || DEFAULT_TITLE;
     document.title = totalUnread > 0 ? `(${totalUnread}) ${base}` : base;
-  }, [totalUnread]);
+    document.querySelector('meta[name="description"]')?.setAttribute("content", meta?.description || DEFAULT_DESCRIPTION);
+    document.querySelector('link[rel="canonical"]')?.setAttribute("href", SITE_URL + (meta ? path : "/"));
+  }, [tab, totalUnread]);
 
   function toggleMsgSound() {
     const next = !msgSound;
@@ -3538,6 +3544,19 @@ function avatarInitials(name) {
           </section>
         )}
       </main>
+
+      <footer style={{ maxWidth: 900, margin: "0 auto", padding: "8px 20px 40px", color: "#64748b", fontSize: "0.9375rem" }}>
+        <nav aria-label="Hire by trade" style={{ borderTop: "1px solid #e2e8f0", paddingTop: 20 }}>
+          <div style={{ fontWeight: 700, color: "#1f2430", marginBottom: 8 }}>Hire a verified local pro</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px" }}>
+            {TRADE_PAGES.map(t => (
+              <a key={t.slug} href={`/hire/${t.slug}`} style={{ color: "#64748b" }}>
+                {t.plural.charAt(0).toUpperCase() + t.plural.slice(1)}
+              </a>
+            ))}
+          </div>
+        </nav>
+      </footer>
 
       {/* CONTRACTOR DETAIL MODAL */}
       {modal && (

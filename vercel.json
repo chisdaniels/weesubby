@@ -25,6 +25,18 @@
   ],
   "rewrites": [
     {
+      "source": "/hire",
+      "destination": "/hire/index.html"
+    },
+    {
+      "source": "/hire/:slug",
+      "destination": "/hire/:slug/index.html"
+    },
+    {
+      "source": "/:page(post|pricing|reviews)",
+      "destination": "/:page/index.html"
+    },
+    {
       "source": "/((?!.*\\.).*)",
       "destination": "/index.html"
     }
