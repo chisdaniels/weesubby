@@ -1,0 +1,122 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+.step { position: absolute; left: 90px; right: 90px; top: 300px; text-align: center; }
+.num { font-family: 'Bebas Neue'; font-size: 300px; line-height: .85; color: transparent; -webkit-text-stroke: 5px var(--amber); }
+.stitle { font-family: 'Bebas Neue'; font-size: 170px; line-height: .9; letter-spacing: 3px; margin-top: 10px; }
+.ssub { margin-top: 30px; }
+.vis { position: absolute; left: 130px; right: 130px; top: 1060px; }
+.bigcard { background: var(--slate); border: 3px solid var(--line); border-radius: 36px; padding: 40px; text-align: left; box-shadow: 0 40px 100px rgba(0,0,0,.45); }
+.bigcard .tt { font-size: 46px; font-weight: 700; margin: 6px 0 14px; }
+.bigcard .meta { font-size: 32px; color: var(--muted); }
+.bub { max-width: 640px; font-size: 38px; padding: 28px 36px; border-radius: 40px; margin-bottom: 26px; line-height: 1.3; }
+.bub.l { background: var(--slate); border: 2px solid var(--line); border-bottom-left-radius: 10px; }
+.bub.r { background: var(--amber); color: var(--navy); font-weight: 600; margin-left: auto; border-bottom-right-radius: 10px; }
+.who { font-size: 26px; color: var(--muted); margin: 0 0 10px 10px; }
+.bigstars { font-size: 92px; letter-spacing: 10px; color: #334155; position: relative; display: inline-block; }
+.bigstars .fill { position: absolute; left: 0; top: 0; color: var(--amber); overflow: hidden; white-space: nowrap; width: calc(var(--w) * 100%); }
+.split { position: absolute; left: 80px; right: 80px; display: grid; gap: 40px; top: 520px; }
+.side { border-radius: 40px; padding: 50px 50px; border: 3px solid var(--line); background: var(--slate); }
+.side.pro { border-color: var(--amber); }
+.side .lab { font-size: 34px; font-weight: 700; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; }
+.side .big { font-family: 'Bebas Neue'; font-size: 140px; line-height: 1; margin-top: 10px; }
+.side .det { font-size: 36px; color: #cbd5e1; margin-top: 8px; }
+.dots { position: absolute; top: 1660px; left: 0; right: 0; display: flex; justify-content: center; gap: 24px; }
+</style></head><body>
+<div class="bg"><div class="glow"></div></div>
+<div class="stripes" style="top:0"></div>
+<div class="stripes" style="bottom:0"></div>
+
+<!-- Intro -->
+<div class="center" id="intro" style="top:540px">
+  <div class="bebas h-xl" id="i1">HOW</div>
+  <div class="logo" id="i2" style="font-size:230px;line-height:.95">WEESUBBY</div>
+  <div class="bebas h-xl" id="i3">WORKS</div>
+  <div class="chip ghost" id="i4" style="margin-top:50px">3 simple steps</div>
+</div>
+
+<!-- Step 1 -->
+<div class="step" id="st1">
+  <div class="num" id="n1">01</div>
+  <div class="stitle" id="t1">POST <span class="amber">A JOB</span></div>
+  <div class="sub ssub" id="d1">Homeowners describe the project.<br>Always free.</div>
+</div>
+<div class="vis" id="v1">
+  <div class="bigcard" id="jc">
+    <span class="badge">Plumber</span> <span class="badge g">Just posted</span>
+    <div class="tt">Bathroom remodel</div>
+    <div class="meta">Seattle, WA · Budget $8,000</div>
+  </div>
+</div>
+
+<!-- Step 2 -->
+<div class="step" id="st2">
+  <div class="num" id="n2">02</div>
+  <div class="stitle" id="t2">PROS <span class="amber">REACH OUT</span></div>
+  <div class="sub ssub" id="d2">Verified contractors message you.<br>Chat right in the app.</div>
+</div>
+<div class="vis" id="v2" style="top:1020px">
+  <div id="b1"><div class="who">Jordan · Plumber ✓</div><div class="bub l">Hi! I can come quote this Friday.</div></div>
+  <div class="bub r" id="b2">Perfect, see you then 👍</div>
+</div>
+
+<!-- Step 3 -->
+<div class="step" id="st3">
+  <div class="num" id="n3">03</div>
+  <div class="stitle" id="t3">GET IT <span class="amber">DONE</span></div>
+  <div class="sub ssub" id="d3">Hire with confidence.<br>Leave a review for the next person.</div>
+</div>
+<div class="vis" id="v3">
+  <div class="bigcard" style="text-align:center">
+    <div class="bigstars" id="stars">★★★★★<span class="fill">★★★★★</span></div>
+    <div class="tt" style="margin-top:16px" id="quote">“Fast, tidy, fair price.”</div>
+    <div class="meta">Review for Jordan · Plumber</div>
+  </div>
+</div>
+
+<!-- Pricing split -->
+<div class="center bebas h-m" id="ftitle" style="top:300px">FAIR FOR <span class="amber">EVERYONE</span></div>
+<div class="split" id="split">
+  <div class="side" id="sh"><div class="lab">Homeowners</div><div class="big">FREE <span class="amber">FOREVER</span></div><div class="det">Post unlimited jobs. Message pros. Leave reviews.</div></div>
+  <div class="side pro" id="sc"><div class="lab">Contractors</div><div class="big">LIST <span class="amber">FREE</span></div><div class="det">Browse jobs &amp; message for $0.<br>Go <b class="amber">Pro for $49/mo</b> to accept jobs.</div></div>
+</div>
+
+<!-- End -->
+<div class="center" id="end" style="top:620px">
+  <div class="logo" id="e1" style="font-size:170px">⚒ WEESUBBY</div>
+  <div class="sub" id="e2" style="margin:40px 0 70px">Construction &amp; home service pros,<br>verified and local.</div>
+  <div id="e3"><span class="chip" style="font-size:52px;padding:26px 60px">Join free today →</span></div>
+  <div class="sub muted" id="e4" style="margin-top:50px;font-size:40px">Link in bio</div>
+</div>
+
+<script src="engine.js"></script>
+<script>
+DURATION = 20;
+a('#i1', .1, .35, { o: [0, 1], y: [-120, 0] });
+a('#i2', .4, .45, { o: [0, 1], s: [1.6, 1] });
+a('#i3', .75, .35, { o: [0, 1], y: [120, 0] });
+pop('#i4', 1.2, .5);
+leave('#intro', 2.3);
+
+function step(n, t0, t1) {
+  a(`#n${n}`, t0, .5, { o: [0, 1], s: [1.8, 1] });
+  rise(`#t${n}`, t0 + .2); fade(`#d${n}`, t0 + .5, .5);
+  a(`#v${n}`, t0 + .8, .6, { o: [0, 1], y: [200, 0] });
+  [`#st${n}`, `#v${n}`].forEach(s => a(s, t1, .35, { o: [1, 0], x: [0, -300] }, 'in'));
+}
+step(1, 2.5, 6.4);
+a('#jc', 4.2, .25, { s: [1, 1.05] }, 'out'); a('#jc', 4.45, .3, { s: [1.05, 1] });
+step(2, 6.7, 10.6);
+a('#b1', 7.5, .5, { o: [0, 1], y: [60, 0] }, 'back');
+a('#b2', 8.6, .5, { o: [0, 1], y: [60, 0] }, 'back');
+step(3, 10.9, 14.8);
+a('#stars', 0, 0, { w: [0, 0] }); a('#stars', 12.0, 1.0, { w: [0, 1] }, 'linear');
+a('#quote', 12.9, .5, { o: [0, 1], y: [30, 0] });
+
+rise('#ftitle', 15.0);
+a('#sh', 15.3, .6, { o: [0, 1], x: [-250, 0] });
+a('#sc', 15.7, .6, { o: [0, 1], x: [250, 0] });
+['#ftitle', '#split'].forEach(s => leave(s, 17.6));
+
+pop('#e1', 17.85, .6); fade('#e2', 18.15, .5); pop('#e3', 18.45, .5); fade('#e4', 18.75);
+a('#e3', 19.15, .35, { s: [1, 1.06] }, 'inOut'); a('#e3', 19.5, .35, { s: [1.06, 1] }, 'inOut');
+</script></body></html>
