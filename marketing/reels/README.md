@@ -1,14 +1,15 @@
 # WeeSubby reels
 
-Vertical (9:16, 1080×1920) motion-graphics reels for Instagram Reels, TikTok and YouTube Shorts.
+Vertical (9:16, 1080×1920) reels for Instagram Reels, TikTok and YouTube Shorts: three motion-graphics reels and one cut from stock construction footage.
 
 | File | Audience | Length |
 | --- | --- | --- |
 | `reel1-homeowners.html` | Homeowners: post a job free, pros come to you | 18s |
 | `reel2-contractors.html` | Contractors: browse jobs, list free, go Pro | 18s |
 | `reel3-how-it-works.html` | Both: the 3-step flow and pricing | 20s |
+| `reel4-crew-footage.html` | Both: real crew footage with WeeSubby overlays | 25s |
 
-Suggested post captions and hashtags are in `captions.md`.
+Suggested post captions and hashtags are in `captions.md`. For reel 4, the caption and the clip credits are in `reel4-footage-credits.md`.
 
 ## How it works
 
@@ -32,6 +33,20 @@ npm i -D playwright && npx playwright install chromium   # one-time setup (adds 
 mkdir -p out stills
 node render.cjs reel1-homeowners.html out/WeeSubby-Reel1-Homeowners.mp4      # 30fps H.264 MP4
 node render.cjs reel1-homeowners.html stills/r1 30 --stills 2,8,15          # PNG stills for quick checks
+```
+
+### Reel 4 (footage)
+
+Reel 4 is a transparent HTML overlay composited over stock clips from [Mixkit](https://mixkit.co), which are free for commercial use with no credit required.
+
+- The clips are not stored in git. `build-footage.sh` downloads them, crops each to 9:16 and joins them into `footage/base.mp4`.
+- `reel4-shots.txt` is the shot list. Each line gives a Mixkit clip ID, its start time, its duration and the horizontal crop position (0 is the left edge, 1 is the right).
+- If you change shot lengths, update the cut times noted at the top of the script in `reel4-crew-footage.html` to match.
+
+```bash
+./build-footage.sh                                                             # needs curl + network access to assets.mixkit.co
+node render-overlay.cjs reel4-crew-footage.html footage/base.mp4 out/WeeSubby-Reel4-Crew.mp4
+node render-overlay.cjs reel4-crew-footage.html footage/base.mp4 stills/r4 30 --stills 1,8,14
 ```
 
 You can also open any reel in a browser and run `render(5)` in the console to see a single moment.

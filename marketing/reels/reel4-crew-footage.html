@@ -1,0 +1,94 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<!-- Overlay for footage: rendered with a transparent background and composited over the Mixkit clip sequence. -->
+<style>
+html, body { background: transparent !important; }
+.shade-b { position: absolute; left: 0; right: 0; bottom: 0; height: 1150px; background: linear-gradient(to top, rgba(15,23,42,.92) 0%, rgba(15,23,42,.65) 45%, rgba(15,23,42,0) 100%); }
+.shade-t { position: absolute; left: 0; right: 0; top: 0; height: 420px; background: linear-gradient(to bottom, rgba(15,23,42,.7), rgba(15,23,42,0)); }
+.wm { position: absolute; top: 210px; left: 70px; font-size: 54px; }
+.big { position: absolute; left: 80px; right: 80px; top: 1060px; text-align: left; text-shadow: 0 6px 30px rgba(0,0,0,.5); }
+.big .bebas { font-size: 210px; }
+.lbl { display: inline-block; background: var(--amber); color: var(--navy); font-weight: 800; font-size: 38px; letter-spacing: 3px; padding: 10px 26px; border-radius: 12px; margin-bottom: 24px; }
+.mini { position: absolute; left: 80px; right: 80px; top: 1380px; }
+.mini .card { padding: 30px; }
+.mini .tt { font-size: 40px; font-weight: 700; margin: 10px 0 6px; }
+.mini .meta { font-size: 30px; color: var(--muted); }
+.toast { left: 80px; right: 80px; }
+.flash { position: absolute; inset: 0; background: #fff; }
+.endbg { position: absolute; inset: 0; background: var(--navy); }
+.endbg::before { content: ''; position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(148,163,184,.07) 2px, transparent 2px), linear-gradient(90deg, rgba(148,163,184,.07) 2px, transparent 2px); background-size: 90px 90px; }
+.endbg .glow { position: absolute; }
+</style></head><body>
+<div class="shade-t" id="shadeT"></div>
+<div class="shade-b" id="shadeB"></div>
+<div class="logo wm" id="wm">⚒ WEESUBBY</div>
+
+<!-- Beat 1–3: hooks -->
+<div class="big" id="k1"><div class="bebas">REAL<br><span class="amber">PROS.</span></div></div>
+<div class="big" id="k2"><div class="bebas">REAL<br><span class="amber">JOBS.</span></div></div>
+<div class="big" id="k3"><div class="bebas" style="font-size:180px">RIGHT IN<br><span class="amber">YOUR AREA.</span></div></div>
+
+<!-- Beat 4: homeowners -->
+<div class="big" id="h" style="top:920px"><div class="lbl" id="hl">HOMEOWNERS</div><div class="bebas" style="font-size:160px">POST YOUR JOB<br><span class="amber">FREE.</span></div></div>
+<div class="mini" id="hc" style="top:1400px"><div class="card"><span class="badge">General Contractor</span> <span class="badge g">Just posted</span><div class="tt">Kitchen remodel</div><div class="meta">Austin, TX · Budget $18,000</div></div></div>
+
+<!-- Beat 5: pros reach out -->
+<div class="big" id="p" style="top:920px"><div class="bebas" style="font-size:160px">PROS <span class="amber">COME<br>TO YOU.</span></div></div>
+<div class="toast" id="pt1" style="top:1300px"><div class="ic">🔨</div><div><b>Ray's Carpentry ✓</b><span style="color:#475569">Interested in your job</span></div></div>
+<div class="toast" id="pt2" style="top:1470px"><div class="ic">💬</div><div><b>3 verified pros</b><span style="color:#475569">Compare reviews &amp; pick yours</span></div></div>
+
+<!-- Beat 6: contractors -->
+<div class="big" id="c" style="top:920px"><div class="lbl" style="background:#fff">CONTRACTORS</div><div class="bebas" style="font-size:160px">FIND WORK<br><span class="amber">NEAR YOU.</span></div></div>
+<div class="mini" id="cc" style="top:1400px"><div class="card"><span class="badge">Carpenter</span> <span class="badge g">New</span><div class="tt">Deck rebuild</div><div class="meta">Portland, OR · $6,000</div></div></div>
+
+<!-- Beat 7: pricing -->
+<div class="big" id="pr" style="top:980px"><div class="bebas" style="font-size:190px">LIST <span class="amber">FREE.</span></div>
+  <div class="sub" id="pr2" style="font-size:52px;margin-top:20px;color:#fff">Go <b class="amber">Pro for $49/mo</b> to accept jobs &amp; get homeowner contact details.</div></div>
+
+<!-- Beat 8: brand -->
+<div class="big" id="b" style="top:1100px;text-align:center"><div class="logo" style="font-size:170px">⚒ WEESUBBY</div><div class="sub" style="color:#fff;margin-top:20px">Built for the trades.</div></div>
+
+<!-- End card -->
+<div class="flash" id="flash"></div>
+<div class="endbg" id="endbg"><div class="glow" style="left:-110px;top:300px"></div></div>
+<div class="stripes" id="st1" style="top:0"></div>
+<div class="stripes" id="st2" style="bottom:0"></div>
+<div class="center" id="end" style="top:600px">
+  <div class="logo" id="e1" style="font-size:170px">⚒ WEESUBBY</div>
+  <div class="sub" id="e2" style="margin:40px 0 70px">Homeowners post free.<br>Pros find real work.</div>
+  <div id="e3"><span class="chip" style="font-size:52px;padding:26px 60px">Join free today →</span></div>
+  <div class="sub muted" id="e4" style="margin-top:50px;font-size:40px">Link in bio</div>
+</div>
+
+<script src="engine.js"></script>
+<script>
+DURATION = 25;
+// Cut points in base.mp4: 0, 2.2, 4.4, 6.8, 9.8, 12.8, 15.8, 18.8, 21.5 (end card) – 25
+fade('#shadeT', 0, .3); fade('#shadeB', 0, .3); fade('#wm', .2, .4);
+function slam(sel, t, out) { a(sel, t, .3, { o: [0, 1], s: [1.25, 1] }); a(sel, out - .15, .15, { o: [1, 0] }, 'in'); }
+slam('#k1', .15, 2.2); slam('#k2', 2.25, 4.4); slam('#k3', 4.45, 6.8);
+// homeowners
+a('#h', 6.85, .4, { o: [0, 1], x: [-140, 0] }); gone('#h', 9.65, .15);
+a('#hc', 7.4, .5, { o: [0, 1], y: [120, 0] }, 'back'); gone('#hc', 9.65, .15);
+// pros reach out
+a('#p', 9.85, .4, { o: [0, 1], x: [-140, 0] }); gone('#p', 12.65, .15);
+a('#pt1', 10.4, .5, { o: [0, 1], y: [80, 0], s: [.9, 1] }, 'back'); gone('#pt1', 12.65, .15);
+a('#pt2', 11.1, .5, { o: [0, 1], y: [80, 0], s: [.9, 1] }, 'back'); gone('#pt2', 12.65, .15);
+// contractors
+a('#c', 12.85, .4, { o: [0, 1], x: [-140, 0] }); gone('#c', 15.65, .15);
+a('#cc', 13.4, .5, { o: [0, 1], y: [120, 0] }, 'back'); gone('#cc', 15.65, .15);
+// pricing
+a('#pr', 15.85, .4, { o: [0, 1], x: [-140, 0] }); gone('#pr', 18.65, .15);
+a('#pr2', 16.4, .5, { o: [0, 1], y: [40, 0] });
+// brand
+gone('#wm', 18.7, .2);
+pop('#b', 19.0, .6); gone('#b', 21.2, .25);
+// end card
+a('#flash', 0, 0, { o: [0, 0] }); a('#flash', 21.4, .08, { o: [0, .8] }, 'linear'); a('#flash', 21.5, .35, { o: [.8, 0] });
+a('#endbg', 0, 0, { o: [0, 0] }); a('#endbg', 21.45, .05, { o: [0, 1] }, 'linear');
+a('#st1', 0, 0, { o: [0, 0] }); a('#st1', 21.5, .3, { o: [0, 1], y: [-40, 0] });
+a('#st2', 0, 0, { o: [0, 0] }); a('#st2', 21.5, .3, { o: [0, 1], y: [40, 0] });
+['#shadeT', '#shadeB'].forEach(s => gone(s, 21.45, .05));
+pop('#e1', 21.7, .6); fade('#e2', 22.0, .5); pop('#e3', 22.3, .5); fade('#e4', 22.6);
+a('#e3', 23.4, .35, { s: [1, 1.06] }, 'inOut'); a('#e3', 23.75, .35, { s: [1.06, 1] }, 'inOut');
+</script></body></html>
