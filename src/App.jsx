@@ -285,6 +285,7 @@ export default function App() {
   const [profileError, setProfileError] = useState(null);
   const [myJobs, setMyJobs] = useState([]);
   const [billingBusy, setBillingBusy] = useState(false);
+  const [planCancelsAt, setPlanCancelsAt] = useState(null);
 
   // Roles are now derived from state, not from a metadata flag. Anyone
   // signed in can post jobs (customer surface); anyone with a `contractors`
@@ -293,6 +294,17 @@ export default function App() {
   const isContractor = !!myContractor;
   const isCustomer   = isSignedIn;
   const isPro        = myContractor?.plan === "pro";
+
+  // A cancelled Pro plan stays active until its paid period ends; show when.
+  useEffect(() => {
+    if (!isPro) { setPlanCancelsAt(null); return; }
+    let stale = false;
+    supabase.rpc("my_plan_cancels_at").then(({ data, error }) => {
+      if (error) console.error("plan cancel date load failed:", error);
+      if (!stale) setPlanCancelsAt(data ?? null);
+    });
+    return () => { stale = true; };
+  }, [isPro, user?.id]);
 
   const messagesEndRef = useRef(null);
   const modalRef = useRef(null);
@@ -2692,11 +2704,19 @@ function avatarInitials(name) {
                       {p.features.map(f => <li key={f}>✓ {f}</li>)}
                     </ul>
                     {current && p.key === "pro" ? (
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                        <span className="badge">✓ Your plan</span>
-                        <button className="btn btn-outline btn-sm" onClick={() => callBillingFunction("create-portal")} disabled={billingBusy}>
-                          {billingBusy ? "Opening..." : "Manage billing"}
-                        </button>
+                      <div style={{ display: "grid", gap: 10 }}>
+                        {planCancelsAt && (
+                          <div role="status" style={{ background: "#fdf1e9", border: "1px solid #f3c9ad", borderRadius: 10, padding: "10px 12px", fontSize: "0.9375rem", color: "#7a3410", lineHeight: 1.45 }}>
+                            <strong>Cancels on {new Date(planCancelsAt).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}.</strong>{" "}
+                            You keep Pro until then. Changed your mind? Renew it in Manage billing.
+                          </div>
+                        )}
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                          <span className="badge">✓ Your plan</span>
+                          <button className="btn btn-outline btn-sm" onClick={() => callBillingFunction("create-portal")} disabled={billingBusy}>
+                            {billingBusy ? "Opening..." : "Manage billing"}
+                          </button>
+                        </div>
                       </div>
                     ) : current ? (
                       <span className="badge" style={{ alignSelf: "flex-start" }}>✓ Your plan</span>

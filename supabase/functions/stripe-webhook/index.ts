@@ -23,11 +23,21 @@ async function syncSubscription(sub: Stripe.Subscription) {
 
   const isPro = PRO_STATUSES.has(sub.status);
 
+  // When cancelled "at period end", Stripe keeps the subscription active and
+  // sets the end date. Newer API versions put cancel_at on the subscription
+  // and current_period_end on its items; older ones on the subscription.
+  // deno-lint-ignore no-explicit-any
+  const raw = sub as any;
+  const periodEnd: number | null = raw.current_period_end ?? raw.items?.data?.[0]?.current_period_end ?? null;
+  const cancelAtUnix: number | null = raw.cancel_at ?? (raw.cancel_at_period_end ? periodEnd : null);
+  const cancelAt = isPro && cancelAtUnix ? new Date(cancelAtUnix * 1000).toISOString() : null;
+
   await admin.from("contractor_billing").upsert({
     user_id: userId,
     stripe_customer_id: customerId,
     stripe_subscription_id: sub.id,
     subscription_status: sub.status,
+    cancel_at: cancelAt,
     updated_at: new Date().toISOString(),
   });
 
