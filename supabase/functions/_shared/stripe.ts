@@ -9,7 +9,12 @@ export const stripeConfigured = stripeKey.startsWith("sk_") || stripeKey.startsW
 export const stripe = new Stripe(stripeConfigured ? stripeKey : "sk_not_configured", {
   httpClient: Stripe.createFetchHttpClient(),
 });
-if (!stripeConfigured) console.error("STRIPE_SECRET_KEY is missing or doesn't look like a Stripe secret key.");
+if (!stripeConfigured) {
+  // Log only the key's type prefix and length (e.g. "pk_live_", 107 chars), never the key,
+  // so a wrong paste (publishable key, webhook secret, price ID) is easy to spot.
+  const kind = stripeKey.match(/^[a-z]{2,6}_(?:live_|test_)?/)?.[0] ?? (stripeKey ? "unrecognised" : "empty");
+  console.error(`STRIPE_SECRET_KEY doesn't look like a Stripe secret key (starts with "${kind}", ${stripeKey.length} characters). It should start with sk_live_ or rk_live_.`);
+}
 
 // Service-role client: bypasses RLS. Only ever used server-side.
 export const admin: SupabaseClient = createClient(
