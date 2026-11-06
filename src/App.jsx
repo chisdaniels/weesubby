@@ -88,6 +88,7 @@ export default function App() {
   const [profileForm, setProfileForm] = useState({ name: "", trade: "General Contractor", location: "", hourly: "", bio: "", tags: "" });
   const [profileBusy, setProfileBusy] = useState(false);
   const [profileError, setProfileError] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [myJobs, setMyJobs] = useState([]);
   const [billingBusy, setBillingBusy] = useState(false);
 
@@ -437,7 +438,38 @@ export default function App() {
       tags: (myContractor?.tags ?? []).join(", "),
     });
     setProfileError(null);
+    setConfirmDelete(false);
     setProfileModal(true);
+  }
+
+  async function deleteProfile() {
+    if (!myContractor) return;
+    if (myContractor.plan === "pro") {
+      setProfileError("Cancel your Pro subscription in Manage Billing before deleting your profile.");
+      return;
+    }
+    setProfileBusy(true);
+    setProfileError(null);
+    const { data, error } = await supabase
+      .from("contractors")
+      .delete()
+      .eq("id", myContractor.id)
+      .select("id");
+    setProfileBusy(false);
+    if (error || !data || data.length === 0) {
+      setProfileError(error?.message ?? "Couldn't delete your profile. Please try again.");
+      return;
+    }
+    const deletedId = myContractor.id;
+    setContractors(prev => prev.filter(c => c.id !== deletedId));
+    setMessages(prev => { const next = { ...prev }; delete next[deletedId]; return next; });
+    setReviews(prev => { const next = { ...prev }; delete next[deletedId]; return next; });
+    if (activeChat === deletedId) setActiveChat(null);
+    if (reviewTarget === deletedId) setReviewTarget(null);
+    setMyContractor(null);
+    setConfirmDelete(false);
+    setProfileModal(false);
+    notify("Profile deleted.");
   }
 
   async function acceptJob(jobId) {
@@ -1382,6 +1414,41 @@ export default function App() {
                 {profileBusy ? "Saving..." : myContractor ? "Save Changes" : "Create Profile"}
               </button>
             </form>
+            {myContractor && (
+              <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid #334155" }}>
+                {!confirmDelete ? (
+                  <button
+                    type="button"
+                    className="btn btn-outline btn-sm"
+                    style={{ borderColor: "#7f1d1d", color: "#f87171" }}
+                    onClick={() => { setProfileError(null); setConfirmDelete(true); }}
+                    disabled={profileBusy}
+                  >
+                    Delete Profile
+                  </button>
+                ) : (
+                  <div role="alert">
+                    <div style={{ fontSize: 13, color: "#f87171", marginBottom: 10 }}>
+                      This removes your listing from Find, along with its reviews and messages. This can't be undone.
+                    </div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button
+                        type="button"
+                        className="btn btn-sm"
+                        style={{ background: "#dc2626", color: "#fff", opacity: profileBusy ? 0.6 : 1 }}
+                        onClick={deleteProfile}
+                        disabled={profileBusy}
+                      >
+                        {profileBusy ? "Deleting..." : "Yes, delete my profile"}
+                      </button>
+                      <button type="button" className="btn btn-outline btn-sm" onClick={() => setConfirmDelete(false)} disabled={profileBusy}>
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
