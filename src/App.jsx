@@ -12,9 +12,10 @@ const TAB_LABELS = {
   messages: "💬 Messages",
   reviews: "⭐ Reviews",
   pricing: "💲 Pricing",
+  admin: "🛠 Admin",
 };
 
-const TAB_ORDER = ["search", "post", "jobs", "messages", "reviews", "pricing"];
+const TAB_ORDER = ["search", "post", "jobs", "messages", "reviews", "pricing", "admin"];
 
 // Contractors pay, customers don't. Homeowner contact info is never in a
 // plain jobs select — it comes from the my_job_contacts() RPC (migration 005).
@@ -88,14 +89,17 @@ export default function App() {
   const [profileForm, setProfileForm] = useState({ name: "", trade: "General Contractor", location: "", hourly: "", bio: "", tags: "" });
   const [profileBusy, setProfileBusy] = useState(false);
   const [profileError, setProfileError] = useState(null);
-  const [confirmDelete, setConfirmDelete] = useState(false);
   const [myJobs, setMyJobs] = useState([]);
   const [billingBusy, setBillingBusy] = useState(false);
+  const [adminConfirmId, setAdminConfirmId] = useState(null);
+  const [adminBusyId, setAdminBusyId] = useState(null);
 
   const role = user?.user_metadata?.role ?? null;
   const isCustomer   = role === "customer";
   const isContractor = role === "contractor";
   const isPro        = isContractor && myContractor?.plan === "pro";
+  // Set only via SQL on auth.users.raw_app_meta_data (see migration 007); users can't edit it.
+  const isAdmin      = user?.app_metadata?.role === "admin";
 
   const messagesEndRef = useRef(null);
   const modalRef = useRef(null);
@@ -112,7 +116,8 @@ export default function App() {
     if (tab === "messages" && !user) setTab("search");
     if (tab === "jobs" && !isContractor) setTab("search");
     if (tab === "post"  && isContractor) setTab("jobs");
-  }, [tab, user, isContractor]);
+    if (tab === "admin" && !isAdmin) setTab("search");
+  }, [tab, user, isContractor, isAdmin]);
 
   useEffect(() => {
     if (!isCustomer) { setMyJobs([]); return; }
@@ -438,38 +443,7 @@ export default function App() {
       tags: (myContractor?.tags ?? []).join(", "),
     });
     setProfileError(null);
-    setConfirmDelete(false);
     setProfileModal(true);
-  }
-
-  async function deleteProfile() {
-    if (!myContractor) return;
-    if (myContractor.plan === "pro") {
-      setProfileError("Cancel your Pro subscription in Manage Billing before deleting your profile.");
-      return;
-    }
-    setProfileBusy(true);
-    setProfileError(null);
-    const { data, error } = await supabase
-      .from("contractors")
-      .delete()
-      .eq("id", myContractor.id)
-      .select("id");
-    setProfileBusy(false);
-    if (error || !data || data.length === 0) {
-      setProfileError(error?.message ?? "Couldn't delete your profile. Please try again.");
-      return;
-    }
-    const deletedId = myContractor.id;
-    setContractors(prev => prev.filter(c => c.id !== deletedId));
-    setMessages(prev => { const next = { ...prev }; delete next[deletedId]; return next; });
-    setReviews(prev => { const next = { ...prev }; delete next[deletedId]; return next; });
-    if (activeChat === deletedId) setActiveChat(null);
-    if (reviewTarget === deletedId) setReviewTarget(null);
-    setMyContractor(null);
-    setConfirmDelete(false);
-    setProfileModal(false);
-    notify("Profile deleted.");
   }
 
   async function acceptJob(jobId) {
@@ -497,6 +471,29 @@ export default function App() {
     }
     await loadJobs();
     notify("Job accepted!");
+  }
+
+  async function adminDeleteContractor(id) {
+    setAdminBusyId(id);
+    const { data, error } = await supabase.functions.invoke("admin-delete-contractor", {
+      method: "POST",
+      body: { contractorId: id },
+    });
+    setAdminBusyId(null);
+    if (error || data?.deleted !== id) {
+      let msg = "Couldn't delete the contractor. Please try again.";
+      try { msg = (await error?.context?.json())?.error ?? msg; } catch { /* keep default */ }
+      notify(msg);
+      return;
+    }
+    setAdminConfirmId(null);
+    setContractors(prev => prev.filter(c => c.id !== id));
+    setMessages(prev => { const next = { ...prev }; delete next[id]; return next; });
+    setReviews(prev => { const next = { ...prev }; delete next[id]; return next; });
+    if (activeChat === id) setActiveChat(null);
+    if (reviewTarget === id) setReviewTarget(null);
+    if (myContractor?.id === id) setMyContractor(null);
+    notify("Contractor deleted.");
   }
 
   async function toggleAvailable() {
@@ -584,6 +581,7 @@ export default function App() {
               if (t === "messages") return !!user;
               if (t === "post")     return !user || isCustomer;
               if (t === "jobs")     return isContractor;
+              if (t === "admin")    return isAdmin;
               return true;
             }).map(t => (
               <button
@@ -1171,6 +1169,57 @@ export default function App() {
         )}
 
         {/* REVIEWS TAB */}
+        {tab === "admin" && isAdmin && (
+          <section aria-labelledby="admin-heading">
+            <h1 id="admin-heading" style={{ fontSize: 28, fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#f59e0b", marginBottom: 4 }}>ADMIN · CONTRACTORS</h1>
+            <p style={{ color: "#64748b", marginBottom: 20, fontSize: 14 }}>
+              {contractors.length} profile{contractors.length === 1 ? "" : "s"}. Deleting a profile also removes its reviews and messages, and cancels any Pro subscription.
+            </p>
+            <div style={{ display: "grid", gap: 10 }}>
+              {contractors.map(c => (
+                <div key={c.id} className="card" style={{ padding: 16, display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+                  <div style={{ flex: "1 1 200px", minWidth: 0 }}>
+                    <div style={{ fontWeight: 700 }}>
+                      {c.name}
+                      {c.plan === "pro" && <span style={{ marginLeft: 8, fontSize: 11, color: "#f59e0b", border: "1px solid #f59e0b", borderRadius: 6, padding: "1px 6px" }}>PRO</span>}
+                    </div>
+                    <div style={{ fontSize: 13, color: "#94a3b8" }}>
+                      {c.trade} · {c.location} · #{c.id}{c.user_id ? "" : " · demo (no account)"}
+                    </div>
+                  </div>
+                  {adminConfirmId === c.id ? (
+                    <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }} role="alert">
+                      <span style={{ fontSize: 13, color: "#f87171" }}>Delete permanently?</span>
+                      <button
+                        className="btn btn-sm"
+                        style={{ background: "#dc2626", color: "#fff", opacity: adminBusyId === c.id ? 0.6 : 1 }}
+                        onClick={() => adminDeleteContractor(c.id)}
+                        disabled={adminBusyId === c.id}
+                      >
+                        {adminBusyId === c.id ? "Deleting..." : "Yes, delete"}
+                      </button>
+                      <button className="btn btn-outline btn-sm" onClick={() => setAdminConfirmId(null)} disabled={adminBusyId === c.id}>Cancel</button>
+                    </div>
+                  ) : (
+                    <button
+                      className="btn btn-outline btn-sm"
+                      style={{ borderColor: "#7f1d1d", color: "#f87171" }}
+                      onClick={() => setAdminConfirmId(c.id)}
+                      disabled={adminBusyId !== null}
+                      aria-label={`Delete ${c.name}`}
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+              ))}
+              {contractors.length === 0 && (
+                <div style={{ color: "#64748b", fontSize: 14 }}>No contractor profiles.</div>
+              )}
+            </div>
+          </section>
+        )}
+
         {tab === "reviews" && (
           <section aria-labelledby="reviews-heading">
             <h1 id="reviews-heading" style={{ fontSize: 28, fontFamily: "'Bebas Neue', cursive", letterSpacing: 2, color: "#f59e0b", marginBottom: 16 }}>REVIEWS</h1>
@@ -1414,41 +1463,6 @@ export default function App() {
                 {profileBusy ? "Saving..." : myContractor ? "Save Changes" : "Create Profile"}
               </button>
             </form>
-            {myContractor && (
-              <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid #334155" }}>
-                {!confirmDelete ? (
-                  <button
-                    type="button"
-                    className="btn btn-outline btn-sm"
-                    style={{ borderColor: "#7f1d1d", color: "#f87171" }}
-                    onClick={() => { setProfileError(null); setConfirmDelete(true); }}
-                    disabled={profileBusy}
-                  >
-                    Delete Profile
-                  </button>
-                ) : (
-                  <div role="alert">
-                    <div style={{ fontSize: 13, color: "#f87171", marginBottom: 10 }}>
-                      This removes your listing from Find, along with its reviews and messages. This can't be undone.
-                    </div>
-                    <div style={{ display: "flex", gap: 8 }}>
-                      <button
-                        type="button"
-                        className="btn btn-sm"
-                        style={{ background: "#dc2626", color: "#fff", opacity: profileBusy ? 0.6 : 1 }}
-                        onClick={deleteProfile}
-                        disabled={profileBusy}
-                      >
-                        {profileBusy ? "Deleting..." : "Yes, delete my profile"}
-                      </button>
-                      <button type="button" className="btn btn-outline btn-sm" onClick={() => setConfirmDelete(false)} disabled={profileBusy}>
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         </div>
       )}
