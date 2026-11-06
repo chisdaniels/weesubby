@@ -1233,6 +1233,27 @@ export default function App() {
     notify(deactivate ? `${contractor.name} taken off the board.` : `${contractor.name} back on the board.`);
   }
 
+  async function adminDeleteContractor(contractor) {
+    if (!isAdmin) return;
+    if (!confirm(`Delete ${contractor.name}'s profile permanently?\n\nThis removes the profile, its reviews, messages and documents, and cancels any Pro subscription. Their login account is kept. This can't be undone.`)) return;
+    setAdminBusy(true);
+    const { data, error } = await supabase.functions.invoke("admin-delete-contractor", {
+      method: "POST",
+      body: { contractorId: contractor.id },
+    });
+    setAdminBusy(false);
+    if (error || data?.deleted !== contractor.id) {
+      let msg = "Couldn't delete the profile. Please try again.";
+      try { msg = (await error?.context?.json())?.error ?? msg; } catch { /* keep default */ }
+      notify(msg);
+      return;
+    }
+    setContractors(prev => prev.filter(c => c.id !== contractor.id));
+    setAdminUsers(prev => prev.map(u => u.contractor_id === contractor.id ? { ...u, contractor_id: null } : u));
+    if (myContractor?.id === contractor.id) setMyContractor(null);
+    notify(`${contractor.name}'s profile deleted.`);
+  }
+
   function openDenyModal(contractor) {
     setDenyReason("");
     setDenyModal(contractor);
@@ -3012,6 +3033,9 @@ function avatarInitials(name) {
                       <button className="btn btn-outline btn-sm" onClick={() => openDenyModal(c)} style={{ borderColor: "#f87171", color: "#b91c1c" }}>
                         Deny
                       </button>
+                      <button className="btn btn-outline btn-sm" onClick={() => adminDeleteContractor(c)} disabled={adminBusy} style={{ borderColor: "#f87171", color: "#b91c1c" }}>
+                          Delete profile
+                        </button>
                     </div>
                   </div>
                 ))}
@@ -3048,6 +3072,9 @@ function avatarInitials(name) {
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                           <button className="btn btn-gold btn-sm" onClick={() => adminSetVerified(c, true)}>Approve anyway</button>
                           <button className="btn btn-outline btn-sm" onClick={() => openDenyModal(c)}>Edit denial reason</button>
+                          <button className="btn btn-outline btn-sm" onClick={() => adminDeleteContractor(c)} disabled={adminBusy} style={{ borderColor: "#f87171", color: "#b91c1c" }}>
+                          Delete profile
+                        </button>
                           {c.user_id && !adminList.some(a => a.user_id === c.user_id) && (
                             <button className="btn btn-outline btn-sm" onClick={() => openAdminChat(c.user_id)}>Message pro</button>
                           )}
@@ -3152,6 +3179,9 @@ function avatarInitials(name) {
                             Take off board
                           </button>
                         )}
+                        <button className="btn btn-outline btn-sm" onClick={() => adminDeleteContractor(c)} disabled={adminBusy} style={{ borderColor: "#f87171", color: "#b91c1c" }}>
+                          Delete profile
+                        </button>
                       </div>
                     </div>
                   </details>
@@ -3224,9 +3254,16 @@ function avatarInitials(name) {
                               {u.jobs_posted} job{u.jobs_posted === 1 ? "" : "s"} posted
                               {" · "}last sign-in {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString() : "never"}
                               </span>
-                              {!u.is_admin && (
-                                <button className="btn btn-outline btn-sm" onClick={() => openAdminChat(u.id)}>Message</button>
-                              )}
+                              <span style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                                {!u.is_admin && (
+                                  <button className="btn btn-outline btn-sm" onClick={() => openAdminChat(u.id)}>Message</button>
+                                )}
+                                {pro && (
+                                  <button className="btn btn-outline btn-sm" onClick={() => adminDeleteContractor(pro)} disabled={adminBusy} style={{ borderColor: "#f87171", color: "#b91c1c" }}>
+                                    Delete profile
+                                  </button>
+                                )}
+                              </span>
                             </div>
                           </div>
                         );

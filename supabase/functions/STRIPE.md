@@ -5,6 +5,7 @@
 | `create-checkout` | App "Upgrade to Pro"     | on (default)     |
 | `create-portal`   | App "Manage billing"     | on (default)     |
 | `stripe-webhook`  | Stripe                   | **off**          |
+| `admin-delete-contractor` | Admin page "Delete profile" | on (default) |
 
 ## Setup
 
@@ -25,6 +26,7 @@
    supabase functions deploy create-checkout
    supabase functions deploy create-portal
    supabase functions deploy stripe-webhook --no-verify-jwt
+   supabase functions deploy admin-delete-contractor
    ```
 
 6. In Stripe → Developers → Webhooks → Add endpoint:
@@ -45,3 +47,12 @@ Admins can also give a contractor Pro by setting `contractors.plan` directly.
 The webhook sets `contractors.plan` to `pro` while the subscription is `active`,
 `trialing`, or `past_due` (a grace period while Stripe retries a failed card), and
 back to `free` for any other status, including cancellation.
+
+## Deleting a pro (admins only)
+
+`admin-delete-contractor` is called from the Admin page's "Delete profile"
+button. It checks the caller is in `public.admins`, cancels the pro's live Pro
+subscription (refusing if Stripe isn't configured), deletes the contractor row
+with the service role, and writes a `delete` entry to `admin_audit_log`.
+Run `supabase/migrations/037_admin_delete_contractor.sql` so the row can't be
+deleted any other way.
