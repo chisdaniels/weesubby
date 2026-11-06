@@ -91,6 +91,7 @@ export default function App() {
   const [profileError, setProfileError] = useState(null);
   const [myJobs, setMyJobs] = useState([]);
   const [billingBusy, setBillingBusy] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [adminConfirmId, setAdminConfirmId] = useState(null);
   const [adminBusyId, setAdminBusyId] = useState(null);
 
@@ -98,8 +99,6 @@ export default function App() {
   const isCustomer   = role === "customer";
   const isContractor = role === "contractor";
   const isPro        = isContractor && myContractor?.plan === "pro";
-  // Set only via SQL on auth.users.raw_app_meta_data (see migration 007); users can't edit it.
-  const isAdmin      = user?.app_metadata?.role === "admin";
 
   const messagesEndRef = useRef(null);
   const modalRef = useRef(null);
@@ -141,6 +140,13 @@ export default function App() {
       setMyJobs(enriched);
     })();
   }, [isCustomer, user, jobs]);
+
+  // Admins are the users listed in public.admins; RLS lets a user read only their own row.
+  useEffect(() => {
+    if (!user) { setIsAdmin(false); return; }
+    supabase.from("admins").select("user_id").eq("user_id", user.id).maybeSingle()
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [user?.id]);
 
   useEffect(() => {
     if (!user) { setMyContractor(null); return; }

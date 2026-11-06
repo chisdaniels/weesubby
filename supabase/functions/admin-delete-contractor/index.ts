@@ -13,14 +13,15 @@ Deno.serve(async (req) => {
   try {
     const user = await getUser(req);
     if (!user) return json({ error: "Please sign in first." }, 401);
-    if (user.app_metadata?.role !== "admin") return json({ error: "Admins only." }, 403);
+    const { data: adminRow } = await admin.from("admins").select("user_id").eq("user_id", user.id).maybeSingle();
+    if (!adminRow) return json({ error: "Admins only." }, 403);
 
     const { contractorId } = await req.json().catch(() => ({}));
     if (!Number.isInteger(contractorId)) return json({ error: "Missing contractorId." }, 400);
 
     const { data: contractor, error: findError } = await admin
       .from("contractors")
-      .select("id, user_id")
+      .select("*")
       .eq("id", contractorId)
       .maybeSingle();
     if (findError) throw findError;
@@ -39,6 +40,15 @@ Deno.serve(async (req) => {
 
     const { error: deleteError } = await admin.from("contractors").delete().eq("id", contractorId);
     if (deleteError) throw deleteError;
+
+    const { error: auditError } = await admin.from("admin_audit_log").insert({
+      actor: user.id,
+      table_name: "contractors",
+      action: "delete",
+      row_key: String(contractorId),
+      old_data: contractor,
+    });
+    if (auditError) console.error("audit log insert failed:", auditError);
 
     return json({ deleted: contractorId });
   } catch (err) {

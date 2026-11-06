@@ -49,15 +49,7 @@ back to `free` for any other status, including cancellation.
 
 ## Admins
 
-Only admins can delete contractor profiles (Admin tab in the app). Run
-`supabase/migrations/007_delete_contractor.sql`, deploy `admin-delete-contractor`,
-then make yourself an admin in the SQL Editor:
-
-```sql
-update auth.users
-set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb) || '{"role":"admin"}'
-where email = 'you@example.com';
-```
-
-Sign out and back in so your session picks up the admin role. Deleting a Pro
-contractor cancels their Stripe subscription first.
+Only admins (users listed in `public.admins`) can delete contractor profiles,
+from the Admin tab in the app. Deploy `admin-delete-contractor`. Deleting a Pro
+contractor cancels their Stripe subscription first, and each delete is written
+to `admin_audit_log`.
