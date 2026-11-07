@@ -55,7 +55,8 @@ back to `free` for any other status, including cancellation.
 `admin-delete-contractor` is called from the Admin page's "Delete profile"
 button. It checks the caller is in `public.admins`, cancels the pro's live Pro
 subscription (refusing if Stripe isn't configured), deletes the contractor row
-with the service role, and writes a `delete` entry to `admin_audit_log`.
+with the service role, removes the pro's uploaded license/insurance files,
+and writes a `delete` entry to `admin_audit_log`.
 Run `supabase/migrations/037_admin_delete_contractor.sql` so the row can't be
 deleted any other way.
 
