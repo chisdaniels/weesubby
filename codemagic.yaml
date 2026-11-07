@@ -46,4 +46,8 @@ workflows:
     publishing:
       app_store_connect:
         auth: integration
-        submit_to_testflight: true
+        # Uploads go straight to TestFlight internal testers (the "Me" group gets
+        # them automatically). Submitting for beta review is only needed for
+        # external testers and needs TestFlight's Test Information filled in, so
+        # it's off; turn it on (true) once that's set up.
+        submit_to_testflight: false
