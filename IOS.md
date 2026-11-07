@@ -26,9 +26,55 @@ Portrait only on iPhone. The app declares it uses no non-exempt encryption
 
 1. **Apple Developer Program** membership ($99/year): https://developer.apple.com/programs/
    Enroll as an organization if WeeSubby is a company (needs a D-U-N-S number), or as an individual.
-2. **A Mac with Xcode** (free from the Mac App Store). Alternatively, a cloud Mac build
-   service such as Codemagic, Ionic Appflow or Bitrise.
-3. **Node.js 20+** on that Mac.
+2. **Either** a Codemagic account (cloud builds, works from an iPad — see below) **or**
+   a Mac with Xcode and Node.js 20+.
+
+## Build in the cloud (Codemagic) — no Mac needed
+
+`codemagic.yaml` builds the app on Codemagic's Macs and uploads it to TestFlight.
+Everything below works from a web browser, including on an iPad. Codemagic's free plan
+includes 500 build minutes a month; one build takes about 10–15.
+
+### One-time setup
+
+1. **Register the app ID with push** — https://developer.apple.com/account/resources/identifiers
+   → **+** → App IDs → App → Description "WeeSubby", Bundle ID **Explicit**
+   `com.weesubby.app` → under Capabilities tick **Push Notifications** → Continue → Register.
+2. **Create the app in App Store Connect** — https://appstoreconnect.apple.com → **Apps** →
+   **+** → New App → iOS, name "WeeSubby", language, bundle ID `com.weesubby.app`,
+   SKU `weesubby` → Create.
+3. **Create an App Store Connect API key** (lets Codemagic sign and upload) — App Store
+   Connect → **Users and Access** → **Integrations** → **App Store Connect API** → Team Keys
+   → **+** → name "Codemagic", access **App Manager** → Generate. Note the **Issuer ID**
+   and **Key ID**, and **Download** the `.p8` file (only possible once). This is a different
+   key from the push key below.
+4. **Sign up for Codemagic** — https://codemagic.io/signup → sign in with GitHub → add the
+   `chisdaniels/weesubby` repository. Codemagic finds `codemagic.yaml` on its own.
+5. **Connect Apple to Codemagic** — Codemagic → **Team settings** → **Team integrations** →
+   **Developer Portal** → Connect → name it exactly **`WeeSubby App Store Connect`**, then
+   enter the Issuer ID, Key ID, and upload the `.p8` from step 3.
+6. **Signing certificate** — Codemagic → **Team settings** → **codemagic.yaml settings** →
+   **Code signing identities** → **iOS certificates** → **Generate certificate** → type
+   **Apple Distribution**, use the `WeeSubby App Store Connect` key → reference name
+   "WeeSubby Distribution" → Create.
+7. **Provisioning profile** — https://developer.apple.com/account/resources/profiles →
+   **+** → Distribution: **App Store Connect** → App ID `com.weesubby.app` → choose the
+   certificate Codemagic just created (newest Apple Distribution) → name "WeeSubby App
+   Store" → Generate. Back in Codemagic → **Code signing identities** → **iOS provisioning
+   profiles** → **Fetch profiles** → tick "WeeSubby App Store" → **Download selected**.
+
+### Each build
+
+Codemagic → the weesubby app → **Start new build** → branch `main` → workflow
+**iOS → TestFlight** → Start. When it finishes (about 15 minutes) the build appears in
+App Store Connect → **TestFlight** after Apple processes it (usually 5–30 minutes).
+
+To install it on your iPhone or iPad: App Store Connect → TestFlight → **Internal
+Testing** → **+** → add yourself → install Apple's **TestFlight** app and accept the
+invite. Internal testers don't need Apple's review.
+
+If a build fails, the log for each step is on the build page; the `.ipa` and Xcode logs
+are under **Artifacts**.
 
 ## Build and run on a Mac
 
