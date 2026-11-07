@@ -202,6 +202,10 @@ export default function App() {
     return pathToTab(window.location.pathname, window.location.hash);
   });
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  // The account menu is placed on screen from the button's position, so it never runs off
+  // the edge, even on an iPhone with large text (index.html follows the phone's text size).
+  const userMenuBtnRef = useRef(null);
+  const [userMenuPos, setUserMenuPos] = useState(null);
   const [serviceFilter, setServiceFilter] = useState(""); // "" | "group:<slug>" | service name
   // Find a Contractor: null until the visitor picks "All services" or a service, and no pros show until then.
   const [findServiceFilter, setFindServiceFilter] = useState(null);
@@ -792,9 +796,27 @@ export default function App() {
 
   useEffect(() => {
     if (!userMenuOpen) return;
+    const place = () => {
+      const r = userMenuBtnRef.current?.getBoundingClientRect();
+      if (!r) return;
+      const top = Math.max(8, r.bottom + 8);
+      const maxHeight = Math.max(160, window.innerHeight - top - 12);
+      // Phones: full width under the button. Wider screens: line up with the button's
+      // right edge, but never wider than the space to its left.
+      setUserMenuPos(window.innerWidth < 600
+        ? { top, left: 12, right: 12, maxHeight, maxWidth: "none" }
+        : { top, right: Math.max(12, window.innerWidth - r.right), maxHeight, maxWidth: Math.max(240, r.right - 12) });
+    };
+    place();
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, { passive: true });
     const handleKey = (e) => { if (e.key === "Escape") setUserMenuOpen(false); };
     document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
+    return () => {
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place);
+      document.removeEventListener("keydown", handleKey);
+    };
   }, [userMenuOpen]);
 
   function contractorTrades(c) {
@@ -1906,9 +1928,10 @@ function avatarInitials(name) {
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-        .user-menu { position: absolute; top: calc(100% + 8px); right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 6px; min-width: 240px; display: flex; flex-direction: column; gap: 2px; z-index: 50; box-shadow: 0 12px 32px rgba(15,23,42,0.14); }
-        .user-menu-who { padding: 10px 14px 12px; margin-bottom: 4px; border-bottom: 1px solid #e2e8f0; max-width: 280px; }
-        .user-menu-item { background: none; border: none; cursor: pointer; padding: 12px 14px; font-size: 1rem; font-weight: 600; color: #b04a17; border-radius: 8px; text-align: left; font-family: inherit; transition: background 0.15s, color 0.15s; white-space: nowrap; }
+        .user-menu { position: fixed; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 6px; min-width: 240px; max-width: calc(100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right)); display: flex; flex-direction: column; gap: 2px; z-index: 50; box-shadow: 0 12px 32px rgba(15,23,42,0.14); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+        .user-menu > * { flex-shrink: 0; }
+        .user-menu-who { padding: 10px 14px 12px; margin-bottom: 4px; border-bottom: 1px solid #e2e8f0; }
+        .user-menu-item { background: none; border: none; cursor: pointer; padding: 12px 14px; font-size: 1rem; font-weight: 600; color: #b04a17; border-radius: 8px; text-align: left; font-family: inherit; transition: background 0.15s, color 0.15s; white-space: normal; overflow-wrap: anywhere; }
         .user-menu-item:hover { background: #f8fafc; }
         .user-menu-item:active { background: #db6b33; color: #0f172a; }
         .user-menu-item:focus-visible { outline: 2px solid #db6b33; outline-offset: -2px; }
@@ -2034,6 +2057,7 @@ function avatarInitials(name) {
             {user ? (
               <>
                 <button
+                  ref={userMenuBtnRef}
                   className="btn btn-outline btn-sm"
                   onClick={() => setUserMenuOpen(o => !o)}
                   aria-expanded={userMenuOpen}
@@ -2046,7 +2070,7 @@ function avatarInitials(name) {
                 {userMenuOpen && (
                   <>
                     <div onClick={() => setUserMenuOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} aria-hidden="true" />
-                    <div role="menu" className="user-menu">
+                    <div role="menu" className="user-menu" style={userMenuPos || { visibility: "hidden" }}>
                       <div role="presentation" className="user-menu-who">
                         <div style={{ fontSize: "0.8125rem", color: "#64748b", fontWeight: 600, letterSpacing: 0.5 }}>SIGNED IN AS</div>
                         <div style={{ fontSize: "0.9375rem", color: "#0f172a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</div>
