@@ -4,6 +4,7 @@ import { SITE_URL, DEFAULT_TITLE, DEFAULT_DESCRIPTION, ROUTE_META, TRADE_PAGES }
 import { ServiceFilter, ServicePicker, ServiceSelect, serviceFilterMatches } from "./ServicePicker";
 import { AdminSection, byStatus } from "./AdminSection";
 import { isNativeApp } from "./platform";
+import { enableNativePush, nativePushPermission, onNativePushTap, removeNativePushToken } from "./nativePush";
 import AdminServices from "./AdminServices";
 import { CredentialList, CredentialReviewPanel, DocLink, VerifiedCredentialBadges, VerifiedCredentialsSummary, VERIFIED_PRO_MEANING } from "./credentials";
 import {
@@ -216,8 +217,9 @@ export default function App() {
   });
   const msgSoundRef = useRef(msgSound);
   // "unsupported" | "default" | "denied" | "on"
+  // In the iPhone app the real permission is read once signed in (see the native push effect).
   const [pushState, setPushState] = useState(() =>
-    !pushSupported() ? "unsupported" : Notification.permission === "denied" ? "denied" : "default");
+    isNativeApp ? "default" : !pushSupported() ? "unsupported" : Notification.permission === "denied" ? "denied" : "default");
   msgSoundRef.current = msgSound;
   const [lastSeenThreads, setLastSeenThreads] = useState(() => {
     try {
@@ -407,6 +409,17 @@ export default function App() {
   }
 
   async function enablePush() {
+    if (isNativeApp) {
+      try {
+        const result = await enableNativePush();
+        if (result === "granted") { setPushState("on"); notify("Notifications are on for this iPhone."); }
+        else if (result === "denied") { setPushState("denied"); notify("Notifications are off. Turn them on in Settings → WeeSubby → Notifications."); }
+      } catch (err) {
+        console.error("native push failed:", err);
+        notify("Couldn't turn on notifications: " + (err.message || err));
+      }
+      return;
+    }
     if (!pushSupported()) {
       // iPhone Safari only offers push to the installed home-screen app.
       if (isIOS()) setIosInstallModal(true);
@@ -1417,7 +1430,10 @@ export default function App() {
 
   async function signOut() {
     // Stop this device's notifications for the account that's leaving.
-    if (pushState === "on") {
+    if (isNativeApp) {
+      try { await removeNativePushToken(); } catch (err) { console.error("push token removal failed:", err); }
+      setPushState("default");
+    } else if (pushState === "on") {
       try {
         const sub = await (await navigator.serviceWorker.ready).pushManager.getSubscription();
         if (sub) {
@@ -1805,8 +1821,26 @@ function avatarInitials(name) {
       .catch(() => {});
   }, [totalUnread, user]);
 
+  // iPhone app: re-save this device for whoever is signed in (if notifications were
+  // allowed before), and open Messages when a notification is tapped.
   useEffect(() => {
-    if (!user || !pushSupported()) return;
+    if (!isNativeApp || !user) return;
+    nativePushPermission().then(perm => {
+      if (perm === "granted") {
+        enableNativePush().then(() => setPushState("on")).catch(err => console.error("push resync failed:", err));
+      } else {
+        setPushState(perm === "denied" ? "denied" : "default");
+      }
+    }).catch(err => console.error("push permission check failed:", err));
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (!isNativeApp) return;
+    return onNativePushTap(data => setTab(data.tab || "messages"));
+  }, []);
+
+  useEffect(() => {
+    if (isNativeApp || !user || !pushSupported()) return;
     const clearTray = () => {
       if (document.visibilityState !== "visible") return;
       navigator.serviceWorker.ready
