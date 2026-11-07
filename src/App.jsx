@@ -226,11 +226,10 @@ export default function App() {
   const [pushState, setPushState] = useState(() =>
     isNativeApp ? "default" : !pushSupported() ? "unsupported" : Notification.permission === "denied" ? "denied" : "default");
   msgSoundRef.current = msgSound;
-  const [lastSeenThreads, setLastSeenThreads] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("tlp_thread_seen") || "{}");
-    } catch { return {}; }
-  });
+  // When each conversation was last read: { threadKey: ms }. Saved to the account
+  // (message_reads) so it survives signing out and carries across devices; this
+  // device keeps a copy so the counts are right before the account loads.
+  const [lastSeenThreads, setLastSeenThreads] = useState({});
   const [reviewInput, setReviewInput] = useState({ stars: 5, text: "" });
   const [reviewTarget, setReviewTarget] = useState(null); // { contractorId, jobId } | null
   const [myReviewedJobIds, setMyReviewedJobIds] = useState(new Set());
@@ -1901,10 +1900,50 @@ function avatarInitials(name) {
     if (next) { unlockChime(); playChime(); }
   }
 
+  function seenStorageKey(userId) { return `tlp_thread_seen:${userId}`; }
+
+  // Load this person's read times: this device's copy first, then the account's,
+  // keeping the later time for each conversation.
+  useEffect(() => {
+    if (!user) { setLastSeenThreads({}); return; }
+    let local = {};
+    try {
+      local = JSON.parse(localStorage.getItem(seenStorageKey(user.id)) || localStorage.getItem("tlp_thread_seen") || "{}");
+    } catch { local = {}; }
+    setLastSeenThreads(local);
+    let cancelled = false;
+    supabase.from("message_reads").select("thread_key, seen_at").eq("user_id", user.id).then(({ data, error }) => {
+      if (cancelled) return;
+      if (error) { console.error("message reads load failed:", error); return; }
+      const fromAccount = Object.fromEntries((data || []).map(r => [r.thread_key, new Date(r.seen_at).getTime()]));
+      setLastSeenThreads(prev => {
+        const merged = { ...fromAccount };
+        const newerHere = [];
+        for (const [k, v] of Object.entries(prev)) {
+          if (!merged[k] || v > merged[k]) { merged[k] = v; newerHere.push({ user_id: user.id, thread_key: k, seen_at: new Date(v).toISOString() }); }
+        }
+        // Reads that were only saved on this device (e.g. before this existed) go to the account too.
+        if (newerHere.length) supabase.from("message_reads").upsert(newerHere).then(({ error: e }) => e && console.error("message reads save failed:", e));
+        try { localStorage.setItem(seenStorageKey(user.id), JSON.stringify(merged)); } catch {}
+        return merged;
+      });
+    });
+    return () => { cancelled = true; };
+  }, [user?.id]);
+
   function markThreadSeen(threadKey) {
+    if (!user) return;
+    // At least as late as the newest message, so a phone clock that runs behind
+    // can't leave a message looking unread.
+    const newest = Math.max(0, ...(messages[threadKey]?.messages || []).map(m => new Date(m.created_at).getTime() || 0));
+    const seenAt = Math.max(Date.now(), newest);
     setLastSeenThreads(prev => {
-      const next = { ...prev, [threadKey]: Date.now() };
-      try { localStorage.setItem("tlp_thread_seen", JSON.stringify(next)); } catch {}
+      if ((prev[threadKey] || 0) >= newest && prev[threadKey]) return prev; // nothing new to mark
+      const next = { ...prev, [threadKey]: seenAt };
+      try { localStorage.setItem(seenStorageKey(user.id), JSON.stringify(next)); } catch {}
+      supabase.from("message_reads")
+        .upsert({ user_id: user.id, thread_key: threadKey, seen_at: new Date(seenAt).toISOString() })
+        .then(({ error }) => error && console.error("message read save failed:", error));
       return next;
     });
   }
