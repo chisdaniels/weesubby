@@ -6,22 +6,33 @@ import { supabase } from "./lib/supabase";
 let currentToken = null;
 
 async function plugin() {
-  if (!window.Capacitor?.isPluginAvailable?.("PushNotifications")) {
+  // Load Capacitor's core first: its isPluginAvailable checks the plugins built into the
+  // app (PluginHeaders). The bare window.Capacitor version only knows plugins whose
+  // JavaScript has already loaded, so asking it first always answered "no".
+  const [{ Capacitor }, { PushNotifications }] = await Promise.all([
+    import("@capacitor/core"),
+    import("@capacitor/push-notifications"),
+  ]);
+  if (!Capacitor.isPluginAvailable("PushNotifications")) {
     throw new Error("Push notifications aren't available in this build of the app.");
   }
-  return (await import("@capacitor/push-notifications")).PushNotifications;
+  // Wrapped on purpose: the plugin is a Proxy that answers every property, including
+  // "then", so returning it bare from an async function makes JavaScript treat it as a
+  // promise and call a native "then" method that doesn't exist.
+  return { P: PushNotifications };
 }
 
 // "granted" | "denied" | "prompt"
 export async function nativePushPermission() {
-  const { receive } = await (await plugin()).checkPermissions();
+  const { P } = await plugin();
+  const { receive } = await P.checkPermissions();
   return receive.startsWith("prompt") ? "prompt" : receive;
 }
 
 // Asks for permission if needed, registers with Apple, and saves this
 // iPhone's token for the signed-in user. Returns the final permission.
 export async function enableNativePush() {
-  const P = await plugin();
+  const { P } = await plugin();
   let { receive } = await P.checkPermissions();
   if (receive.startsWith("prompt")) ({ receive } = await P.requestPermissions());
   if (receive !== "granted") return receive.startsWith("prompt") ? "prompt" : receive;
@@ -65,7 +76,7 @@ export async function removeNativePushToken() {
 export function onNativePushTap(onTap) {
   let handle;
   plugin()
-    .then(P => P.addListener("pushNotificationActionPerformed", a => onTap(a.notification?.data || {})))
+    .then(({ P }) => P.addListener("pushNotificationActionPerformed", a => onTap(a.notification?.data || {})))
     .then(h => { handle = h; })
     .catch(err => console.error("push tap listener failed:", err));
   return () => handle?.remove();
