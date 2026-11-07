@@ -3,6 +3,7 @@ import { supabase } from "./lib/supabase";
 import { SITE_URL, DEFAULT_TITLE, DEFAULT_DESCRIPTION, ROUTE_META, TRADE_PAGES } from "./seo";
 import { ServiceFilter, ServicePicker, ServiceSelect, serviceFilterMatches } from "./ServicePicker";
 import { AdminSection, byStatus } from "./AdminSection";
+import { isNativeApp } from "./platform";
 import AdminServices from "./AdminServices";
 import { CredentialList, CredentialReviewPanel, DocLink, VerifiedCredentialBadges, VerifiedCredentialsSummary, VERIFIED_PRO_MEANING } from "./credentials";
 import {
@@ -266,7 +267,8 @@ export default function App() {
   const [denyReason, setDenyReason] = useState("");
   const [denyBusy, setDenyBusy] = useState(false);
   const [installPrompt, setInstallPrompt] = useState(null);
-  const [isInstalled, setIsInstalled] = useState(false);
+  // The iPhone app counts as installed: hides Install buttons and "add to Home Screen" tips.
+  const [isInstalled, setIsInstalled] = useState(isNativeApp);
   const [iosInstallModal, setIosInstallModal] = useState(false);
   const [jobReleases, setJobReleases] = useState([]);
   const [supportTickets, setSupportTickets] = useState([]);
@@ -2747,13 +2749,18 @@ function avatarInitials(name) {
                         )}
                         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                           <span className="badge">✓ Your plan</span>
-                          <button className="btn btn-outline btn-sm" onClick={() => callBillingFunction("create-portal")} disabled={billingBusy}>
-                            {billingBusy ? "Opening..." : "Manage billing"}
-                          </button>
+                          {/* Apple doesn't allow outside payment flows in the iPhone app. */}
+                          {!isNativeApp && (
+                            <button className="btn btn-outline btn-sm" onClick={() => callBillingFunction("create-portal")} disabled={billingBusy}>
+                              {billingBusy ? "Opening..." : "Manage billing"}
+                            </button>
+                          )}
                         </div>
                       </div>
                     ) : current ? (
                       <span className="badge" style={{ alignSelf: "flex-start" }}>✓ Your plan</span>
+                    ) : p.key === "pro" && user && isNativeApp ? (
+                      <div style={{ fontSize: "0.9375rem", color: "#64748b" }}>Pro can't be purchased in the iPhone app.</div>
                     ) : p.key === "pro" && user ? (
                       <button className="btn btn-gold" onClick={startCheckout} disabled={billingBusy} style={{ opacity: billingBusy ? 0.6 : 1 }}>
                         {billingBusy ? "Opening checkout..." : myContractor ? "Upgrade to Pro" : "Set Up Profile to Go Pro"}

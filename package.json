@@ -6,14 +6,20 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && node scripts/build-seo.mjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "ios": "npm run build && cap sync ios && cap open ios",
+    "ios:sync": "npm run build && cap sync ios",
+    "ios:assets": "node scripts/render-ios-assets.mjs"
   },
   "dependencies": {
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/ios": "^8.6.0",
     "@supabase/supabase-js": "^2.105.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.6.0",
     "@vitejs/plugin-react": "^4.3.1",
     "sharp": "^0.35.5",
     "vite": "^5.4.2"

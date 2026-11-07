@@ -1,0 +1,9 @@
+{
+  "appId": "com.weesubby.app",
+  "appName": "WeeSubby",
+  "webDir": "dist",
+  "ios": {
+    "contentInset": "automatic",
+    "backgroundColor": "#ffffff"
+  }
+}
