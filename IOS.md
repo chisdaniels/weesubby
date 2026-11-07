@@ -75,9 +75,9 @@ Test with friends first using **TestFlight** (App Store Connect → TestFlight) 
 
 ## Before Apple will approve it
 
-- **Account deletion (required).** Apple rejects apps that let people sign up but not
-  delete their account from inside the app (Guideline 5.1.1(v)). WeeSubby doesn't have
-  this yet.
+- **Account deletion (done).** Apple requires apps that let people sign up to let them
+  delete their account in the app (Guideline 5.1.1(v)). Account menu → **Delete my account**
+  does this via the `delete-account` Edge Function. Mention it in the review notes.
 - **More than a website (likely).** Apple can reject apps that are just a website in a
   wrapper (Guideline 4.2). Native push notifications for new messages and job updates are
   the strongest fix. They need an Apple Push Notification key from your developer account.

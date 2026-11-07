@@ -6,6 +6,7 @@
 | `create-portal`   | App "Manage billing"     | on (default)     |
 | `stripe-webhook`  | Stripe                   | **off**          |
 | `admin-delete-contractor` | Admin page "Delete profile" | on (default) |
+| `delete-account` | Account menu "Delete my account" | on (default) |
 
 ## Setup
 
@@ -27,6 +28,7 @@
    supabase functions deploy create-portal
    supabase functions deploy stripe-webhook --no-verify-jwt
    supabase functions deploy admin-delete-contractor
+   supabase functions deploy delete-account
    ```
 
 6. In Stripe → Developers → Webhooks → Add endpoint:
@@ -56,3 +58,14 @@ subscription (refusing if Stripe isn't configured), deletes the contractor row
 with the service role, and writes a `delete` entry to `admin_audit_log`.
 Run `supabase/migrations/037_admin_delete_contractor.sql` so the row can't be
 deleted any other way.
+
+## Deleting your own account
+
+`delete-account` lets a signed-in user permanently delete their own account
+(Apple requires this for the iPhone app). Admins are refused so the admin team
+can't be locked out. It cancels a live Pro subscription (refusing if Stripe isn't
+configured), deletes the contractor profile and the user's files in the
+`credentials` bucket, removes contact details from jobs they posted and takes their
+open jobs off the board, renames reviews they wrote to "Former WeeSubby user",
+deletes their support tickets, then deletes the login (which cascades to messages,
+push subscriptions and the billing record).
