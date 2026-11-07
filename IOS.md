@@ -79,7 +79,53 @@ Test with friends first using **TestFlight** (App Store Connect → TestFlight) 
   delete their account in the app (Guideline 5.1.1(v)). Account menu → **Delete my account**
   does this via the `delete-account` Edge Function. Mention it in the review notes.
 - **More than a website (likely).** Apple can reject apps that are just a website in a
-  wrapper (Guideline 4.2). Native push notifications for new messages and job updates are
-  the strongest fix. They need an Apple Push Notification key from your developer account.
+  wrapper (Guideline 4.2). The app has native push notifications for new messages (see
+  below); mention them in the review notes.
 - **Pro purchases.** Selling Pro inside the app would require Apple in-app purchase
   (Apple keeps 15–30%). The app currently doesn't sell Pro at all, which Apple allows.
+
+## Push notifications
+
+New messages notify the recipient's iPhone through Apple Push Notification service (APNs),
+alongside the website's web push. Tapping a notification opens Messages.
+
+How it fits together:
+
+- **App:** "Turn on notifications" (account menu, or the banner on Messages) asks for iOS
+  permission and saves the iPhone's token with `save_native_push_token()`
+  (`src/nativePush.js`). Signing out removes it.
+- **Database:** `native_push_tokens` (migration `038_native_push_tokens.sql`, already applied).
+- **Sending:** `notify-message-push` sends to every iPhone the recipient has, trying Apple's
+  production server first and the sandbox (builds run from Xcode) if the token isn't
+  recognised. Tokens Apple reports as gone are removed. Already deployed.
+- **iOS project:** push capability (`App/App.entitlements`) and the token hand-off in
+  `AppDelegate.swift`.
+
+### One-time setup (needs your Apple Developer account)
+
+1. **Create a push key.** developer.apple.com → Certificates, Identifiers & Profiles →
+   **Keys** → **+** → name it "WeeSubby Push", tick **Apple Push Notifications service (APNs)**,
+   Continue → Register → **Download** the `.p8` file (you can only download it once).
+   Note the **Key ID** shown on that page.
+2. **Find your Team ID:** developer.apple.com → Account → Membership details.
+3. **Add the secrets** in Supabase → Edge Functions → Secrets:
+
+   | Name | Value |
+   |------|-------|
+   | `APNS_KEY_ID` | the Key ID from step 1 |
+   | `APNS_TEAM_ID` | your Team ID |
+   | `APNS_PRIVATE_KEY` | the whole contents of the `.p8` file, including the `BEGIN`/`END` lines |
+   | `APNS_BUNDLE_ID` | optional; only if you changed it from `com.weesubby.app` |
+
+   No redeploy needed; the function reads them on each call.
+4. **In Xcode**, App target → **Signing & Capabilities**: check that **Push Notifications**
+   is listed (it comes from `App.entitlements`). If Xcode reports a provisioning error, click
+   **+ Capability** → Push Notifications to let it update your App ID.
+
+### Testing
+
+Push doesn't work in the iOS Simulator for remote notifications from a server, so use a real
+iPhone: run the app from Xcode (or install from TestFlight), sign in, tap **Turn on
+notifications** and allow. From another account (e.g. on the website) send that user a
+message and lock the iPhone. In Supabase → Edge Functions → `notify-message-push` → Logs,
+the response includes `ios_sent`; `apns failed` lines show Apple's reason if one fails.
