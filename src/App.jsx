@@ -201,6 +201,8 @@ export default function App() {
   });
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [serviceFilter, setServiceFilter] = useState(""); // "" | "group:<slug>" | service name
+  // Find a Contractor: null until the visitor picks "All services" or a service, and no pros show until then.
+  const [findServiceFilter, setFindServiceFilter] = useState(null);
   const [onlyMyServices, setOnlyMyServices] = useState(false);
   const [search, setSearch] = useState("");
   const [contractors, setContractors] = useState([]);
@@ -784,10 +786,10 @@ export default function App() {
     () => new Set(searchCatalog(catalog, search, { includeInactive: true }).map(r => r.service.name)),
     [catalog, search]
   );
-  const filtered = contractors.filter(c => {
+  const filtered = findServiceFilter == null ? [] : contractors.filter(c => {
     if (c.deactivated_at) return false; // hidden from the public board
     const trades = contractorTrades(c);
-    if (!serviceFilterMatches(catalog, trades, serviceFilter)) return false;
+    if (!serviceFilterMatches(catalog, trades, findServiceFilter)) return false;
     const q = search.trim().toLowerCase();
     if (!q) return true;
     return c.name.toLowerCase().includes(q) ||
@@ -1926,6 +1928,7 @@ function avatarInitials(name) {
         .svc-filter-btn { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; color: #0f172a; padding: 10px 14px; font-family: inherit; font-weight: 500; font-size: max(16px, 1.0625rem); cursor: pointer; text-align: left; }
         .svc-filter-btn:focus-visible, .svc-filter-btn[aria-expanded="true"] { outline: none; border-color: #db6b33; box-shadow: 0 0 0 3px rgba(219,107,51,0.28); }
         .svc-filter-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .svc-filter-value.placeholder { color: #64748b; }
         .svc-filter-menu { position: absolute; top: calc(100% + 6px); left: 0; z-index: 60; min-width: 100%; width: max-content; max-width: min(380px, calc(100vw - 32px)); max-height: min(60vh, 440px); overflow-y: auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 6px; box-shadow: 0 12px 32px rgba(15,23,42,0.16); outline: none; }
         .svc-filter-heading { color: #b04a17; font-size: 1.125rem; font-weight: 800; letter-spacing: 0.3px; padding: 14px 10px 6px; margin-top: 4px; border-top: 1px solid #e2e8f0; }
         .svc-filter-opt { display: flex; justify-content: space-between; gap: 12px; padding: 8px 10px 8px 24px; border-radius: 6px; font-size: 1rem; color: #1f2430; cursor: pointer; }
@@ -2298,7 +2301,7 @@ function avatarInitials(name) {
                 style={{ flex: 1, minWidth: 200 }}
               />
               <label htmlFor="trade-filter" className="sr-only">Filter by service</label>
-              <ServiceFilter id="trade-filter" catalog={catalog} value={serviceFilter} onChange={setServiceFilter} />
+              <ServiceFilter id="trade-filter" catalog={catalog} value={findServiceFilter} onChange={setFindServiceFilter} />
             </div>
             <div style={{ display: "grid", gap: 16 }} role="list" aria-label="Contractor listings">
               {filtered.map(c => (
@@ -2343,7 +2346,11 @@ function avatarInitials(name) {
                   </button>
                 </div>
               ))}
-              {filtered.length === 0 && (
+              {findServiceFilter == null ? (
+                <div style={{ textAlign: "center", color: "#475569", padding: 40 }} role="status">
+                  Pick a service from the dropdown above, or choose "All services", to see pros.
+                </div>
+              ) : filtered.length === 0 && (
                 <div style={{ textAlign: "center", color: "#64748b", padding: 40 }} role="status">
                   No contractors found. Try adjusting your search.
                 </div>

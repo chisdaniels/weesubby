@@ -148,7 +148,8 @@ export function ServiceSelect({ catalog, value, onChange, id, allLabel, style })
 // custom listbox rather than a <select>, because browsers (macOS, iOS) ignore
 // styling on <optgroup> labels and the category headings need to stand out.
 // Values: "" (all), "group:<slug>" (a whole category), or a service name.
-export function ServiceFilter({ catalog, value, onChange, id, allLabel = "All services" }) {
+// value === null means nothing picked yet; the button then shows `placeholder`.
+export function ServiceFilter({ catalog, value, onChange, id, allLabel = "All services", placeholder = "Choose a service" }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const rootRef = useRef(null);
@@ -174,7 +175,7 @@ export function ServiceFilter({ catalog, value, onChange, id, allLabel = "All se
   }, [catalog, allLabel]);
 
   const selectedIdx = items.findIndex(i => i.value === value);
-  const currentLabel = selectedIdx >= 0 ? items[selectedIdx].label : value;
+  const currentLabel = value == null ? placeholder : selectedIdx >= 0 ? items[selectedIdx].label : value;
   const optId = idx => `${id}-opt-${idx}`;
 
   useEffect(() => {
@@ -243,7 +244,7 @@ export function ServiceFilter({ catalog, value, onChange, id, allLabel = "All se
         onClick={() => setOpen(o => !o)}
         onKeyDown={onButtonKey}
       >
-        <span className="svc-filter-value">{currentLabel}</span>
+        <span className={`svc-filter-value${value == null ? " placeholder" : ""}`}>{currentLabel}</span>
         <span aria-hidden="true">▾</span>
       </button>
       {open && (
