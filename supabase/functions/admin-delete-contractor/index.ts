@@ -45,6 +45,16 @@ Deno.serve(async (req) => {
     const { error: deleteError } = await admin.from("contractors").delete().eq("id", contractorId);
     if (deleteError) throw deleteError;
 
+    // Uploaded license/insurance files live under "<user id>/" in the credentials bucket.
+    if (contractor.user_id) {
+      const { data: files } = await admin.storage.from("credentials").list(contractor.user_id, { limit: 1000 });
+      if (files?.length) {
+        const { error: fileError } = await admin.storage.from("credentials")
+          .remove(files.map(f => `${contractor.user_id}/${f.name}`));
+        if (fileError) console.error("credential file cleanup failed:", fileError);
+      }
+    }
+
     const { error: auditError } = await admin.from("admin_audit_log").insert({
       actor: user.id,
       table_name: "contractors",

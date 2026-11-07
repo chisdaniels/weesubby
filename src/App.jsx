@@ -3,6 +3,7 @@ import { supabase } from "./lib/supabase";
 import { SITE_URL, DEFAULT_TITLE, DEFAULT_DESCRIPTION, ROUTE_META, TRADE_PAGES } from "./seo";
 import { ServiceFilter, ServicePicker, ServiceSelect, serviceFilterMatches } from "./ServicePicker";
 import { AdminSection, byStatus } from "./AdminSection";
+import { isNativeApp } from "./platform";
 import AdminServices from "./AdminServices";
 import { CredentialList, CredentialReviewPanel, DocLink, VerifiedCredentialBadges, VerifiedCredentialsSummary, VERIFIED_PRO_MEANING } from "./credentials";
 import {
@@ -266,7 +267,12 @@ export default function App() {
   const [denyReason, setDenyReason] = useState("");
   const [denyBusy, setDenyBusy] = useState(false);
   const [installPrompt, setInstallPrompt] = useState(null);
-  const [isInstalled, setIsInstalled] = useState(false);
+  // The iPhone app counts as installed: hides Install buttons and "add to Home Screen" tips.
+  const [isInstalled, setIsInstalled] = useState(isNativeApp);
+  const [deleteAccountModal, setDeleteAccountModal] = useState(false);
+  const [deleteAccountText, setDeleteAccountText] = useState("");
+  const [deleteAccountBusy, setDeleteAccountBusy] = useState(false);
+  const [deleteAccountError, setDeleteAccountError] = useState(null);
   const [iosInstallModal, setIosInstallModal] = useState(false);
   const [jobReleases, setJobReleases] = useState([]);
   const [supportTickets, setSupportTickets] = useState([]);
@@ -1425,6 +1431,24 @@ export default function App() {
     notify("Signed out.");
   }
 
+  async function deleteMyAccount(e) {
+    e.preventDefault();
+    if (deleteAccountText.trim().toUpperCase() !== "DELETE") return;
+    setDeleteAccountBusy(true);
+    setDeleteAccountError(null);
+    const { data, error } = await supabase.functions.invoke("delete-account", { method: "POST" });
+    if (error || !data?.deleted) {
+      let msg = "Couldn't delete your account. Please try again or contact support.";
+      try { msg = (await error?.context?.json())?.error ?? msg; } catch { /* keep default */ }
+      setDeleteAccountBusy(false);
+      setDeleteAccountError(msg);
+      return;
+    }
+    // The login no longer exists; clear this device's session and start fresh.
+    await supabase.auth.signOut({ scope: "local" }).catch(() => {});
+    window.location.replace("/");
+  }
+
 function avatarInitials(name) {
     const parts = name.trim().split(/\s+/);
     if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
@@ -2081,6 +2105,14 @@ function avatarInitials(name) {
                         onClick={() => { signOut(); setUserMenuOpen(false); }}
                       >
                         Sign Out
+                      </button>
+                      <button
+                        className="user-menu-item"
+                        role="menuitem"
+                        style={{ color: "#b91c1c" }}
+                        onClick={() => { setDeleteAccountText(""); setDeleteAccountError(null); setDeleteAccountModal(true); setUserMenuOpen(false); }}
+                      >
+                        Delete my account
                       </button>
                     </div>
                   </>
@@ -2747,13 +2779,18 @@ function avatarInitials(name) {
                         )}
                         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                           <span className="badge">✓ Your plan</span>
-                          <button className="btn btn-outline btn-sm" onClick={() => callBillingFunction("create-portal")} disabled={billingBusy}>
-                            {billingBusy ? "Opening..." : "Manage billing"}
-                          </button>
+                          {/* Apple doesn't allow outside payment flows in the iPhone app. */}
+                          {!isNativeApp && (
+                            <button className="btn btn-outline btn-sm" onClick={() => callBillingFunction("create-portal")} disabled={billingBusy}>
+                              {billingBusy ? "Opening..." : "Manage billing"}
+                            </button>
+                          )}
                         </div>
                       </div>
                     ) : current ? (
                       <span className="badge" style={{ alignSelf: "flex-start" }}>✓ Your plan</span>
+                    ) : p.key === "pro" && user && isNativeApp ? (
+                      <div style={{ fontSize: "0.9375rem", color: "#64748b" }}>Pro can't be purchased in the iPhone app.</div>
                     ) : p.key === "pro" && user ? (
                       <button className="btn btn-gold" onClick={startCheckout} disabled={billingBusy} style={{ opacity: billingBusy ? 0.6 : 1 }}>
                         {billingBusy ? "Opening checkout..." : myContractor ? "Upgrade to Pro" : "Set Up Profile to Go Pro"}
@@ -4273,6 +4310,56 @@ function avatarInitials(name) {
       )}
 
       {/* DENY CONTRACTOR MODAL */}
+      {deleteAccountModal && (
+        <div className="modal-bg" onClick={() => !deleteAccountBusy && setDeleteAccountModal(false)} role="presentation">
+          <div className="modal" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="delete-account-title">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <h2 id="delete-account-title" style={{ fontSize: "1.5rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#b91c1c" }}>DELETE MY ACCOUNT</h2>
+              <button className="btn btn-outline btn-sm" onClick={() => setDeleteAccountModal(false)} disabled={deleteAccountBusy} aria-label="Close">✕</button>
+            </div>
+            <p style={{ fontSize: "0.9375rem", color: "#334155", marginBottom: 10 }}>
+              This permanently deletes your WeeSubby account. It can't be undone. We'll remove:
+            </p>
+            <ul style={{ fontSize: "0.9375rem", color: "#475569", margin: "0 0 12px 18px", lineHeight: 1.6 }}>
+              <li>Your login and profile{myContractor ? ", including your contractor listing, reviews and uploaded documents" : ""}</li>
+              <li>Your messages and notifications</li>
+              <li>Your contact details on jobs you posted, and your open jobs</li>
+              {isPro && <li>Your WeeSubby Pro subscription (cancelled right away)</li>}
+            </ul>
+            <p style={{ fontSize: "0.9375rem", color: "#475569", marginBottom: 14 }}>
+              Reviews you wrote stay on the pro's profile as "Former WeeSubby user".
+            </p>
+            <form onSubmit={deleteMyAccount} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div>
+                <label htmlFor="delete-account-confirm" style={{ fontSize: "0.9375rem", color: "#334155", marginBottom: 6, display: "block" }}>
+                  Type <strong>DELETE</strong> to confirm
+                </label>
+                <input
+                  id="delete-account-confirm"
+                  autoComplete="off"
+                  autoCapitalize="characters"
+                  value={deleteAccountText}
+                  onChange={e => setDeleteAccountText(e.target.value)}
+                />
+              </div>
+              {deleteAccountError && (
+                <div role="alert" style={{ color: "#b91c1c", fontSize: "0.9375rem", background: "#fef2f2", padding: "8px 12px", borderRadius: 8 }}>
+                  {deleteAccountError}
+                </div>
+              )}
+              <button
+                type="submit"
+                className="btn"
+                style={{ background: "#dc2626", color: "#fff", opacity: deleteAccountBusy || deleteAccountText.trim().toUpperCase() !== "DELETE" ? 0.6 : 1 }}
+                disabled={deleteAccountBusy || deleteAccountText.trim().toUpperCase() !== "DELETE"}
+              >
+                {deleteAccountBusy ? "Deleting..." : "Permanently delete my account"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
       {denyModal && (
         <div className="modal-bg" onClick={() => setDenyModal(null)} role="presentation">
           <div className="modal" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
