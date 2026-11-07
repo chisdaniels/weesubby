@@ -205,6 +205,7 @@ export default function App() {
   // The account menu is placed on screen from the button's position, so it never runs off
   // the edge, even on an iPhone with large text (index.html follows the phone's text size).
   const userMenuBtnRef = useRef(null);
+  const notifyTimerRef = useRef(null);
   const [userMenuPos, setUserMenuPos] = useState(null);
   const [serviceFilter, setServiceFilter] = useState(""); // "" | "group:<slug>" | service name
   // Find a Contractor: null until the visitor picks "All services" or a service, and no pros show until then.
@@ -414,13 +415,15 @@ export default function App() {
 
   async function enablePush() {
     if (isNativeApp) {
+      notify("Turning on notifications…", 20000);
       try {
         const result = await enableNativePush();
         if (result === "granted") { setPushState("on"); notify("Notifications are on for this iPhone."); }
-        else if (result === "denied") { setPushState("denied"); notify("Notifications are off. Turn them on in Settings → WeeSubby → Notifications."); }
+        else if (result === "denied") { setPushState("denied"); notify("Notifications are off for WeeSubby. Turn them on in your iPhone's Settings → WeeSubby → Notifications.", 8000); }
+        else notify("Notifications weren't turned on. Tap again and choose Allow when your iPhone asks.", 8000);
       } catch (err) {
         console.error("native push failed:", err);
-        notify("Couldn't turn on notifications: " + (err.message || err));
+        notify("Couldn't turn on notifications: " + (err.message || err), 10000);
       }
       return;
     }
@@ -846,9 +849,11 @@ export default function App() {
     (!onlyMyServices || myServiceNames.includes(j.trade))
   );
 
-  function notify(msg) {
+  // A new message replaces the current one and restarts its timer.
+  function notify(msg, ms = 3000) {
     setNotification(msg);
-    setTimeout(() => setNotification(null), 3000);
+    clearTimeout(notifyTimerRef.current);
+    notifyTimerRef.current = setTimeout(() => setNotification(null), ms);
   }
 
   async function sendMessage() {
@@ -1964,7 +1969,7 @@ function avatarInitials(name) {
         input:focus, textarea:focus, select:focus { border-color: #db6b33; box-shadow: 0 0 0 3px rgba(219,107,51,0.28); }
         .msg-me { background: #db6b33; color: #0f172a; border-radius: 18px 18px 4px 18px; }
         .msg-them { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 18px 18px 18px 4px; }
-        .notification { position: fixed; top: calc(env(safe-area-inset-top) + 20px); right: calc(env(safe-area-inset-right) + 20px); background: #1f2430; color: #ffffff; padding: 12px 22px; border-radius: 12px; font-weight: 700; z-index: 999; animation: slidein 0.3s; }
+        .notification { position: fixed; top: calc(env(safe-area-inset-top) + 20px); right: calc(env(safe-area-inset-right) + 20px); background: #1f2430; color: #ffffff; padding: 12px 22px; border-radius: 12px; font-weight: 700; z-index: 999; animation: slidein 0.3s; max-width: calc(100vw - 40px - env(safe-area-inset-left) - env(safe-area-inset-right)); }
         @keyframes slidein { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
         .modal-bg { position: fixed; inset: 0; background: rgba(15,23,42,0.45); z-index: 100; display: flex; align-items: center; justify-content: center; padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); backdrop-filter: blur(2px); overflow-y: auto; }
         .modal { background: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 24px 60px rgba(15,23,42,0.25); width: 100%; max-width: 480px; padding: 28px; max-height: 90vh; overflow-y: auto; overflow-x: hidden; }

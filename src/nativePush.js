@@ -26,17 +26,32 @@ export async function enableNativePush() {
   if (receive.startsWith("prompt")) ({ receive } = await P.requestPermissions());
   if (receive !== "granted") return receive.startsWith("prompt") ? "prompt" : receive;
 
-  const token = await new Promise(async (resolve, reject) => {
-    const handles = [];
-    const done = () => handles.forEach(h => h.remove());
-    handles.push(await P.addListener("registration", t => { done(); resolve(t.value); }));
-    handles.push(await P.addListener("registrationError", e => { done(); reject(new Error(e.error || "Registration failed")); }));
-    await P.register();
-  });
+  const token = await registerWithApple(P);
   const { error } = await supabase.rpc("save_native_push_token", { p_token: token });
   if (error) throw error;
   currentToken = token.toLowerCase();
   return "granted";
+}
+
+// Asks Apple for this iPhone's push token. Fails with a readable message instead of
+// waiting forever if Apple never answers (e.g. no push capability in this build).
+async function registerWithApple(P) {
+  const handles = [];
+  let timer;
+  try {
+    return await new Promise((resolve, reject) => {
+      timer = setTimeout(() => reject(new Error("Apple didn't respond. Check your internet connection and try again.")), 20000);
+      Promise.all([
+        P.addListener("registration", t => resolve(t.value)),
+        P.addListener("registrationError", e => reject(new Error(e?.error || "Apple refused to register this iPhone for notifications."))),
+      ])
+        .then(hs => { handles.push(...hs); return P.register(); })
+        .catch(reject);
+    });
+  } finally {
+    clearTimeout(timer);
+    handles.forEach(h => h.remove());
+  }
 }
 
 // Called on sign-out so this iPhone stops getting the old account's alerts.
