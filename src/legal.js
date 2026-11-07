@@ -6,7 +6,7 @@
 // advice: have it reviewed before relying on it, and update LEGAL_UPDATED
 // whenever the text changes.
 
-export const LEGAL_UPDATED = "November 5, 2026";
+export const LEGAL_UPDATED = "November 7, 2026";
 
 export const PRIVACY = {
   path: "/privacy",
@@ -47,12 +47,14 @@ export const PRIVACY = {
       "We may also disclose information if required by law, to protect the rights and safety of our users or the public, or as part of a sale or merger of the business, in which case this policy will continue to apply.",
     ]],
     ["How long we keep information", [
-      "We keep your information while your account is open. When you ask us to delete your account, we delete or anonymize your personal information, except where we need to keep records for legal, tax, accounting, or dispute purposes. Stripe keeps payment records as the law requires.",
+      "We keep your information while your account is open. When you delete your account, we delete or anonymize your personal information, except where we need to keep records for legal, tax, accounting, or dispute purposes. Stripe keeps payment records as the law requires.",
+      "Deleting your account removes your login, your contractor profile and its reviews, your uploaded documents, your messages, notifications, and support requests, and the contact details on jobs you posted. Your open jobs come off the board. Any WeeSubby Pro subscription is cancelled. Reviews you wrote about contractors stay on their profiles, shown as \"Former WeeSubby user\" instead of your name.",
     ]],
     ["Your choices", [
       "You can update your profile and job details in the app at any time.",
       "You can turn notifications and message sounds off from your profile menu.",
-      "To get a copy of your information, correct it, or delete your account, contact us through Support in the app and we will respond within 30 days.",
+      "You can delete your account at any time, on the website or in the app: open the account menu and choose Delete my account. Deletion is permanent and takes effect right away.",
+      "To get a copy of your information or correct it, contact us through Support in the app and we will respond within 30 days.",
     ]],
     ["Security", [
       "Uploaded documents are stored privately and shared only through time-limited links. Access to private data is restricted by database rules, and all traffic uses HTTPS. No system is perfectly secure, so please use a strong, unique password.",
