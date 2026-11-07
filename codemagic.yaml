@@ -1,0 +1,49 @@
+# Codemagic cloud build for the WeeSubby iPhone app.
+# Builds the site, packages it into the iOS app, signs it, and uploads it to
+# TestFlight. Start it by hand in Codemagic (Start new build → "iOS → TestFlight").
+# Setup steps: IOS.md → "Build in the cloud (Codemagic)".
+
+workflows:
+  ios-testflight:
+    name: iOS → TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 45
+    integrations:
+      # The App Store Connect API key added in Codemagic → Team settings → Integrations.
+      # This name must match the one you give it there.
+      app_store_connect: WeeSubby App Store Connect
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.weesubby.app
+      vars:
+        # Public values, the same ones weesubby.com ships to every browser.
+        VITE_SUPABASE_URL: https://mjlaniudtmdfzrcgmios.supabase.co
+        VITE_SUPABASE_ANON_KEY: sb_publishable_B1Xdr9vSe_qlWi7N881wNw_nKHIKPFF
+        XCODE_PROJECT: ios/App/App.xcodeproj
+        XCODE_SCHEME: App
+      node: 22
+      xcode: latest
+    scripts:
+      - name: Install dependencies
+        script: npm ci
+      - name: Build the site
+        script: npm run build
+      - name: Copy the site into the iOS project
+        script: npx cap sync ios
+      - name: Set up code signing
+        script: xcode-project use-profiles
+      - name: Set the build number
+        # Each upload needs a higher build number; Codemagic counts builds for us.
+        script: |
+          cd ios/App
+          agvtool new-version -all "$BUILD_NUMBER"
+      - name: Build the app
+        script: xcode-project build-ipa --project "$XCODE_PROJECT" --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
