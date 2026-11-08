@@ -8,6 +8,8 @@ const path = require('path');
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 1 });
   await page.goto('file://' + path.resolve(page_));
+  const vpSize = await page.evaluate(() => window.VIEWPORT || null); // pages may set e.g. { width: 1920, height: 1080 }
+  if (vpSize) await page.setViewportSize(vpSize);
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(300);
   if (stillsFlag === '--stills') {

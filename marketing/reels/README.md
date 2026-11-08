@@ -9,6 +9,14 @@ Vertical (9:16, 1080×1920) reels for Instagram Reels, TikTok and YouTube Shorts
 | `reel3-how-it-works.html` | Both: the 3-step flow and pricing | 20s |
 | `reel4-crew-footage.html` | Both: real crew footage with WeeSubby overlays | 25s |
 
+There's also a landscape (16:9, 1920×1080) app walkthrough:
+
+| File | Audience | Length |
+| --- | --- | --- |
+| `how-to-use-explainer.html` | Both: how to use every feature and why it helps, for YouTube, the website or onboarding | 104s |
+
+It shows the app in a browser window, with an animated cursor and a caption panel for each step. Part 1 covers homeowners: signing up, finding pros, profiles and messages, posting a job, tracking it and leaving a review. Part 2 covers contractors: profile, availability, open jobs, going Pro and accepting a job. It sets `VIEWPORT = { width: 1920, height: 1080 }`, which `render.cjs` picks up.
+
 Suggested post captions and hashtags are in `captions.md`. For reel 4, the caption and the clip credits are in `reel4-footage-credits.md`.
 
 ## How it works
@@ -33,6 +41,7 @@ npm i -D playwright && npx playwright install chromium   # one-time setup (adds 
 mkdir -p out stills
 node render.cjs reel1-homeowners.html out/WeeSubby-Reel1-Homeowners.mp4      # 30fps H.264 MP4
 node render.cjs reel1-homeowners.html stills/r1 30 --stills 2,8,15          # PNG stills for quick checks
+node render.cjs how-to-use-explainer.html out/WeeSubby-HowToUse.mp4        # 16:9 walkthrough (~5 min to render)
 ```
 
 ### Reel 4 (footage)
