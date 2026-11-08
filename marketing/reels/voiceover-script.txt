@@ -1,0 +1,15 @@
+# Voice-over script for how-to-use-explainer.html (one line per segment: <segment id>|<narration>)
+# Segment ids match the video's sections. The video is retimed to the recorded lines, so wording can change freely.
+intro|Here's how to use WeeSubby, for homeowners and contractors.
+h1|Homeowners, start by creating a free account. Choose Homeowner, then add your email and a password. You'll never pay a thing.
+h2|Next, find a contractor. Search by name, trade, or city. Every card shows ratings, hourly rates, and who's available right now.
+h3|Open a profile to check reviews, rates, and specialties. Then send a message, and ask anything before you hire.
+h4|Ready? Post your job. Add a title, trade, location, budget, and a short description. Contractors come to you, and your contact details are only shared with the pro who accepts.
+h5|You'll see when your job is accepted, and by whom. When the work's done, leave a review to help your neighbors.
+mid|Contractors, here's how WeeSubby works for you.
+c1|Sign up as a contractor, and build your free profile: your trade, hourly rate, location, specialties, and a short bio. Homeowners nearby will find you in search.
+c2|Use the Open and Busy toggle, so you only get contacted when you have room.
+c3|The Jobs tab lists real jobs with budgets. Filter by your trade, and message homeowners for free.
+c4|To accept jobs, go Pro for forty-nine dollars a month, with secure checkout. Cancel anytime.
+c5|Hit Accept Job, and the homeowner's name, email, and phone unlock instantly. The job is yours.
+outro|WeeSubby. Free for homeowners. Free to list for contractors. Sign up today.
