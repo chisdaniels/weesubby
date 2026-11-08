@@ -63,7 +63,7 @@ elif cmd == 'mix':
     fade = total - 3.5
     graph = ';'.join(chains + [
         f'{"".join(labels)}amix=inputs={len(labels)}:normalize=0,loudnorm=I=-16:TP=-2[voice]',
-        f'[1:a]aresample=48000,afade=t=in:d=0.5,afade=t=out:st={fade:.2f}:d=3.5,loudnorm=I=-30:TP=-10[bed]',
+        f'[1:a]aresample=48000,afade=t=in:d=0.5,afade=t=out:st={fade:.2f}:d=3.5,loudnorm=I=-30:TP=-9[bed]',
         '[voice][bed]amix=inputs=2:normalize=0:duration=longest,loudnorm=I=-14:TP=-1.5:LRA=11,aresample=48000[a]'])
     subprocess.run(['ffmpeg', '-nostdin', '-loglevel', 'error', '-y', *inputs, '-filter_complex', graph,
                     '-map', '0:v', '-map', '[a]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-ac', '2',
