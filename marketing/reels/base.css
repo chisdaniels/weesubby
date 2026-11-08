@@ -8,7 +8,7 @@ body { font-family: 'DM Sans', sans-serif; color: var(--ink); position: relative
 .bg { position: absolute; inset: 0; overflow: hidden; }
 .bg::before { content: ''; position: absolute; inset: -200px;
   background-image: linear-gradient(rgba(148,163,184,.07) 2px, transparent 2px), linear-gradient(90deg, rgba(148,163,184,.07) 2px, transparent 2px);
-  background-size: 90px 90px; transform: translateY(calc(var(--t, 0) * 18px)); }
+  background-size: 90px 90px; background-position: 0 calc(var(--t, 0) * 18px); /* repeats, so it never leaves a gap */ }
 .glow { position: absolute; width: 1300px; height: 1300px; border-radius: 50%; left: -110px; top: 300px;
   background: radial-gradient(circle, rgba(245,158,11,.22), rgba(245,158,11,0) 62%); }
 .stripes { position: absolute; left: 0; right: 0; height: 34px;

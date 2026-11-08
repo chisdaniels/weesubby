@@ -17,6 +17,23 @@ There's also a landscape (16:9, 1920×1080) app walkthrough:
 
 It shows the app in a browser window, with an animated cursor and a caption panel for each step. Part 1 covers homeowners: signing up, finding pros, profiles and messages, posting a job, tracking it and leaving a review. Part 2 covers contractors: profile, availability, open jobs, going Pro and accepting a job. It sets `VIEWPORT = { width: 1920, height: 1080 }`, which `render.cjs` picks up.
 
+#### Voice-over
+
+The narrated version uses an [ElevenLabs](https://elevenlabs.io) voice (Adam).
+
+- `voiceover-script.txt` has one line per section.
+- `make-voiceover.py` generates `voiceover/<section>.mp3`. It needs an ElevenLabs API key in `ELEVENLABS_API_KEY`.
+- The generated clips are committed, so you can rebuild the video without paying for the voice again.
+- `voiceover-video.py timing` writes `explainer-timing.js`, which slows any section that's too short for its line. While that file exists, the page renders at voice-over timing (about 1:58). Delete it to render the original 1:44 cut.
+- `voiceover-video.py mix` lays the lines over the render, with the music well under the voice.
+
+```bash
+python3 make-voiceover.py                 # only after editing the script; default voice is Adam
+python3 voiceover-video.py timing
+node render.cjs how-to-use-explainer.html out/WeeSubby-HowToUse-voice-silent.mp4
+python3 voiceover-video.py mix out/WeeSubby-HowToUse-voice-silent.mp4 out/WeeSubby-HowToUse-voice.mp4
+```
+
 Suggested post captions and hashtags are in `captions.md`. For reel 4, the caption and the clip credits are in `reel4-footage-credits.md`.
 
 ## How it works
