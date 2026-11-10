@@ -1,0 +1,16 @@
+# Soundtrack for each reel, used by add-music.sh.
+# Columns: <rendered file in out/> <Mixkit music track id> <start offset in the track, seconds>
+# Tracks are from https://mixkit.co/free-stock-music/ under the Mixkit Stock Music Free License
+# (commercial use allowed, no attribution required). Start offsets skip quiet intros and land on
+# a bar line; find-music-start.py suggests one for a new track.
+#
+#   158  "Happy Times"          Alejandro Magaña   Pop, 117 BPM
+#   49   "Rock the Game"        Ahjay Stelino      Rock, 117 BPM
+#   33   "Motivating Mornings"  Ahjay Stelino      Corporate, 123 BPM
+#   1116 "Pick it Up"           Michael Ramir C.   Rock, 117 BPM
+#   634  "Your Breath"          Eugenio Mininni    Corporate, 117 BPM
+WeeSubby-Reel1-Homeowners.mp4 158 0.07
+WeeSubby-Reel2-Contractors.mp4 49 4.16
+WeeSubby-Reel3-HowItWorks.mp4 33 14.42
+WeeSubby-Reel4-Crew.mp4 1116 0.09
+WeeSubby-HowToUse.mp4 634 31.02

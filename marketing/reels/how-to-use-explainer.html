@@ -1,0 +1,365 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<!-- 16:9 app walkthrough. Left: chapter + step captions. Right: browser window with the WeeSubby app recreated. -->
+<style>
+html, body { width: 1920px; height: 1080px; }
+.bg::before { background-size: 80px 80px; }
+.glow { left: 600px; top: -200px; }
+.side { position: absolute; left: 90px; top: 0; bottom: 0; width: 470px; }
+.chap { position: absolute; top: 200px; font-weight: 800; font-size: 26px; letter-spacing: 4px; padding: 10px 22px; border-radius: 10px; }
+.step { position: absolute; top: 300px; left: 0; right: 0; }
+.step .n { font-family: 'Bebas Neue'; font-size: 120px; line-height: .8; color: transparent; -webkit-text-stroke: 3px var(--amber); }
+.step .h { font-family: 'Bebas Neue'; font-size: 82px; line-height: .95; letter-spacing: 2px; margin: 18px 0 22px; }
+.step .p { font-size: 30px; line-height: 1.4; color: #cbd5e1; }
+.step .why { margin-top: 30px; font-size: 26px; line-height: 1.4; color: var(--ink); border-left: 6px solid var(--amber); padding: 6px 0 6px 20px; }
+.step .why b { color: var(--amber); display: block; font-size: 20px; letter-spacing: 3px; margin-bottom: 4px; }
+.prog { position: absolute; bottom: 110px; left: 0; display: flex; gap: 10px; }
+.prog i { width: 46px; height: 8px; border-radius: 4px; background: #334155; display: block; }
+.prog i.on { background: var(--amber); }
+
+/* browser */
+.win { position: absolute; left: 640px; top: 110px; width: 1200px; height: 860px; border-radius: 22px; overflow: hidden; background: #020617;
+  box-shadow: 0 50px 120px rgba(0,0,0,.6), 0 0 0 2px #334155; }
+.chrome { height: 50px; background: #1e293b; display: flex; align-items: center; gap: 10px; padding: 0 20px; }
+.chrome i { width: 14px; height: 14px; border-radius: 50%; background: #475569; display: block; }
+.chrome .url { margin-left: 24px; flex: 1; background: #0f172a; border-radius: 8px; height: 30px; color: #64748b; font-size: 16px; display: flex; align-items: center; padding: 0 14px; }
+.vp { position: absolute; top: 50px; left: 0; right: 0; bottom: 0; background: var(--navy); overflow: hidden; }
+.scr { position: absolute; inset: 0; }
+.hdr { height: 66px; border-bottom: 1px solid #1e293b; display: flex; align-items: center; padding: 0 28px; gap: 18px; }
+.hdr .logo { font-size: 30px; letter-spacing: 3px; }
+.tabs { flex: 1; display: flex; justify-content: center; gap: 4px; }
+.tab { font-size: 17px; color: var(--muted); padding: 8px 12px; border-radius: 8px; white-space: nowrap; }
+.tab.on { background: rgba(245,158,11,.14); color: var(--amber); font-weight: 700; }
+.hb { font-size: 16px; font-weight: 700; border: 2px solid var(--line); color: #cbd5e1; padding: 6px 14px; border-radius: 9px; white-space: nowrap; }
+.hb.gold { background: var(--amber); color: var(--navy); border-color: var(--amber); }
+.hb.ol { border-color: var(--amber); color: var(--amber); }
+.hb.gr { border-color: var(--green); color: var(--green); }
+.hb.rd { border-color: #f87171; color: #f87171; }
+.main { padding: 28px 40px; }
+.ttl { font-family: 'Bebas Neue'; color: var(--amber); font-size: 44px; letter-spacing: 2px; }
+.lead { color: #64748b; font-size: 18px; margin: 2px 0 20px; }
+.inp { background: #1e293b; border: 2px solid var(--line); border-radius: 10px; padding: 12px 16px; font-size: 19px; min-height: 52px; color: var(--ink); }
+.inp.focus { border-color: var(--amber); }
+.inp.ph { color: #64748b; }
+.lab { font-size: 15px; color: var(--muted); margin: 0 0 6px; }
+.b { display: inline-block; font-size: 15px; padding: 4px 12px; border-radius: 999px; background: rgba(245,158,11,.14); color: var(--amber); font-weight: 600; }
+.b.g { background: rgba(52,211,153,.14); color: var(--green); }
+.b.r { background: rgba(248,113,113,.14); color: #f87171; }
+.cc { background: #1e293b; border: 2px solid var(--line); border-radius: 16px; padding: 20px; display: flex; gap: 18px; align-items: flex-start; margin-bottom: 14px; }
+.cc.hl { border-color: var(--amber); }
+.av { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 22px; color: #fff; flex: none; }
+.nm { font-weight: 700; font-size: 21px; }
+.mt { color: var(--muted); font-size: 16px; margin: 4px 0 8px; }
+.st { color: var(--amber); font-size: 17px; letter-spacing: 1px; }
+.gbtn { background: var(--amber); color: var(--navy); font-weight: 800; font-size: 17px; padding: 10px 20px; border-radius: 10px; white-space: nowrap; display: inline-block; }
+.obtn { border: 2px solid var(--line); color: #cbd5e1; font-weight: 700; font-size: 17px; padding: 8px 18px; border-radius: 10px; display: inline-block; }
+.dim { position: absolute; inset: 0; background: rgba(2,6,23,.7); }
+.modal { position: absolute; left: 50%; top: 50%; transform-origin: center; background: #1e293b; border: 2px solid var(--line); border-radius: 20px; padding: 32px; }
+.mtitle { font-family: 'Bebas Neue'; color: var(--amber); font-size: 36px; letter-spacing: 2px; margin-bottom: 18px; }
+.role { display: flex; gap: 12px; margin-bottom: 18px; }
+.role div { flex: 1; text-align: center; border: 2px solid var(--line); border-radius: 12px; padding: 14px; font-size: 19px; font-weight: 700; color: var(--muted); }
+.role div.sel { border-color: var(--amber); color: var(--amber); background: rgba(245,158,11,.1); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
+.toastx { position: absolute; top: 86px; left: 50%; margin-left: -280px; width: 560px; background: #065f46; color: #ecfdf5; font-weight: 700; font-size: 19px; padding: 16px 22px; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,.5); z-index: 30; }
+.bub { max-width: 520px; font-size: 19px; padding: 14px 18px; border-radius: 16px; margin-bottom: 12px; line-height: 1.35; }
+.bub.l { background: #1e293b; border: 1px solid var(--line); }
+.bub.r { background: var(--amber); color: var(--navy); font-weight: 600; margin-left: auto; }
+.jc { background: #1e293b; border: 2px solid var(--line); border-radius: 16px; padding: 20px 22px; margin-bottom: 14px; }
+.jc .row1 { display: flex; justify-content: space-between; align-items: center; }
+.jt { font-size: 21px; font-weight: 700; }
+.money { color: var(--amber); font-weight: 800; font-size: 19px; }
+.cbox { background: var(--navy); border-radius: 12px; padding: 14px 16px; margin-top: 14px; font-size: 17px; }
+.cbox .k { font-size: 13px; font-weight: 800; letter-spacing: 2px; color: var(--amber); margin-bottom: 6px; }
+.plan { background: #1e293b; border: 2px solid var(--line); border-radius: 18px; padding: 24px; }
+.plan.pro { border-color: var(--amber); }
+.plan .pn { font-weight: 700; font-size: 20px; margin-bottom: 6px; }
+.plan .pp { font-size: 42px; font-weight: 800; }
+.plan .pp small { font-size: 16px; color: #64748b; font-weight: 500; }
+.plan ul { list-style: none; margin: 14px 0 20px; display: grid; gap: 8px; color: var(--muted); font-size: 17px; }
+.cursor { position: absolute; left: 0; top: 0; width: 34px; height: 34px; z-index: 50; pointer-events: none; }
+.ring { position: absolute; width: 60px; height: 60px; margin: -30px 0 0 -30px; border-radius: 50%; border: 4px solid var(--amber); z-index: 49; }
+.card16 { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+</style></head><body>
+<div class="bg"><div class="glow"></div></div>
+<div class="stripes" style="top:0;height:22px;background-size:auto"></div>
+
+<!-- Caption side panel -->
+<div class="side" id="side">
+  <div class="chap" id="chapH" style="background:var(--amber);color:var(--navy)">FOR HOMEOWNERS</div>
+  <div class="chap" id="chapC" style="background:#fff;color:var(--navy)">FOR CONTRACTORS</div>
+  <div id="steps"></div>
+  <div class="prog" id="prog"></div>
+</div>
+
+<!-- Browser window -->
+<div class="win" id="win">
+  <div class="chrome"><i></i><i></i><i></i><div class="url">weesubby.com</div></div>
+  <div class="vp" id="vp"></div>
+</div>
+<svg class="cursor" id="cursor" viewBox="0 0 24 24"><path d="M4 2 L4 20 L9 15.5 L12.5 22 L15.5 20.6 L12 14 L19 14 Z" fill="#fff" stroke="#0f172a" stroke-width="1.5" stroke-linejoin="round"/></svg>
+<div class="ring" id="ring"></div>
+
+<!-- Intro / chapter / outro cards -->
+<div class="card16" id="intro">
+  <div class="logo" id="in1" style="font-size:150px">⚒ WEESUBBY</div>
+  <div class="bebas" id="in2" style="font-size:110px;margin-top:10px">HOW TO USE <span class="amber">THE APP</span></div>
+  <div class="sub" id="in3" style="font-size:38px;margin-top:24px">For homeowners and contractors</div>
+</div>
+<div class="card16" id="mid">
+  <div class="chip" id="mid1" style="background:#fff;font-size:34px">PART 2</div>
+  <div class="bebas" id="mid2" style="font-size:150px;margin-top:20px">FOR <span class="amber">CONTRACTORS</span></div>
+  <div class="sub" id="mid3" style="font-size:38px;margin-top:10px">List free. Find work. Get paid.</div>
+</div>
+<div class="card16" id="outro">
+  <div class="logo" id="o1" style="font-size:130px">⚒ WEESUBBY</div>
+  <div id="o2" style="display:flex;gap:40px;margin:40px 0 50px;text-align:left">
+    <div class="plan" style="width:520px"><div class="b" style="margin-bottom:12px">HOMEOWNERS · FREE FOREVER</div><ul style="color:#cbd5e1;font-size:24px;gap:12px"><li>✓ Find verified local pros</li><li>✓ Post unlimited jobs</li><li>✓ Message &amp; review</li></ul></div>
+    <div class="plan pro" style="width:520px"><div class="b" style="margin-bottom:12px">CONTRACTORS · LIST FREE</div><ul style="color:#cbd5e1;font-size:24px;gap:12px"><li>✓ Get found in search</li><li>✓ Browse &amp; message on jobs</li><li>✓ Pro $49/mo to accept jobs</li></ul></div>
+  </div>
+  <div id="o3"><span class="chip" style="font-size:44px;padding:22px 56px">Sign up free today →</span></div>
+</div>
+
+<script>
+// ---------- Build the app screens ----------
+const AV = { IR: '#b45309', BS: '#0369a1', VP: '#7c3aed', AR: '#b91c1c' };
+const av = (i, s = 60) => `<div class="av" style="background:${AV[i]};width:${s}px;height:${s}px">${i}</div>`;
+function hdr(role, on, extra = '') {
+  const tabs = role === 'home' ? ['🔍 Find', '📋 Post Job', '💬 Messages', '⭐ Reviews', '💲 Pricing']
+    : ['🔍 Find', '💼 Jobs', '💬 Messages', '⭐ Reviews', '💲 Pricing'];
+  const right = role === 'home' ? '<span class="hb">Sign Out</span>'
+    : role === 'guest' ? '<span class="hb gold">Sign In</span>'
+    : extra + '<span class="hb">Edit Profile</span>';
+  const t = role === 'guest' ? ['🔍 Find', '📋 Post Job', '⭐ Reviews', '💲 Pricing'] : tabs;
+  return `<div class="hdr"><span class="logo">⚒ WEESUBBY</span><div class="tabs">${t.map(x => `<span class="tab ${x.includes(on) ? 'on' : ''}">${x}</span>`).join('')}</div>${right}</div>`;
+}
+const pro = (name, i, trade, loc, rating, n, rate, tags, availC = true, id = '') =>
+  `<div class="cc" ${id ? `id="${id}"` : ''}>${av(i)}<div style="flex:1"><div class="row" style="gap:12px"><span class="nm">${name}</span><span class="b ${availC ? 'g' : 'r'}">${availC ? 'Available' : 'Busy'}</span></div>
+   <div class="mt">${trade} · ${loc}</div><div class="row" style="gap:12px;margin-bottom:10px"><span class="st">★★★★★</span><span class="mt" style="margin:0">${rating} (${n} reviews)</span><b class="amber" style="font-size:17px">$${rate}/hr</b></div>
+   <div class="row" style="gap:8px">${tags.map(x => `<span class="b">${x}</span>`).join('')}</div></div><span class="gbtn" ${id ? `id="${id}-msg"` : ''}>Message</span></div>`;
+const job = (t, trade, loc, money, desc, id = '', btn = '') =>
+  `<div class="jc" ${id ? `id="${id}"` : ''}><div class="row1"><span class="jt">${t}</span><span class="money">${money}</span></div>
+   <div class="row" style="gap:8px;margin:10px 0"><span class="b">${trade}</span><span class="b">${loc}</span><span class="b">Open</span></div>
+   <div class="mt" style="margin:0 0 ${btn ? 14 : 0}px">${desc}</div>${btn}</div>`;
+const FIND = (x = '') => `<div class="main"><div class="ttl">FIND A CONTRACTOR</div><div class="lead">Browse verified construction &amp; home service pros</div>
+  <div class="row" style="gap:14px;margin-bottom:20px"><div class="inp ph" style="flex:1" ${x ? 'id="q"' : ''}><span ${x ? 'id="qt"' : ''}>${x ? 'plumber' : 'Search by name, trade, or city...'}</span></div><div class="inp" style="width:230px">All Trades ▾</div></div>
+  ${pro('Blue Stream Plumbing', 'BS', 'Plumber', 'Austin, TX', '4.9', 38, 85, ['Leaks', 'Water Heaters', 'Re-pipes'], true, x && 'bs')}
+  ${pro('Iron Ridge Builders', 'IR', 'General Contractor', 'Austin, TX', '4.8', 52, 95, ['Renovations', 'Framing'], true, x && 'ir')}
+  ${pro('Vega Pro Electric', 'VP', 'Electrician', 'Round Rock, TX', '4.7', 21, 90, ['Panels', 'EV Chargers'], false, x && 'vpe')}</div>`;
+const S = {};
+S.auth = `${hdr('guest', 'Find')}${FIND()}<div class="dim"></div>
+  <div class="modal" id="authm" style="width:520px;margin:-250px 0 0 -260px"><div class="mtitle">CREATE ACCOUNT</div><div class="lab">I am a...</div>
+  <div class="role"><div id="r-home">🏠 Homeowner</div><div id="r-con">🔨 Contractor</div></div>
+  <div class="lab">Email</div><div class="inp" style="margin-bottom:14px"><span id="em1">sarah@email.com</span></div><div class="lab">Password</div><div class="inp" style="margin-bottom:22px"><span id="pw1">••••••••••</span></div>
+  <div class="gbtn" id="su1" style="display:block;text-align:center;padding:14px">Sign Up Free</div></div>`;
+S.find = `${hdr('home', 'Find')}${FIND(1)}`;
+S.prof = `${hdr('home', 'Find')}${FIND()}<div class="dim"></div>
+  <div class="modal" id="profm" style="width:640px;margin:-300px 0 0 -320px"><div class="row" style="gap:18px;margin-bottom:18px">${av('BS', 76)}<div><div class="nm" style="font-size:26px">Blue Stream Plumbing</div><div class="mt" style="margin:4px 0 0">Plumber · Austin, TX</div><div class="st" style="margin-top:6px">★★★★★ <span class="mt">4.9</span></div></div></div>
+  <div class="grid2" style="grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px">${[['$85', 'Per Hour'], ['38', 'Reviews'], ['Available', 'Status']].map(([a, b]) => `<div style="background:var(--navy);border-radius:12px;padding:14px;text-align:center"><div style="font-weight:800;font-size:22px;color:${b === 'Status' ? 'var(--green)' : 'var(--amber)'}">${a}</div><div class="mt" style="margin:4px 0 0;font-size:14px">${b}</div></div>`).join('')}</div>
+  <div class="mt" style="font-size:17px;line-height:1.5;color:#cbd5e1">Family-owned plumbing team. Licensed &amp; insured, 15 years in Austin. Same-week appointments.</div>
+  <div class="row" style="gap:8px;margin:14px 0 22px">${['Leaks', 'Water Heaters', 'Re-pipes'].map(x => `<span class="b">${x}</span>`).join('')}</div>
+  <div class="row" style="gap:12px"><span class="gbtn" id="pm-msg" style="flex:1;text-align:center;padding:14px">💬 Message</span><span class="obtn" style="flex:1;text-align:center;padding:12px">⭐ Leave Review</span></div></div>`;
+S.chat = `${hdr('home', 'Messages')}<div class="main"><div class="ttl" style="margin-bottom:16px">MESSAGES</div>
+  <div style="display:flex;gap:18px;height:600px"><div style="width:300px;background:#1e293b;border:2px solid var(--line);border-radius:16px;padding:12px">
+  <div class="row" style="gap:12px;padding:10px;border-radius:10px;background:rgba(245,158,11,.12)">${av('BS', 46)}<div><div style="font-weight:700;font-size:17px">Blue Stream Plumbing</div><div class="mt" style="margin:2px 0 0;font-size:14px">Plumber</div></div></div>
+  <div class="row" style="gap:12px;padding:10px">${av('IR', 46)}<div><div style="font-weight:700;font-size:17px">Iron Ridge Builders</div><div class="mt" style="margin:2px 0 0;font-size:14px">General Contractor</div></div></div></div>
+  <div style="flex:1;background:#1e293b;border:2px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column">
+  <div style="flex:1"><div class="bub r" id="m1">Hi! Do you handle leaking kitchen sinks? Thinking this week.</div><div class="bub l" id="m2">Yes, we do those all the time. I can come by Thursday afternoon.</div><div class="bub r" id="m3">Perfect, I'll post the job now 👍</div></div>
+  <div class="row" style="gap:10px"><div class="inp ph" style="flex:1;background:var(--navy)">Type a message...</div><span class="gbtn">Send</span></div></div></div></div>`;
+S.post = `${hdr('home', 'Post Job')}<div class="main"><div class="ttl">POST A JOB</div><div class="lead">Describe your project and let contractors come to you</div>
+  <div class="grid2"><div><div class="lab">Job title</div><div class="inp" id="pf1"><span id="p1">Fix leaking kitchen sink</span></div></div><div><div class="lab">Trade</div><div class="inp">Plumber ▾</div></div>
+  <div><div class="lab">Location</div><div class="inp" id="pf2"><span id="p2">Austin, TX</span></div></div><div><div class="lab">Budget ($)</div><div class="inp" id="pf3"><span id="p3">300</span></div></div></div>
+  <div class="lab" style="margin-top:16px">Description</div><div class="inp" id="pf4" style="min-height:96px"><span id="p4">Slow leak under the sink, cabinet floor is getting wet. Weekday afternoons work best.</span></div>
+  <div style="margin-top:18px;background:#1e293b;border:2px dashed var(--line);border-radius:14px;padding:16px 18px"><div class="lab" style="color:var(--amber);font-weight:700">🔒 Your contact details · only shared with the contractor who accepts</div>
+  <div class="grid2" style="grid-template-columns:1fr 1fr 1fr;gap:12px"><div class="inp">Sarah K.</div><div class="inp">sarah@email.com</div><div class="inp">(512) 555-0142</div></div></div>
+  <div class="gbtn" id="postbtn" style="margin-top:20px;padding:14px 30px">Post Job →</div></div>
+  <div class="toastx" id="tpost">✓ Job posted! Contractors will reach out shortly.</div>`;
+S.posted = `${hdr('home', 'Post Job')}<div class="main"><div class="ttl" style="font-size:36px;margin-bottom:14px">YOUR POSTED JOBS</div>
+  <div class="jc" id="pj"><div class="row1"><span class="jt">Fix leaking kitchen sink</span><span class="money">$300</span></div>
+  <div class="row" style="gap:8px;margin:10px 0"><span class="b">Plumber</span><span class="b">Austin, TX</span><span style="position:relative;display:inline-block"><span class="b" id="pjopen" style="display:inline-block">Open</span><span class="b g" id="pjacc" style="position:absolute;left:0;top:0;display:inline-block">Accepted</span></span></div>
+  <div class="cbox" id="pjby"><div class="k">ACCEPTED BY</div><div class="row" style="gap:12px">${av('BS', 44)}<div><div style="font-weight:700">Blue Stream Plumbing</div><div class="mt" style="margin:2px 0 0;font-size:15px">Plumber · Austin, TX</div></div></div></div></div>
+  ${job('Repaint living room', 'General Contractor', 'Austin, TX', '$1,200', 'Two walls plus ceiling, light color change.')}</div>`;
+S.review = `${hdr('home', 'Reviews')}<div class="main"><div class="ttl" style="margin-bottom:16px">REVIEWS</div>
+  <div class="jc" style="padding:26px"><div class="row" style="gap:14px;margin-bottom:18px">${av('BS', 50)}<div class="nm">Review Blue Stream Plumbing</div></div>
+  <div class="lab">Your Rating</div><div id="rstars" style="font-size:46px;letter-spacing:6px;color:#334155;position:relative;display:inline-block;margin-bottom:14px">★★★★★<span id="rfill" style="position:absolute;left:0;top:0;color:var(--amber);overflow:hidden;white-space:nowrap;width:calc(var(--w,0)*100%)">★★★★★</span></div>
+  <div class="lab">Write your review</div><div class="inp" style="min-height:96px;margin-bottom:18px"><span id="rtxt">On time, clean, fair price. Fixed the leak in under an hour. Highly recommend!</span></div>
+  <span class="gbtn" id="rsub">Submit Review</span></div>
+  <div class="toastx" id="trev">✓ Review submitted!</div></div>`;
+S.cauth = S.auth.replace('id="authm"', 'id="authm2"').replace('id="r-home"', 'id="r-home2"').replace('id="r-con"', 'id="r-con2"').replace('id="em1">sarah@email.com', 'id="em2">jordan@bluestream.com').replace('id="pw1"', 'id="pw2"').replace('id="su1"', 'id="su2"');
+S.cprof = `${hdr('con', 'Find', '<span class="hb ol">Upgrade</span>')}<div class="main"><div class="card" style="border-color:var(--amber);padding:16px 20px;border-radius:14px;background:#1e293b;border:2px solid var(--amber)"><b>Complete your contractor profile</b><div class="mt" style="margin:4px 0 0">Add your name, trade, and rate so homeowners can find you.</div></div></div><div class="dim"></div>
+  <div class="modal" id="cpm" style="width:720px;margin:-330px 0 0 -360px"><div class="mtitle">CREATE YOUR PROFILE</div>
+  <div class="grid2"><div><div class="lab">Business / Your Name *</div><div class="inp" id="cf1"><span id="c1">Blue Stream Plumbing</span></div></div><div><div class="lab">Trade *</div><div class="inp">Plumber ▾</div></div>
+  <div><div class="lab">Hourly Rate ($)</div><div class="inp" id="cf2"><span id="c2">85</span></div></div><div><div class="lab">Location *</div><div class="inp" id="cf3"><span id="c3">Austin, TX</span></div></div></div>
+  <div class="lab" style="margin-top:16px">Specialties (comma-separated)</div><div class="inp" id="cf4"><span id="c4">Leaks, Water Heaters, Re-pipes</span></div>
+  <div class="lab" style="margin-top:16px">Bio</div><div class="inp" id="cf5" style="min-height:80px"><span id="c5">Family-owned plumbing team. Licensed &amp; insured, 15 years in Austin.</span></div>
+  <div class="gbtn" id="csave" style="margin-top:20px;padding:14px 30px">Save Profile</div></div>
+  <div class="toastx" id="tprof">✓ Profile created!</div>`;
+const JOBS = (accBtns, banner) => `<div class="main"><div class="ttl">OPEN JOBS</div><div class="lead">Browse jobs posted by homeowners. Reach out to claim work.</div>
+  ${banner ? `<div style="background:#1e293b;border:2px solid var(--amber);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:16px;margin-bottom:16px"><div style="flex:1"><b>Want to accept jobs?</b><div class="mt" style="margin:2px 0 0">Upgrade to Pro ($49/mo) to accept jobs and get homeowner contact details.</div></div><span class="gbtn">See Pro</span></div>` : ''}
+  <div class="row" style="gap:14px;margin-bottom:16px"><div class="inp" style="width:260px">Plumber ▾</div></div>
+  ${job('Fix leaking kitchen sink', 'Plumber', 'Austin, TX', '$300', 'Slow leak under the sink, cabinet floor is getting wet.', accBtns ? 'j1' : '', accBtns ? `<div class="row" style="gap:10px"><span class="gbtn" id="${accBtns}">Accept Job</span><span class="obtn">💬 Message</span></div>` : '')}
+  ${job('Bathroom re-pipe', 'Plumber', 'Round Rock, TX', '$2,900', 'Old galvanized pipes, 2-bath house.', '', accBtns ? '<div class="row" style="gap:10px"><span class="gbtn">Accept Job</span><span class="obtn">💬 Message</span></div>' : '')}</div>`;
+S.avail = `${hdr('con', 'Jobs', '<span class="hb ol">Upgrade</span><span style="position:relative;display:inline-block"><span class="hb gr" id="avOpen" style="display:inline-block">● Open</span><span class="hb rd" id="avBusy" style="position:absolute;left:0;top:0;display:inline-block">● Busy</span></span>')}${JOBS('', true)}`;
+S.jobs = `${hdr('con', 'Jobs', '<span class="hb ol" id="upg">Upgrade</span><span class="hb gr">● Open</span>')}${JOBS('acc1', true)}
+  <div class="toastx" id="tpro1" style="background:#78350f;color:#fef3c7">Accepting jobs is a Pro feature.</div>`;
+S.pricing = `${hdr('con', 'Pricing', '<span class="hb ol">Upgrade</span><span class="hb gr">● Open</span>')}<div class="main"><div class="ttl">PRICING</div><div class="lead">Homeowners never pay. Contractors list for free and go Pro to win work.</div>
+  <div class="grid2" style="grid-template-columns:1fr 1fr 1fr;gap:18px">
+  <div class="plan"><div class="pn">Homeowners</div><div class="pp">Free<small> forever</small></div><ul><li>✓ Post unlimited jobs</li><li>✓ Browse &amp; message contractors</li><li>✓ Leave reviews</li></ul></div>
+  <div class="plan"><div class="pn">Contractor Free</div><div class="pp">$0<small>/month</small></div><ul><li>✓ Listed in Find</li><li>✓ Browse open jobs</li><li>✓ Message homeowners</li></ul><span class="b g">Your plan</span></div>
+  <div class="plan pro" id="proplan"><div class="pn">Contractor Pro</div><div class="pp amber">$49<small>/month</small></div><ul><li>✓ Everything in Free</li><li>✓ Accept jobs</li><li>✓ Homeowner contact details</li></ul><span class="gbtn" id="upbtn" style="display:block;text-align:center">Upgrade to Pro</span></div></div>
+  <div class="row" style="gap:10px;margin-top:22px;color:#64748b;font-size:16px">🔒 Secure checkout by Stripe · cancel anytime from Manage billing</div></div>
+  <div class="toastx" id="tpro2">✓ You're on Pro! You can now accept jobs.</div>`;
+S.accept = `${hdr('con', 'Jobs', '<span class="hb gold">★ Pro</span><span class="hb gr">● Open</span>')}<div class="main"><div class="ttl">OPEN JOBS</div><div class="lead">Browse jobs posted by homeowners. Reach out to claim work.</div>
+  <div class="jc" id="j2"><div class="row1"><span class="jt">Fix leaking kitchen sink</span><span class="money">$300</span></div>
+  <div class="row" style="gap:8px;margin:10px 0"><span class="b">Plumber</span><span class="b">Austin, TX</span><span class="b g" id="accb">✓ Accepted by you</span></div>
+  <div class="mt" style="margin:0 0 14px">Slow leak under the sink, cabinet floor is getting wet.</div>
+  <div class="row" style="gap:10px" id="accrow"><span class="gbtn" id="acc2">Accept Job</span><span class="obtn">💬 Message</span></div>
+  <div class="cbox" id="contact" style="margin-top:0"><div class="k">HOMEOWNER CONTACT</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:18px"><span>👤 Sarah K.</span><span>✉ sarah@email.com</span><span>📞 (512) 555-0142</span></div></div></div>
+  ${job('Bathroom re-pipe', 'Plumber', 'Round Rock, TX', '$2,900', 'Old galvanized pipes, 2-bath house.')}</div>
+  <div class="toastx" id="tacc">✓ Job accepted!</div>`;
+const vp = document.getElementById('vp');
+for (const k in S) vp.insertAdjacentHTML('beforeend', `<div class="scr" id="s-${k}">${S[k]}</div>`);
+
+// ---------- Caption steps ----------
+const STEPS = [
+  ['H', '1', 'Create a free account', 'Tap Sign In, choose <b class="amber">Homeowner</b>, and add your email and a password.', 'Homeowners never pay. Not to post, message or hire.'],
+  ['H', '2', 'Find a contractor', 'Search by name, trade or city, or filter by trade.', 'Every card shows ratings, hourly rate and who\'s available right now.'],
+  ['H', '3', 'Check them out', 'Open a profile to see rates, reviews, specialties and a bio. Then message them directly.', 'Ask questions and get a feel for the pro before you hire.'],
+  ['H', '4', 'Post your job', 'Add a title, trade, location, budget and a description, then hit Post Job.', 'Contractors come to you. Your contact details are only shared with the pro who accepts.'],
+  ['H', '5', 'Track it &amp; review', 'See when your job is accepted, and by whom. When the work\'s done, leave a star rating and review.', 'Honest reviews help your neighbors pick great pros.'],
+  ['C', '1', 'List your business', 'Sign up as a <b class="amber">Contractor</b> and create your profile: name, trade, rate, location, specialties and bio.', 'Listing is free. Your profile shows up in Find for homeowners near you.'],
+  ['C', '2', 'Set your availability', 'Tap the <b style="color:var(--green)">● Open</b> button to switch to <b style="color:#f87171">● Busy</b> when you\'re booked up.', 'Homeowners see it on your card, so you only get contacted when you have room.'],
+  ['C', '3', 'Browse open jobs', 'The Jobs tab lists real jobs with budgets. Filter by your trade and message homeowners for free.', 'No buying leads. You see the job before you reach out.'],
+  ['C', '4', 'Go Pro', 'Accepting jobs is a Pro feature. Upgrade on the Pricing tab for $49/month with secure Stripe checkout.', 'Cancel anytime from Manage billing.'],
+  ['C', '5', 'Accept &amp; get to work', 'Hit Accept Job. The homeowner\'s name, email and phone unlock instantly.', 'Once you accept, the job is yours. No one else can take it.'],
+];
+document.getElementById('steps').innerHTML = STEPS.map(([c, n, h, p, w], i) =>
+  `<div class="step" id="st${i}"><div class="n">0${n}</div><div class="h">${h}</div><div class="p">${p}</div><div class="why"><b>WHY IT HELPS</b>${w}</div></div>`).join('');
+document.getElementById('prog').innerHTML = STEPS.map((_, i) => `<i id="pg${i}"></i>`).join('');
+</script>
+<script src="engine.js"></script>
+<script>
+DURATION = 104;
+VIEWPORT = { width: 1920, height: 1080 };
+// Step windows (seconds). App screen per step is set below.
+const T = [[5, 12.5], [12.5, 22], [22, 31], [31, 43.5], [43.5, 53], [57, 67], [67, 73], [73, 81], [81, 92], [92, 99]];
+// intro
+a('#side', 0, 0, { o: [0, 0] }); a('#win', 0, 0, { o: [0, 0], y: [60, 60] });
+pop('#in1', .2, .6); rise('#in2', .6); fade('#in3', 1.1, .5); leave('#intro', 4.3, .4);
+a('#side', 4.7, .5, { o: [0, 1] }); a('#win', 4.7, .7, { o: [0, 1], y: [60, 0] });
+// chapter labels
+a('#chapH', 4.8, .4, { o: [0, 1], x: [-60, 0] }); gone('#chapH', 53, .3);
+a('#chapC', 0, 0, { o: [0, 0] }); a('#chapC', 57, .4, { o: [0, 1], x: [-60, 0] });
+// mid card
+a('#side', 53, .3, { o: [1, 0] }); a('#win', 53, .4, { o: [1, 0], s: [1, .96] }, 'in');
+a('#mid', 0, 0, { o: [0, 0] }); a('#mid', 53.3, .1, { o: [0, 1] }, 'linear');
+pop('#mid1', 53.4, .5); rise('#mid2', 53.6); fade('#mid3', 54.1); a('#mid', 56.4, .4, { o: [1, 0] }, 'in');
+a('#side', 56.7, .4, { o: [0, 1] }); a('#win', 56.7, .5, { o: [0, 1], s: [.96, 1] });
+// outro
+a('#side', 99, .4, { o: [1, 0] }); a('#win', 99, .5, { o: [1, 0], y: [0, 60] }, 'in');
+a('#outro', 0, 0, { o: [0, 0] }); a('#outro', 99.4, .1, { o: [0, 1] }, 'linear');
+pop('#o1', 99.5, .6); a('#o2', 99.9, .6, { o: [0, 1], y: [50, 0] }); pop('#o3', 100.6, .5);
+a('#o3', 102, .35, { s: [1, 1.06] }, 'inOut'); a('#o3', 102.35, .35, { s: [1.06, 1] }, 'inOut');
+// caption steps + progress
+T.forEach(([t0, t1], i) => {
+  a(`#st${i}`, 0, 0, { o: [0, 0] }); a(`#st${i}`, t0 + .1, .5, { o: [0, 1], y: [40, 0] }); a(`#st${i}`, t1 - .3, .3, { o: [1, 0] }, 'in');
+});
+hook(t => T.forEach(([t0], i) => document.getElementById('pg' + i).classList.toggle('on', t >= t0 + .1)));
+// app screens: show(screen, in, out)
+const scr = (k, t0, t1) => { a(`#s-${k}`, 0, 0, { o: [0, 0] }); a(`#s-${k}`, t0, .35, { o: [0, 1] }); a(`#s-${k}`, t1, .35, { o: [1, 0] }); };
+scr('auth', 4.7, 12.4); scr('find', 12.4, 22); scr('prof', 22, 26.8); scr('chat', 26.8, 31); scr('post', 31, 43.5);
+scr('posted', 43.5, 47.8); scr('review', 47.8, 53.5); scr('cauth', 56.7, 60.6); scr('cprof', 60.6, 67);
+scr('avail', 67, 73); scr('jobs', 73, 82.6); scr('pricing', 82.6, 92); scr('accept', 92, 99.5);
+// --- per-screen animations ---
+const sel = (s, t) => hook(tt => document.querySelector(s).classList.toggle('sel', tt >= t));
+const focus = (s, t0, t1) => hook(tt => document.querySelector(s).classList.toggle('focus', tt >= t0 && tt < t1));
+const toast = (s, t, d = 2) => { a(s, 0, 0, { o: [0, 0] }); a(s, t, .4, { o: [0, 1], y: [-40, 0] }, 'back'); a(s, t + d, .3, { o: [1, 0] }); };
+const modalIn = (s, t) => a(s, t, .4, { o: [0, 1], s: [.9, 1] }, 'back');
+// H1 sign up
+modalIn('#authm', 5.4); sel('#r-home', 7.0); typeText('#em1', 7.6, 24); typeText('#pw1', 8.4, 20);
+// H2 find
+hook(t => { document.getElementById('q').classList.toggle('ph', t < 14); document.getElementById('q').classList.toggle('focus', t >= 13.8 && t < 16); });
+typeText('#qt', 14, 12);
+['#bs', '#ir', '#vpe'].forEach((s, i) => a(s, 15.3 + i * .25, .5, { o: [0, 1], y: [30, 0] }));
+hook(t => document.getElementById('bs').classList.toggle('hl', t >= 19.5));
+// H3 profile + chat
+modalIn('#profm', 22.2);
+a('#m1', 0, 0, { o: [0, 0] }); a('#m1', 27.4, .4, { o: [0, 1], y: [20, 0] });
+a('#m2', 0, 0, { o: [0, 0] }); a('#m2', 28.6, .4, { o: [0, 1], y: [20, 0] });
+a('#m3', 0, 0, { o: [0, 0] }); a('#m3', 29.7, .4, { o: [0, 1], y: [20, 0] });
+// H4 post job
+typeText('#p1', 32.0, 26); focus('#pf1', 32, 33.1); typeText('#p2', 33.3, 24); focus('#pf2', 33.3, 34);
+typeText('#p3', 34.2, 16); focus('#pf3', 34.2, 34.6); typeText('#p4', 34.8, 40); focus('#pf4', 34.8, 37);
+toast('#tpost', 40.4, 2.6);
+// H5 posted + review
+a('#pjacc', 0, 0, { o: [0, 0] }); a('#pjacc', 45.0, .4, { o: [0, 1], s: [.6, 1] }, 'back'); gone('#pjopen', 45, .2);
+a('#pjby', 0, 0, { o: [0, 0] }); a('#pjby', 45.3, .5, { o: [0, 1], y: [-20, 0] });
+a('#rstars', 0, 0, { w: [0, 0] }); a('#rstars', 48.8, .9, { w: [0, 1] }, 'linear');
+typeText('#rtxt', 49.8, 34); toast('#trev', 52.0, 1.5);
+// C1 contractor sign up + profile
+modalIn('#authm2', 56.9); sel('#r-con2', 58.0); typeText('#em2', 58.5, 30); typeText('#pw2', 59.3, 20);
+modalIn('#cpm', 60.9);
+[['#c1', '#cf1', 61.4], ['#c2', '#cf2', 62.3], ['#c3', '#cf3', 62.6], ['#c4', '#cf4', 63.1], ['#c5', '#cf5', 64.0]].forEach(([s, f, t], i, arr) => {
+  typeText(s, t, 32); focus(f, t, (arr[i + 1] || [0, 0, 65.6])[2]);
+});
+toast('#tprof', 66.0, 1);
+// C2 availability toggle
+a('#avBusy', 0, 0, { o: [0, 0] }); a('#avBusy', 69.6, .2, { o: [0, 1] }); a('#avOpen', 69.6, .2, { o: [1, 0] });
+a('#avBusy', 71.6, .2, { o: [1, 0] }); a('#avOpen', 71.6, .2, { o: [0, 1] });
+// C3/C4 jobs → pro
+toast('#tpro1', 80.2, 2);
+a('#proplan', 86.0, .3, { s: [1, 1.04] }); a('#proplan', 86.3, .3, { s: [1.04, 1] });
+toast('#tpro2', 89.0, 2.6);
+// C5 accept
+a('#accb', 0, 0, { o: [0, 0] }); a('#accb', 94.7, .4, { o: [0, 1], s: [.6, 1] }, 'back');
+a('#accrow', 94.6, .25, { o: [1, 0] });
+a('#contact', 0, 0, { o: [0, 0], y: [-50, -50] }); a('#contact', 94.9, .5, { o: [0, 1], y: [-50, -50] });
+toast('#tacc', 94.6, 2.2);
+
+// ---------- Cursor: waypoints [time, selector, click] ----------
+const W = [
+  [4.9, '#s-auth .hdr .hb', 0], [5.2, '#s-auth .hdr .hb', 1], [6.9, '#r-home', 1], [7.5, '#em1', 1], [10.4, '#su1', 1],
+  [13.6, '#q', 1], [19.3, '#bs', 0], [21.6, '#bs .nm', 1],
+  [25.6, '#pm-msg', 1], [29.6, '#s-chat .inp', 0],
+  [31.8, '#pf1', 1], [38.6, '#postbtn', 0], [40.2, '#postbtn', 1],
+  [44.8, '#pjacc', 0], [48.5, '#rstars', 1], [51.6, '#rsub', 1],
+  [57.8, '#r-con2', 1], [58.4, '#em2', 1], [60.4, '#su2', 1], [61.2, '#cf1', 1], [65.6, '#csave', 1],
+  [69.4, '#avOpen', 1], [71.4, '#avOpen', 1],
+  [74.6, '#s-jobs .inp', 0], [77.0, '#j1', 0], [80.0, '#acc1', 1], [81.4, '#upg', 0], [82.4, '#upg', 1],
+  [85.4, '#proplan', 0], [88.6, '#upbtn', 1],
+  [93.6, '#j2 .jt', 0], [94.5, '#acc2', 1], [97.8, '#contact', 0],
+];
+const cur = document.getElementById('cursor'), ring = document.getElementById('ring');
+const center = s => { const r = document.querySelector(s).getBoundingClientRect(); return [r.left + Math.min(r.width / 2, 120), r.top + r.height / 2]; };
+const ease = x => (x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+hook(t => {
+  const vis = (t > 4.9 && t < 53) || (t > 56.9 && t < 99);
+  cur.style.opacity = vis ? 1 : 0;
+  let i = W.findIndex(w => w[0] > t);
+  let p;
+  if (i === -1) p = center(W[W.length - 1][1]);
+  else if (i === 0) p = center(W[0][1]);
+  else {
+    const [ta, sa] = W[i - 1], [tb, sb] = W[i];
+    const move = Math.min(.8, tb - ta);
+    const k = Math.max(0, Math.min(1, (t - (tb - move)) / move));
+    const A = center(sa), B = center(sb);
+    p = [A[0] + (B[0] - A[0]) * ease(k), A[1] + (B[1] - A[1]) * ease(k)];
+  }
+  cur.style.transform = `translate(${p[0] - 6}px, ${p[1] - 3}px)`;
+  // click ring
+  const c = W.find(w => w[2] && t >= w[0] && t < w[0] + .45);
+  if (c && vis) { const q = (t - c[0]) / .45; ring.style.opacity = 1 - q; ring.style.transform = `translate(${p[0]}px, ${p[1]}px) scale(${.4 + q})`; }
+  else ring.style.opacity = 0;
+});
+</script>
+<!-- Optional voice-over timing from voiceover-video.py: stretches sections to fit the narration. -->
+<script src="explainer-timing.js"></script>
+<script>
+if (window.WARP) {
+  const base = window.render;
+  window.render = t => {
+    const w = WARP.find(w => t < w[3]) || WARP[WARP.length - 1];
+    base(w[0] + (w[1] - w[0]) * Math.min(1, Math.max(0, (t - w[2]) / (w[3] - w[2]))));
+  };
+  DURATION = WARP[WARP.length - 1][3];
+}
+</script></body></html>
