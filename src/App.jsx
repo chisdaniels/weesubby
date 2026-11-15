@@ -60,6 +60,27 @@ function pathToTab(pathname, hash) {
   return PATH_TABS[clean] || "search";
 }
 
+// When a posted job can start (jobs.start_timing / start_date, migration 040).
+const START_TIMING_OPTIONS = [
+  ["ready", "Ready to start now"],
+  ["planning", "Still in planning"],
+  ["date", "Start on a specific date"],
+];
+function jobStartLabel(j) {
+  if (j?.start_timing === "ready") return "Ready to start";
+  if (j?.start_timing === "planning") return "In planning";
+  if (j?.start_timing === "date" && j.start_date) {
+    // Dates are stored as YYYY-MM-DD; read them as a local date so the day doesn't shift.
+    const d = new Date(`${j.start_date}T00:00:00`);
+    return `Starts ${d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}`;
+  }
+  return null;
+}
+function todayISO() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 const AVATAR_COLORS = { IR: "#b04a17", BS: "#0369a1", VP: "#7c3aed", AR: "#b91c1c", CC: "#047857", TK: "#374151" };
 
 function Stars({ rating }) {
@@ -235,7 +256,7 @@ export default function App() {
   const [myReviewedJobIds, setMyReviewedJobIds] = useState(new Set());
   const [modal, setModal] = useState(null);
   const [jobs, setJobs] = useState([]);
-  const [jobForm, setJobForm] = useState({ title: "", trades: [], location: "", budget: "", desc: "", homeowner_name: "", homeowner_email: "", homeowner_phone: "" });
+  const [jobForm, setJobForm] = useState({ title: "", trades: [], location: "", start_timing: "", start_date: "", budget: "", desc: "", homeowner_name: "", homeowner_email: "", homeowner_phone: "" });
   const [notification, setNotification] = useState(null);
   const [user, setUser] = useState(null);
   const [authModal, setAuthModal] = useState(false);
@@ -995,11 +1016,15 @@ export default function App() {
   async function postJob() {
     if (!jobForm.title || !jobForm.location || !jobForm.homeowner_name || !jobForm.homeowner_email) return;
     if (!jobForm.trades.length) { notify("Pick at least one service you need."); return; }
+    if (!jobForm.start_timing) { notify("Choose when the job can start."); return; }
+    if (jobForm.start_timing === "date" && !jobForm.start_date) { notify("Pick the date the job can start."); return; }
     const groupId = (typeof crypto !== "undefined" && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
     const rows = jobForm.trades.map(t => ({
       title: jobForm.title,
       trade: t,
       location: jobForm.location,
+      start_timing: jobForm.start_timing,
+      start_date: jobForm.start_timing === "date" ? jobForm.start_date : null,
       budget: jobForm.budget ? Number(jobForm.budget) : null,
       description: jobForm.desc,
       posted_by: user.id,
@@ -1027,7 +1052,7 @@ export default function App() {
         homeowner_phone: jobForm.homeowner_phone.trim() || null,
       }});
     }
-    setJobForm({ title: "", trades: [], location: "", budget: "", desc: "", homeowner_name: "", homeowner_email: "", homeowner_phone: "" });
+    setJobForm({ title: "", trades: [], location: "", start_timing: "", start_date: "", budget: "", desc: "", homeowner_name: "", homeowner_email: "", homeowner_phone: "" });
     await loadJobs();
     notify(jobForm.trades.length > 1
       ? `Job posted with ${jobForm.trades.length} services. Each stays open until a matching pro accepts.`
@@ -1042,7 +1067,8 @@ export default function App() {
     e.preventDefault();
     if (!jobEditModal) return;
     setJobEditBusy(true);
-    const { id, title, trade, location, budget, description } = jobEditModal;
+    const { id, title, trade, location, budget, description, start_timing, start_date } = jobEditModal;
+    if (start_timing === "date" && !start_date) { setJobEditBusy(false); notify("Pick the date the job can start."); return; }
     const { error } = await supabase
       .from("jobs")
       .update({
@@ -1051,6 +1077,8 @@ export default function App() {
         location,
         budget: budget === "" || budget == null ? null : Number(budget),
         description,
+        start_timing: start_timing || null,
+        start_date: start_timing === "date" ? start_date : null,
       })
       .eq("id", id);
     setJobEditBusy(false);
@@ -2580,6 +2608,37 @@ function avatarInitials(name) {
                 label={<>Services Needed * <span style={{ color: "#64748b" }}>(pick one or more — each becomes a separate sub-job that a matching pro can accept)</span></>}
               />
               <div>
+                <label htmlFor="job-start" style={{ fontSize: "0.9375rem", color: "#334155", marginBottom: 6, display: "block" }}>
+                  Project timing <span aria-hidden="true">*</span>
+                </label>
+                <select
+                  id="job-start"
+                  required
+                  aria-required="true"
+                  value={jobForm.start_timing}
+                  onChange={e => setJobForm(f => ({ ...f, start_timing: e.target.value, start_date: e.target.value === "date" ? f.start_date : "" }))}
+                >
+                  <option value="" disabled>Choose when the job can start</option>
+                  {START_TIMING_OPTIONS.map(([v, label]) => <option key={v} value={v}>{label}</option>)}
+                </select>
+                {jobForm.start_timing === "date" && (
+                  <div style={{ marginTop: 10 }}>
+                    <label htmlFor="job-start-date" style={{ fontSize: "0.9375rem", color: "#334155", marginBottom: 6, display: "block" }}>
+                      Start date <span aria-hidden="true">*</span>
+                    </label>
+                    <input
+                      id="job-start-date"
+                      type="date"
+                      required
+                      aria-required="true"
+                      min={todayISO()}
+                      value={jobForm.start_date}
+                      onChange={e => setJobForm(f => ({ ...f, start_date: e.target.value }))}
+                    />
+                  </div>
+                )}
+              </div>
+              <div>
                 <label htmlFor="job-budget" style={{ fontSize: "0.9375rem", color: "#334155", marginBottom: 6, display: "block" }}>Budget ($) <span style={{ color: "#64748b" }}>(total across all trades)</span></label>
                 <input
                   id="job-budget"
@@ -2695,6 +2754,7 @@ function avatarInitials(name) {
                     <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10 }}>
                       <span className="badge">{j.trade}</span>
                       <span className="badge">{j.location}</span>
+                          {jobStartLabel(j) && <span className="badge">🗓 {jobStartLabel(j)}</span>}
                       {removedByAdmin
                         ? <span className="badge unavail">Removed by admin</span>
                         : j.status === "completed"
@@ -2825,6 +2885,7 @@ function avatarInitials(name) {
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
                         <span className="badge">{j.trade}</span>
                         <span className="badge">{j.location}</span>
+                          {jobStartLabel(j) && <span className="badge">🗓 {jobStartLabel(j)}</span>}
                       </div>
                       <div style={{ fontSize: "0.875rem", color: "#64748b", marginBottom: j.description ? 10 : 0 }}>
                         Licensing — {licensingSummary(j.trade, j.location)}
@@ -2976,6 +3037,7 @@ function avatarInitials(name) {
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10 }}>
                           <span className="badge">{j.trade}</span>
                           <span className="badge">{j.location}</span>
+                          {jobStartLabel(j) && <span className="badge">🗓 {jobStartLabel(j)}</span>}
                           {j.status === "completed"
                             ? <span className="badge avail">✓ Completed</span>
                             : <span className="badge avail">Accepted</span>}
@@ -3009,6 +3071,7 @@ function avatarInitials(name) {
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10 }}>
                           <span className="badge">{j.trade}</span>
                           <span className="badge">{j.location}</span>
+                          {jobStartLabel(j) && <span className="badge">🗓 {jobStartLabel(j)}</span>}
                           {j.status === "completed"
                             ? <span className="badge avail">✓ Completed</span>
                             : j.accepted_by
@@ -4413,6 +4476,28 @@ function avatarInitials(name) {
                   <label htmlFor="je-budget" style={{ fontSize: "0.9375rem", color: "#334155", marginBottom: 6, display: "block" }}>Budget ($)</label>
                   <input id="je-budget" type="number" min="0" value={jobEditModal.budget ?? ""} onChange={e => setJobEditModal(j => ({ ...j, budget: e.target.value }))} />
                 </div>
+              </div>
+              <div>
+                <label htmlFor="je-start" style={{ fontSize: "0.9375rem", color: "#334155", marginBottom: 6, display: "block" }}>Project timing</label>
+                <select
+                  id="je-start"
+                  value={jobEditModal.start_timing || ""}
+                  onChange={e => setJobEditModal(j => ({ ...j, start_timing: e.target.value, start_date: e.target.value === "date" ? j.start_date : null }))}
+                >
+                  <option value="">Not set</option>
+                  {START_TIMING_OPTIONS.map(([v, label]) => <option key={v} value={v}>{label}</option>)}
+                </select>
+                {jobEditModal.start_timing === "date" && (
+                  <input
+                    id="je-start-date"
+                    aria-label="Start date"
+                    type="date"
+                    required
+                    style={{ marginTop: 10 }}
+                    value={jobEditModal.start_date || ""}
+                    onChange={e => setJobEditModal(j => ({ ...j, start_date: e.target.value }))}
+                  />
+                )}
               </div>
               <div>
                 <label htmlFor="je-location" style={{ fontSize: "0.9375rem", color: "#334155", marginBottom: 6, display: "block" }}>Location *</label>
