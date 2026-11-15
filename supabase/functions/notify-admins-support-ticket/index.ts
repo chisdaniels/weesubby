@@ -1,11 +1,15 @@
 // Supabase Edge Function: notify-admins-support-ticket
 //
-// Creates a support ticket and emails every admin. The ticket is inserted
+// Creates a support ticket and emails every admin and the support inbox. The ticket is inserted
 // here with the service role — not by the browser — so logged-out visitors
 // can reach support without any access to the tickets table. A signed-in
 // caller's account id and email come from their token, never the payload.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+// WeeSubby's support inbox: gets every support request and receives replies
+// to WeeSubby's emails. Override with the SUPPORT_EMAIL secret.
+const SUPPORT_EMAIL = (Deno.env.get("SUPPORT_EMAIL") || "weesubby@gmail.com").trim().toLowerCase();
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -53,7 +57,7 @@ Deno.serve(async (req) => {
 
 async function emailAdmins(admin: ReturnType<typeof createClient>, ticket: any) {
   const { data: admins } = await admin.from("admins").select("email");
-  const recipients = (admins || []).map((a: any) => a.email).filter(Boolean);
+  const recipients = [...new Set([SUPPORT_EMAIL, ...(admins || []).map((a: any) => String(a.email || "").toLowerCase())].filter(Boolean))];
   const apiKey = Deno.env.get("RESEND_API_KEY");
   const from   = Deno.env.get("MAIL_FROM");
   const appUrl = Deno.env.get("APP_URL") || "";

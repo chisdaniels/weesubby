@@ -6,6 +6,10 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// WeeSubby's support inbox: gets every support request and receives replies
+// to WeeSubby's emails. Override with the SUPPORT_EMAIL secret.
+const SUPPORT_EMAIL = (Deno.env.get("SUPPORT_EMAIL") || "weesubby@gmail.com").trim().toLowerCase();
+
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -98,7 +102,7 @@ Deno.serve(async (req) => {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from, to: [ticket.email], subject, html, text, reply_to: from }),
+      body: JSON.stringify({ from, to: [ticket.email], subject, html, text, reply_to: SUPPORT_EMAIL }),
     });
     const body = await res.text();
     console.log("send status:", res.status, body);
