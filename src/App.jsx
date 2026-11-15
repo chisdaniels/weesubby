@@ -81,6 +81,32 @@ function todayISO() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
+// WeeSubby's social pages, shown under "Follow Us". To add TikTok, add an entry
+// like { name: "TikTok", url: "https://www.tiktok.com/@yourhandle", color: "#000000", icon: "tiktok" }.
+const SOCIAL_LINKS = [
+  { name: "Facebook", url: "https://www.facebook.com/profile.php?id=61596067389701", color: "#1877f2", icon: "facebook" },
+  { name: "Instagram", url: "https://www.instagram.com/weesubby1", color: "#d62976", icon: "instagram" },
+  // sub_confirmation=1 opens YouTube with the Subscribe prompt ready.
+  { name: "YouTube", url: "https://www.youtube.com/channel/UCNz4a0pIMA8ZtbjfCQvUIIA?sub_confirmation=1", color: "#ff0000", icon: "youtube" },
+];
+
+function SocialIcon({ icon, color }) {
+  const common = { width: 22, height: 22, viewBox: "0 0 24 24", "aria-hidden": true, focusable: "false" };
+  if (icon === "facebook") return (
+    <svg {...common}><circle cx="12" cy="12" r="11" fill={color} /><path fill="#fff" d="M13.2 19v-6h2l.3-2.4h-2.3V9.1c0-.7.2-1.2 1.2-1.2h1.2V5.8c-.2 0-1-.1-1.8-.1-1.8 0-3 1.1-3 3.1v1.8H8.8V13h2V19h2.4z" /></svg>
+  );
+  if (icon === "instagram") return (
+    <svg {...common}><rect x="1.5" y="1.5" width="21" height="21" rx="6" fill={color} /><rect x="6" y="6" width="12" height="12" rx="3.6" fill="none" stroke="#fff" strokeWidth="1.8" /><circle cx="12" cy="12" r="2.9" fill="none" stroke="#fff" strokeWidth="1.8" /><circle cx="16.3" cy="7.7" r="1" fill="#fff" /></svg>
+  );
+  if (icon === "youtube") return (
+    <svg {...common}><rect x="1" y="4.5" width="22" height="15" rx="4.5" fill={color} /><path fill="#fff" d="M10 8.7v6.6l5.6-3.3z" /></svg>
+  );
+  if (icon === "tiktok") return (
+    <svg {...common}><circle cx="12" cy="12" r="11" fill={color} /><path fill="#fff" d="M13.6 5.5h2a3.5 3.5 0 0 0 2.9 2.9v2a5.4 5.4 0 0 1-2.9-.9v4.8a4.3 4.3 0 1 1-4.3-4.3h.4v2.1h-.4a2.2 2.2 0 1 0 2.3 2.2z" /></svg>
+  );
+  return null;
+}
+
 const AVATAR_COLORS = { IR: "#b04a17", BS: "#0369a1", VP: "#7c3aed", AR: "#b91c1c", CC: "#047857", TK: "#374151" };
 
 function Stars({ rating }) {
@@ -226,6 +252,7 @@ export default function App() {
   // The account menu is placed on screen from the button's position, so it never runs off
   // the edge, even on an iPhone with large text (index.html follows the phone's text size).
   const userMenuBtnRef = useRef(null);
+  const [followMenuOpen, setFollowMenuOpen] = useState(false);
   const notifyTimerRef = useRef(null);
   const [userMenuPos, setUserMenuPos] = useState(null);
   const [serviceFilter, setServiceFilter] = useState(""); // "" | "group:<slug>" | service name
@@ -2049,6 +2076,11 @@ function avatarInitials(name) {
         .toolbar-btn:active { transform: scale(0.98); background: #db6b33; border-color: #b04a17; color: #1f2430; }
         .toolbar-btn.active { background: #db6b33; border-color: #b04a17; color: #1f2430; }
         .toolbar-btn:focus-visible { outline: 2px solid #db6b33; outline-offset: 2px; }
+        .toolbar-pair { flex: 1; display: flex; gap: 8px; position: relative; }
+        .toolbar-half { padding-left: 10px; padding-right: 10px; white-space: nowrap; }
+        .follow-menu { position: absolute; top: calc(100% + 8px); right: 0; z-index: 50; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 6px; min-width: 240px; max-width: calc(100vw - 24px); box-shadow: 0 12px 32px rgba(15,23,42,0.14); display: flex; flex-direction: column; gap: 2px; }
+        .follow-item { display: flex; align-items: center; gap: 12px; padding: 12px 10px; border-radius: 8px; color: #1f2430; font-weight: 600; text-decoration: none; }
+        .follow-item:hover, .follow-item:focus-visible { background: #fdf6f1; outline: none; }
         .card { background: #ffffff; border-radius: 16px; border: 1px solid #ddd7cb; box-shadow: 0 1px 2px rgba(15,23,42,0.06), 0 4px 14px rgba(15,23,42,0.07); transition: transform 0.18s, box-shadow 0.18s; }
         .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(15,23,42,0.12); }
         .badge { display: inline-block; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; border-radius: 99px; padding: 3px 10px; font-size: 0.8125rem; font-weight: 600; }
@@ -2134,6 +2166,7 @@ function avatarInitials(name) {
         .chat-sidebar-btn:focus-visible { outline: 2px solid #db6b33; outline-offset: 2px; }
         @media (max-width: 640px) {
           .btn-sm { padding: 6px 10px; }
+          .toolbar-pair { flex: 1 1 100%; }
           .messages-layout { grid-template-columns: 1fr; height: auto; }
           .messages-chat { height: 480px; }
           .messages-layout.has-active .messages-sidebar-list { display: none !important; }
@@ -2365,13 +2398,47 @@ function avatarInitials(name) {
               Browse Jobs
             </button>
           )}
-          <button
-            className={`toolbar-btn ${tab === "pricing" ? "active" : ""}`}
-            onClick={() => setTab("pricing")}
-            aria-current={tab === "pricing" ? "page" : undefined}
-          >
-            Pricing
-          </button>
+          {/* Pricing and Follow Us share one slot, half each. */}
+          <div className="toolbar-pair">
+            <button
+              className={`toolbar-btn toolbar-half ${tab === "pricing" ? "active" : ""}`}
+              onClick={() => setTab("pricing")}
+              aria-current={tab === "pricing" ? "page" : undefined}
+            >
+              Pricing
+            </button>
+            <button
+              className={`toolbar-btn toolbar-half ${followMenuOpen ? "active" : ""}`}
+              onClick={() => setFollowMenuOpen(o => !o)}
+              aria-haspopup="menu"
+              aria-expanded={followMenuOpen}
+            >
+              Follow Us
+            </button>
+            {followMenuOpen && (
+              <>
+                <div onClick={() => setFollowMenuOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} aria-hidden="true" />
+                <div role="menu" aria-label="Follow WeeSubby" className="follow-menu" onKeyDown={e => e.key === "Escape" && setFollowMenuOpen(false)}>
+                  <div style={{ fontSize: "0.875rem", color: "#64748b", padding: "6px 10px 8px" }}>Follow WeeSubby for tips, new pros and updates</div>
+                  {SOCIAL_LINKS.map(l => (
+                    <a
+                      key={l.name}
+                      role="menuitem"
+                      className="follow-item"
+                      href={l.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setFollowMenuOpen(false)}
+                    >
+                      <SocialIcon icon={l.icon} color={l.color} />
+                      <span>{l.name}</span>
+                      <span aria-hidden="true" style={{ marginLeft: "auto", color: "#94a3b8" }}>↗</span>
+                    </a>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
           {isAdmin && (
             <button
               className={`toolbar-btn ${tab === "admin" ? "active" : ""}`}
