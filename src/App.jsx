@@ -244,6 +244,8 @@ export default function App() {
   const [authIntent, setAuthIntent] = useState(null); // "customer" | "pro" | null — tailors the sign-up note
   const [authError, setAuthError] = useState(null);
   const [authBusy, setAuthBusy] = useState(false);
+  const [authInfo, setAuthInfo] = useState(null); // green confirmation, e.g. "reset link sent"
+  useEffect(() => { if (!authModal) setAuthInfo(null); }, [authModal]);
   const [showPassword, setShowPassword] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [authState, setAuthState] = useState("loading"); // "loading" | "signed-out" | "signed-in"
@@ -330,7 +332,15 @@ export default function App() {
       setUser(u);
       setAuthState(u ? "signed-in" : "signed-out");
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      // Opened from a "reset your password" email: ask for the new password.
+      if (event === "PASSWORD_RECOVERY") {
+        setAuthMode("reset");
+        setAuthForm({ email: "", password: "" });
+        setAuthError(null);
+        setAuthInfo(null);
+        setAuthModal(true);
+      }
       const u = session?.user ?? null;
       setUser(u);
       setAuthState(u ? "signed-in" : "signed-out");
@@ -1420,7 +1430,33 @@ export default function App() {
     e.preventDefault();
     setAuthBusy(true);
     setAuthError(null);
+    setAuthInfo(null);
     const { email, password } = authForm;
+    if (authMode === "forgot") {
+      // Always link to the website, even from the iPhone app, so the email link opens in a browser.
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: SITE_URL });
+      setAuthBusy(false);
+      if (error) {
+        console.error("reset email error:", error);
+        return setAuthError(error.message || "Couldn't send the reset email. Please try again.");
+      }
+      // Same message whether or not the email has an account, so this can't be used to look up accounts.
+      setAuthInfo(`If ${email.trim()} has a WeeSubby account, we've emailed a link to reset the password. Check your inbox (and spam).`);
+      return;
+    }
+    if (authMode === "reset") {
+      const { error } = await supabase.auth.updateUser({ password });
+      setAuthBusy(false);
+      if (error) {
+        console.error("password update error:", error);
+        return setAuthError(error.message || "Couldn't update your password. Please request a new reset link.");
+      }
+      setAuthModal(false);
+      setAuthMode("signin");
+      setAuthForm({ email: "", password: "" });
+      notify("Password updated. You're signed in.");
+      return;
+    }
     if (authMode === "signup") {
       const { data, error } = await supabase.auth.signUp({ email, password });
       setAuthBusy(false);
@@ -4201,7 +4237,7 @@ function avatarInitials(name) {
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
               <h2 id="auth-modal-title" style={{ fontSize: "1.5rem", fontFamily: "'Inter', 'DM Sans', sans-serif", fontWeight: 800, letterSpacing: "-0.01em", color: "#1f2430" }}>
-                {authMode === "signin" ? "SIGN IN" : "CREATE ACCOUNT"}
+                {{ signin: "SIGN IN", signup: "CREATE ACCOUNT", forgot: "RESET PASSWORD", reset: "NEW PASSWORD" }[authMode]}
               </h2>
               <button className="btn btn-outline btn-sm" onClick={() => setAuthModal(false)} aria-label="Close">✕</button>
             </div>
@@ -4215,6 +4251,17 @@ function avatarInitials(name) {
                       : "One account, both sides. Post jobs as a customer, and if you're a pro, add a contractor profile to accept work — anytime, from your profile menu."}
                 </div>
               )}
+              {authMode === "forgot" && (
+                <p style={{ margin: 0, fontSize: "0.9375rem", color: "#475569", lineHeight: 1.5 }}>
+                  Enter the email you signed up with and we'll send you a link to choose a new password.
+                </p>
+              )}
+              {authMode === "reset" && (
+                <p style={{ margin: 0, fontSize: "0.9375rem", color: "#475569", lineHeight: 1.5 }}>
+                  Choose a new password for your account (at least 6 characters).
+                </p>
+              )}
+              {authMode !== "reset" && (
               <div>
                 <label htmlFor="auth-email" style={{ fontSize: "0.9375rem", color: "#334155", marginBottom: 6, display: "block" }}>Email</label>
                 <input
@@ -4226,8 +4273,21 @@ function avatarInitials(name) {
                   onChange={e => setAuthForm(f => ({ ...f, email: e.target.value }))}
                 />
               </div>
+              )}
+              {authMode !== "forgot" && (
               <div>
-                <label htmlFor="auth-password" style={{ fontSize: "0.9375rem", color: "#334155", marginBottom: 6, display: "block" }}>Password</label>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+                  <label htmlFor="auth-password" style={{ fontSize: "0.9375rem", color: "#334155" }}>{authMode === "reset" ? "New password" : "Password"}</label>
+                  {authMode === "signin" && (
+                    <button
+                      type="button"
+                      onClick={() => { setAuthMode("forgot"); setAuthError(null); setAuthInfo(null); }}
+                      style={{ background: "none", border: "none", padding: 0, color: "#b04a17", fontSize: "0.875rem", cursor: "pointer", fontFamily: "inherit", textDecoration: "underline" }}
+                    >
+                      Forgot password?
+                    </button>
+                  )}
+                </div>
                 <div style={{ position: "relative" }}>
                   <input
                     id="auth-password"
@@ -4235,6 +4295,7 @@ function avatarInitials(name) {
                     required
                     minLength={6}
                     autoComplete={authMode === "signin" ? "current-password" : "new-password"}
+                    aria-label={authMode === "reset" ? "New password" : "Password"}
                     value={authForm.password}
                     onChange={e => setAuthForm(f => ({ ...f, password: e.target.value }))}
                     style={{ paddingRight: 42 }}
@@ -4253,13 +4314,19 @@ function avatarInitials(name) {
                   </button>
                 </div>
               </div>
+              )}
               {authError && (
                 <div style={{ color: "#dc2626", fontSize: "0.9375rem", background: "#fef2f2", padding: "8px 12px", borderRadius: 8 }} role="alert">
                   {authError}
                 </div>
               )}
+              {authInfo && (
+                <div style={{ color: "#047857", fontSize: "0.9375rem", background: "#ecfdf5", padding: "8px 12px", borderRadius: 8, lineHeight: 1.5 }} role="status">
+                  {authInfo}
+                </div>
+              )}
               <button type="submit" className="btn btn-gold" disabled={authBusy} style={{ opacity: authBusy ? 0.6 : 1 }}>
-                {authBusy ? "Working..." : authMode === "signin" ? "Sign In" : "Create Account"}
+                {authBusy ? "Working..." : { signin: "Sign In", signup: "Create Account", forgot: "Send Reset Link", reset: "Save New Password" }[authMode]}
               </button>
               {authMode === "signup" && (
                 <p style={{ margin: 0, fontSize: "0.875rem", color: "#64748b", textAlign: "center", lineHeight: 1.5 }}>
@@ -4268,13 +4335,15 @@ function avatarInitials(name) {
                   <a href="/privacy" target="_blank" rel="noopener" style={{ color: "#b04a17" }}>Privacy Policy</a>.
                 </p>
               )}
+              {authMode !== "reset" && (
               <button
                 type="button"
-                onClick={() => { setAuthMode(authMode === "signin" ? "signup" : "signin"); setAuthError(null); }}
+                onClick={() => { setAuthMode(authMode === "signin" ? "signup" : "signin"); setAuthError(null); setAuthInfo(null); }}
                 style={{ background: "none", border: "none", color: "#475569", fontSize: "0.9375rem", cursor: "pointer", fontFamily: "inherit", textDecoration: "underline" }}
               >
-                {authMode === "signin" ? "Need an account? Sign up" : "Already have an account? Sign in"}
+                {authMode === "signin" ? "Need an account? Sign up" : authMode === "forgot" ? "Back to sign in" : "Already have an account? Sign in"}
               </button>
+              )}
             </form>
           </div>
         </div>
