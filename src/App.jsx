@@ -81,11 +81,11 @@ function todayISO() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-// WeeSubby's social pages, shown under "Follow Us". To add TikTok, add an entry
-// like { name: "TikTok", url: "https://www.tiktok.com/@yourhandle", color: "#000000", icon: "tiktok" }.
+// WeeSubby's social pages, shown under "Follow Us", in this order.
 const SOCIAL_LINKS = [
   { name: "Facebook", url: "https://www.facebook.com/profile.php?id=61596067389701", color: "#1877f2", icon: "facebook" },
   { name: "Instagram", url: "https://www.instagram.com/weesubby1", color: "#d62976", icon: "instagram" },
+  { name: "TikTok", url: "https://www.tiktok.com/@weesubby", color: "#000000", icon: "tiktok" },
   // sub_confirmation=1 opens YouTube with the Subscribe prompt ready.
   { name: "YouTube", url: "https://www.youtube.com/channel/UCNz4a0pIMA8ZtbjfCQvUIIA?sub_confirmation=1", color: "#ff0000", icon: "youtube" },
 ];
