@@ -18,17 +18,26 @@ Deno.serve(async (req) => {
     if (!contractor) return json({ error: "Create your contractor profile first." }, 400);
     if (contractor.plan === "pro") return json({ error: "You're already on Pro." }, 400);
 
-    const priceId = Deno.env.get("STRIPE_PRICE_ID")?.trim();
+    // Monthly ($49) by default; { interval: "year" } picks the yearly ($399) price.
+    const body = await req.json().catch(() => ({}));
+    const yearly = body?.interval === "year";
+    const priceVar = yearly ? "STRIPE_PRICE_ID_YEARLY" : "STRIPE_PRICE_ID";
+    // Accept a pasted dashboard URL too: keep just the price_... ID.
+    const rawPrice = Deno.env.get(priceVar)?.trim() ?? "";
+    const priceId = rawPrice.match(/price_[A-Za-z0-9]+/)?.[0] ?? "";
     const site = siteUrl(req);
     if (!stripeConfigured || !priceId || !site) {
       // Names only, never values, so the logs say exactly which secret to fix.
       const missing = [
         !stripeConfigured && "STRIPE_SECRET_KEY",
-        !priceId && "STRIPE_PRICE_ID",
+        !priceId && priceVar,
         !site && "APP_URL",
       ].filter(Boolean);
       console.error("create-checkout not configured; missing or invalid:", missing.join(", "));
-      return json({ error: "Payments aren't configured yet." }, 500);
+      const msg = yearly && stripeConfigured && site
+        ? "Yearly billing isn't available yet. Please choose monthly."
+        : "Payments aren't configured yet.";
+      return json({ error: msg }, 500);
     }
 
     // Reuse this contractor's Stripe customer if they've checked out before.

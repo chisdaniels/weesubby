@@ -48,6 +48,8 @@ const TAB_PATHS = {
 // Contractors pay, customers don't. Accepting jobs needs Pro (enforced in the
 // database by migration 035); billing runs through Stripe Edge Functions.
 const PRO_PRICE = 49;
+const PRO_PRICE_YEARLY = 399;
+const PRO_YEARLY_SAVINGS = PRO_PRICE * 12 - PRO_PRICE_YEARLY;
 const PATH_TABS = Object.fromEntries(Object.entries(TAB_PATHS).map(([t, p]) => [p, t]));
 
 function pathToTab(pathname, hash) {
@@ -686,9 +688,9 @@ export default function App() {
     return () => { stopped = true; clearInterval(timer); };
   }, [user?.id]);
 
-  async function callBillingFunction(name) {
+  async function callBillingFunction(name, body) {
     setBillingBusy(true);
-    const { data, error } = await supabase.functions.invoke(name, { method: "POST" });
+    const { data, error } = await supabase.functions.invoke(name, { method: "POST", body });
     if (error || !data?.url) {
       let msg = "Something went wrong. Please try again.";
       try { msg = (await error?.context?.json())?.error ?? msg; } catch { /* keep default */ }
@@ -699,9 +701,10 @@ export default function App() {
     window.location.href = data.url;
   }
 
-  function startCheckout() {
+  // interval: "month" ($49/month) or "year" ($399/year).
+  function startCheckout(interval = "month") {
     if (!myContractor) { notify("Set up your contractor profile first."); openProfileModal(); return; }
-    callBillingFunction("create-checkout");
+    callBillingFunction("create-checkout", { interval });
   }
 
   // Private rows (credentials, homeowner contacts) only come back where the
@@ -2919,7 +2922,7 @@ function avatarInitials(name) {
               <div className="card" style={{ padding: 16, marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", borderColor: "#db6b33" }}>
                 <div>
                   <div style={{ fontWeight: 700, marginBottom: 2 }}>You're on the Free plan</div>
-                  <div style={{ fontSize: "0.9375rem", color: "#475569" }}>Go Pro (${PRO_PRICE}/month) to accept jobs and get the customer's contact details.</div>
+                  <div style={{ fontSize: "0.9375rem", color: "#475569" }}>Go Pro (${PRO_PRICE}/month or ${PRO_PRICE_YEARLY}/year) to accept jobs and get the customer's contact details.</div>
                 </div>
                 <button className="btn btn-gold btn-sm" onClick={() => setTab("pricing")}>See Pro</button>
               </div>
@@ -3018,6 +3021,7 @@ function avatarInitials(name) {
                 },
                 {
                   key: "pro", name: "WeeSubby Pro", price: `$${PRO_PRICE}`, sub: "/month", highlight: true,
+                  alt: `or $${PRO_PRICE_YEARLY}/year (save $${PRO_YEARLY_SAVINGS})`,
                   features: ["Everything in Free", "Accept jobs", "Customer contact details", "Cancel anytime"],
                 },
               ].map(p => {
@@ -3031,6 +3035,9 @@ function avatarInitials(name) {
                     <div style={{ marginBottom: 14 }}>
                       <span style={{ fontSize: "2rem", fontWeight: 800, color: p.highlight ? "#b04a17" : "#1f2430" }}>{p.price}</span>
                       <span style={{ color: "#64748b", fontSize: "0.9375rem", marginLeft: 4 }}>{p.sub}</span>
+                      {p.alt && (
+                        <div style={{ marginTop: 4, fontSize: "0.9375rem", fontWeight: 600, color: "#047857" }}>{p.alt}</div>
+                      )}
                     </div>
                     <ul style={{ listStyle: "none", padding: 0, margin: "0 0 18px", display: "grid", gap: 6, fontSize: "0.9375rem", color: "#475569", flex: 1 }}>
                       {p.features.map(f => <li key={f}>✓ {f}</li>)}
@@ -3057,10 +3064,19 @@ function avatarInitials(name) {
                       <span className="badge" style={{ alignSelf: "flex-start" }}>✓ Your plan</span>
                     ) : p.key === "pro" && user && isNativeApp ? (
                       <div style={{ fontSize: "0.9375rem", color: "#64748b" }}>Pro can't be purchased in the iPhone app.</div>
-                    ) : p.key === "pro" && user ? (
-                      <button className="btn btn-gold" onClick={startCheckout} disabled={billingBusy} style={{ opacity: billingBusy ? 0.6 : 1 }}>
-                        {billingBusy ? "Opening checkout..." : myContractor ? "Upgrade to Pro" : "Set Up Profile to Go Pro"}
+                    ) : p.key === "pro" && user && !myContractor ? (
+                      <button className="btn btn-gold" onClick={() => startCheckout()}>
+                        Set Up Profile to Go Pro
                       </button>
+                    ) : p.key === "pro" && user ? (
+                      <div style={{ display: "grid", gap: 8 }}>
+                        <button className="btn btn-gold" onClick={() => startCheckout("month")} disabled={billingBusy} style={{ opacity: billingBusy ? 0.6 : 1 }}>
+                          {billingBusy ? "Opening checkout..." : `Go Pro Monthly: $${PRO_PRICE}/month`}
+                        </button>
+                        <button className="btn btn-outline" onClick={() => startCheckout("year")} disabled={billingBusy} style={{ opacity: billingBusy ? 0.6 : 1 }}>
+                          {`Go Pro Yearly: $${PRO_PRICE_YEARLY}/year (save $${PRO_YEARLY_SAVINGS})`}
+                        </button>
+                      </div>
                     ) : !user ? (
                       <button
                         className={p.highlight ? "btn btn-gold" : "btn btn-outline"}
