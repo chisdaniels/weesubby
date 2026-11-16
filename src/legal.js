@@ -6,7 +6,7 @@
 // advice: have it reviewed before relying on it, and update LEGAL_UPDATED
 // whenever the text changes.
 
-export const LEGAL_UPDATED = "November 7, 2026";
+export const LEGAL_UPDATED = "November 16, 2026";
 
 export const PRIVACY = {
   path: "/privacy",
@@ -98,8 +98,8 @@ export const TERMS = {
       "Use customer contact details only to discuss and carry out the job you accepted.",
     ]],
     ["WeeSubby Pro subscriptions", [
-      "WeeSubby Pro costs the price shown on our Pricing page (currently $49 per month, plus any applicable taxes) and is billed in advance through Stripe.",
-      "Your subscription renews automatically each month until you cancel. You authorize us, through Stripe, to charge your payment method on each renewal.",
+      "WeeSubby Pro costs the price shown on our Pricing page (currently $49 per month, or $399 per year, plus any applicable taxes) and is billed in advance through Stripe.",
+      "Your subscription renews automatically at the end of each billing period (monthly or yearly, whichever you chose) until you cancel. You authorize us, through Stripe, to charge your payment method on each renewal.",
       "You can cancel any time from Manage billing on the Pricing page. Cancellation takes effect at the end of the current billing period, and you keep Pro until then.",
       "Payments are non-refundable except where the law requires otherwise, or where we decide to issue a refund.",
       "If a payment fails, we may pause Pro features until it is resolved. We may change the price with at least 30 days' notice, and the new price applies from your next billing period after that notice.",
