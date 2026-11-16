@@ -7,6 +7,15 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// Emails always show "WeeSubby" as the sender name, keeping MAIL_FROM's address
+// (which must stay on a domain verified with Resend).
+function weesubbyFrom(raw?: string | null): string {
+  const s = (raw || "").trim();
+  if (!s) return "";
+  const addr = s.match(/<([^>]+)>/)?.[1]?.trim() || s;
+  return `WeeSubby <${addr}>`;
+}
+
 // WeeSubby's support inbox: gets every support request and receives replies
 // to WeeSubby's emails. Override with the SUPPORT_EMAIL secret.
 const SUPPORT_EMAIL = (Deno.env.get("SUPPORT_EMAIL") || "weesubby@gmail.com").trim().toLowerCase();
@@ -63,7 +72,7 @@ Deno.serve(async (req) => {
     if (!email) return json({ skipped: "no email on file" }, 200);
 
     const apiKey = Deno.env.get("RESEND_API_KEY");
-    const from   = Deno.env.get("MAIL_FROM");
+    const from   = weesubbyFrom(Deno.env.get("MAIL_FROM"));
     // APP_URL may be set without a scheme; email links need a full URL.
     const rawUrl = (Deno.env.get("APP_URL") || "").trim().replace(/\/+$/, "");
     const appUrl = rawUrl && !/^https?:\/\//i.test(rawUrl) ? `https://${rawUrl}` : rawUrl;
