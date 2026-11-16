@@ -6,6 +6,15 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// Emails always show "WeeSubby" as the sender name, keeping MAIL_FROM's address
+// (which must stay on a domain verified with Resend).
+function weesubbyFrom(raw?: string | null): string {
+  const s = (raw || "").trim();
+  if (!s) return "";
+  const addr = s.match(/<([^>]+)>/)?.[1]?.trim() || s;
+  return `WeeSubby <${addr}>`;
+}
+
 // WeeSubby's support inbox: gets every support request and receives replies
 // to WeeSubby's emails. Override with the SUPPORT_EMAIL secret.
 const SUPPORT_EMAIL = (Deno.env.get("SUPPORT_EMAIL") || "weesubby@gmail.com").trim().toLowerCase();
@@ -50,7 +59,7 @@ Deno.serve(async (req) => {
     if (!ticket.email) return json({ skipped: "no email on ticket" }, 200);
 
     const apiKey = Deno.env.get("RESEND_API_KEY");
-    const from   = Deno.env.get("MAIL_FROM");
+    const from   = weesubbyFrom(Deno.env.get("MAIL_FROM"));
     const appUrl = Deno.env.get("APP_URL") || "";
     if (!apiKey || !from) return json({ error: "secrets missing" }, 500);
 

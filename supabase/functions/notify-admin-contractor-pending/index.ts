@@ -20,6 +20,15 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// Emails always show "WeeSubby" as the sender name, keeping MAIL_FROM's address
+// (which must stay on a domain verified with Resend).
+function weesubbyFrom(raw?: string | null): string {
+  const s = (raw || "").trim();
+  if (!s) return "";
+  const addr = s.match(/<([^>]+)>/)?.[1]?.trim() || s;
+  return `WeeSubby <${addr}>`;
+}
+
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -90,7 +99,7 @@ Deno.serve(async (req) => {
     }
 
     const apiKey = Deno.env.get("RESEND_API_KEY");
-    const from   = Deno.env.get("MAIL_FROM");
+    const from   = weesubbyFrom(Deno.env.get("MAIL_FROM"));
     console.log("secrets present — key:", !!apiKey, "from:", from);
     if (!apiKey || !from) {
       console.error("missing secrets");
